@@ -1,0 +1,233 @@
+contentSlug: kexcel
+lastReviewedAt: "2026-07-20"
+
+facts:
+  - id: project-period
+    statement: "KExcel은 2026년 5월 한 달 동안 개발한 개인 오픈소스 프로젝트다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "기간·프로젝트 형태"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: project-purpose
+    statement: "실무에서 경험한 Apache POI 기반 엑셀 생성의 성능과 API 복잡도 문제를 일반화해 개발했다."
+    sourceType: user-confirmed
+    source: "사용자 설명 및 이력서"
+    scope: "개발 동기"
+    public: true
+    confidence: confirmed
+    note: "회사 업무의 구현 범위와 KExcel 기능을 혼합하지 않는다."
+
+  - id: kotlin-dsl
+    statement: "excel { sheet { row { cell() } } } 형태의 Kotlin DSL을 제공한다."
+    sourceType: repository
+    source: "https://github.com/Hong1008/kexcel/blob/main/README.ko.md"
+    scope: "사용자 API"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: engine-abstraction
+    statement: "ExcelDriver 인터페이스 뒤에 PoiDriver와 FastExcelDriver를 분리했다."
+    sourceType: repository
+    source: "https://github.com/Hong1008/kexcel/blob/main/README.ko.md"
+    scope: "아키텍처"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: style-inheritance
+    statement: "Workbook → Sheet → Row → Cell 순서의 계층적 스타일 상속을 제공한다."
+    sourceType: repository
+    source: "https://github.com/Hong1008/kexcel/blob/main/README.ko.md"
+    scope: "스타일 모델"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: streaming
+    statement: "Sequence 기반 행 단위 스트리밍 쓰기를 제공한다."
+    sourceType: repository
+    source: "https://github.com/Hong1008/kexcel/blob/main/README.ko.md"
+    scope: "대용량 처리"
+    public: true
+    confidence: confirmed
+    note: "데이터 크기와 무관하게 메모리가 완전히 일정하다고 단정하지 않는다."
+
+  - id: fail-fast
+    statement: "처리 완료 행의 재접근과 동일 시트 동시 쓰기 오용을 Fail-Fast로 감지한다."
+    sourceType: repository
+    source: "https://github.com/Hong1008/kexcel"
+    scope: "안전 제약"
+    public: true
+    confidence: confirmed
+    note: "멀티스레드 안전 쓰기를 지원한다는 의미가 아니다."
+
+  - id: native-extension
+    statement: "nativeWorkbook과 nativeSheet를 통해 엔진 고유 기능에 접근할 수 있다."
+    sourceType: repository
+    source: "https://github.com/Hong1008/kexcel/blob/main/README.ko.md"
+    scope: "추상화 확장"
+    public: true
+    confidence: confirmed
+    note: "사용 시 특정 엔진 의존성이 생길 수 있다."
+
+  - id: release
+    statement: "JitPack 0.1.0으로 공개됐고 MIT License를 사용한다."
+    sourceType: repository
+    source: "https://github.com/Hong1008/kexcel"
+    scope: "공개·배포"
+    public: true
+    confidence: confirmed
+    note: null
+
+metrics:
+  - id: fast-excel-dsl-overhead
+    name: "FastExcel DSL overhead"
+    value: 3.1
+    unit: "percent"
+    baseline: 16.3
+    scope: "Native FastExcel API 대비 KExcel DSL 처리량 차이"
+    environment: "OpenJDK 21, 512MB heap, G1GC, JMH 1.36, FastExcel 0.18.4, 10,000행 × 10열"
+    source: "https://github.com/Hong1008/kexcel/blob/main/docs/BENCHMARK.ko.md"
+    public: true
+
+  - id: poi-dsl-overhead
+    name: "Apache POI DSL overhead"
+    value: 0.4
+    unit: "percent"
+    baseline: null
+    scope: "Native POI SXSSF API 대비 KExcel DSL 처리량 차이"
+    environment: "OpenJDK 21, 512MB heap, G1GC, JMH 1.36, Apache POI 5.2.5, 10,000행 × 10열"
+    source: "https://github.com/Hong1008/kexcel/blob/main/docs/BENCHMARK.ko.md"
+    public: true
+
+  - id: extra-allocation
+    name: "DSL execution additional allocation"
+    value: 364
+    unit: "bytes"
+    baseline: 204800
+    scope: "핫패스 최적화 전후 DSL 실행당 추가 메모리 할당량"
+    environment: "JMH benchmark"
+    source: "https://github.com/Hong1008/kexcel/blob/main/docs/BENCHMARK.ko.md"
+    public: true
+
+  - id: large-data-100k-fast
+    name: "FastExcel 100,000 rows"
+    value: 0.238
+    unit: "seconds"
+    baseline: null
+    scope: "100,000행 생성"
+    environment: "OpenJDK 21, 512MB heap, G1GC, FastExcel 0.18.4"
+    source: "https://github.com/Hong1008/kexcel/blob/main/docs/BENCHMARK.ko.md"
+    public: true
+
+  - id: large-data-100k-poi
+    name: "POI SXSSF 100,000 rows"
+    value: 0.440
+    unit: "seconds"
+    baseline: null
+    scope: "100,000행 생성"
+    environment: "OpenJDK 21, 512MB heap, G1GC, Apache POI 5.2.5"
+    source: "https://github.com/Hong1008/kexcel/blob/main/docs/BENCHMARK.ko.md"
+    public: true
+
+  - id: large-data-1m-fast
+    name: "FastExcel 1,000,000 rows"
+    value: 3.396
+    unit: "seconds"
+    baseline: null
+    scope: "1,000,000행 생성"
+    environment: "OpenJDK 21, 512MB heap, G1GC, FastExcel 0.18.4"
+    source: "https://github.com/Hong1008/kexcel/blob/main/docs/BENCHMARK.ko.md"
+    public: true
+
+  - id: large-data-1m-poi
+    name: "POI SXSSF 1,000,000 rows"
+    value: 4.249
+    unit: "seconds"
+    baseline: null
+    scope: "1,000,000행 생성"
+    environment: "OpenJDK 21, 512MB heap, G1GC, Apache POI 5.2.5"
+    source: "https://github.com/Hong1008/kexcel/blob/main/docs/BENCHMARK.ko.md"
+    public: true
+
+  - id: merge-throughput
+    name: "POI merge throughput"
+    value: 17.42
+    unit: "ops/s"
+    baseline: 3.36
+    scope: "addMergedRegion 대비 addMergedRegionUnsafe 적용 병합 시나리오"
+    environment: "JMH MergeBenchmark"
+    source: "https://github.com/Hong1008/kexcel/blob/main/docs/BENCHMARK.ko.md"
+    public: true
+
+  - id: merge-gc-allocation
+    name: "POI merge GC allocation rate"
+    value: 328.6
+    unit: "MB/s"
+    baseline: 1580.8
+    scope: "addMergedRegion 대비 addMergedRegionUnsafe 적용 병합 시나리오"
+    environment: "JMH MergeBenchmark"
+    source: "https://github.com/Hong1008/kexcel/blob/main/docs/BENCHMARK.ko.md"
+    public: true
+
+contribution:
+  mine:
+    - "문제 정의"
+    - "Kotlin DSL과 Scope 계층 설계"
+    - "ExcelDriver 인터페이스 설계"
+    - "PoiDriver와 FastExcelDriver 구현"
+    - "스트리밍·동시 쓰기 Fail-Fast 구현"
+    - "JMH 벤치마크와 핫패스 최적화"
+    - "README·예제·배포 구성"
+  team: []
+  external:
+    - "Apache POI와 FastExcel 엔진 구현 자체는 외부 라이브러리다."
+    - "JMH는 벤치마크 실행 프레임워크다."
+    - "JitPack은 패키지 배포 경로다."
+
+publication:
+  allowed:
+    - "공개 GitHub 저장소의 코드와 문서"
+    - "DSL 사용 예시"
+    - "아키텍처"
+    - "벤치마크 환경과 결과"
+    - "JitPack 버전"
+    - "한계와 트레이드오프"
+  anonymize: []
+  prohibited:
+    - "회사 내부 엑셀 코드"
+    - "실제 회사 보고서 데이터와 화면"
+    - "근거가 확인되지 않은 회사 운영 성능 수치"
+
+risks:
+  - claim: "Zero-allocation"
+    reason: "벤치마크에서도 약 364B의 추가 할당이 남아 있다."
+    safeWording: "DSL 실행당 추가 할당량을 약 200KB에서 364B로 줄였다."
+
+  - claim: "Thread-safe"
+    reason: "여러 스레드의 안전한 동시 쓰기를 지원하는 것이 아니라 오용을 감지해 실패시킨다."
+    safeWording: "동일 시트 동시 쓰기를 감지해 Fail-Fast로 차단한다."
+
+  - claim: "메모리 사용량이 데이터 크기와 무관하다"
+    reason: "병합 메타데이터 등 데이터 규모에 따라 남는 메모리 비용이 있다."
+    safeWording: "512MB heap 환경에서 최대 100만 행 생성 벤치마크를 완료했다."
+
+  - claim: "성능 518% 개선"
+    reason: "전체 파일 생성 성능이 아니라 특정 병합 벤치마크의 처리량 비교다."
+    safeWording: "병합 처리량을 3.36에서 17.42 ops/s로 개선했다."
+
+  - claim: "메모리 99.8% 절감"
+    reason: "전체 메모리가 아니라 DSL의 추가 할당량 기준이다."
+    safeWording: "DSL 실행당 추가 할당량을 약 200KB에서 364B로 축소했다."
+
+  - claim: "POI 병합 문제를 안전하게 완전히 해결"
+    reason: "addMergedRegionUnsafe는 중복 검증을 우회하며 병합 메타데이터의 memory residency가 남는다."
+    safeWording: "병합 중복 검증을 우회해 CPU 병목을 줄였으며, 잘못된 병합 방지와 메모리 비용은 별도 제약으로 남는다."
+
+  - claim: "회사 업무에서 KExcel 전체 기능을 구현"
+    reason: "KExcel은 실무 문제를 사후에 일반화한 개인 프로젝트다."
+    safeWording: "실무에서 경험한 문제를 바탕으로 개인 프로젝트에서 엔진 추상화와 벤치마크를 추가 구현했다."

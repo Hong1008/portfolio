@@ -1,0 +1,82 @@
+---
+import { getCollection, render } from "astro:content";
+import "../../styles/global.css";
+
+export async function getStaticPaths() {
+  const projects = await getCollection(
+    "projects",
+    ({ data }) => data.visibility === "public",
+  );
+
+  return projects.map((project) => ({
+    params: {
+      slug: project.data.slug,
+    },
+    props: {
+      project,
+    },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const period = [project.data.startDate, project.data.endDate ?? "현재"].join(
+  " – ",
+);
+---
+
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{project.data.title}</title>
+    <meta name="description" content={project.data.summary} />
+  </head>
+
+  <body>
+    <main>
+      <nav aria-label="현재 위치">
+        <a href="/projects/">프로젝트 목록</a>
+      </nav>
+
+      <header class="content-header">
+        <p class="eyebrow">{project.data.organization.displayName}</p>
+        <h1>{project.data.title}</h1>
+        <p class="summary">{project.data.summary}</p>
+
+        <dl class="metadata">
+          <div>
+            <dt>기간</dt>
+            <dd>{period}</dd>
+          </div>
+          <div>
+            <dt>역할</dt>
+            <dd>{project.data.role.title}</dd>
+          </div>
+          <div>
+            <dt>기술</dt>
+            <dd>{project.data.technologies.primary.join(", ")}</dd>
+          </div>
+        </dl>
+
+        <div class="external-links" aria-label="프로젝트 링크">
+          {
+            project.data.links.repository && (
+              <a href={project.data.links.repository}>GitHub 저장소</a>
+            )
+          }
+          {
+            project.data.links.external.map((link) => (
+              <a href={link.url}>{link.label}</a>
+            ))
+          }
+        </div>
+      </header>
+
+      <article class="prose">
+        <Content />
+      </article>
+    </main>
+  </body>
+</html>
