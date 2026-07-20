@@ -69,39 +69,25 @@ links:
 
 evidenceRef: "kexcel"
 
+caseSummary:
+  problem: "Apache POI의 저수준 API를 직접 사용하면 객체와 좌표, 스타일 생명주기를 반복해서 관리해야 했고, 엔진을 바꾸면 보고서 코드도 함께 변경해야 했습니다."
+  decision: "사용자 DSL과 실제 엑셀 엔진을 ExcelDriver 인터페이스로 분리하고, 스트리밍 제약과 동일 시트 동시 쓰기 오용은 즉시 실패하도록 했습니다."
+  role: "개인 프로젝트로 API와 Scope 계층 설계, POI·FastExcel 드라이버 구현, 벤치마크와 배포를 수행했습니다."
+  verification: "OpenJDK 21, 512MB heap, G1GC 환경에서 JMH로 DSL 오버헤드와 병합 처리량을 측정했습니다."
+  limitation: "병합 중복 검증을 우회한 최적화는 잘못된 병합 요청을 사전에 방지해야 하며, 병합 메타데이터의 메모리 비용은 남습니다."
+
+limitations:
+  - "addMergedRegionUnsafe는 POI의 병합 중복 검증을 우회하므로 잘못된 병합 요청을 별도로 방지해야 합니다."
+  - "병합 메타데이터는 파일 작성이 끝날 때까지 메모리에 유지됩니다."
+  - "벤치마크 결과는 OpenJDK 21, 512MB heap과 명시한 라이브러리 버전에서 측정한 범위에 한정됩니다."
+
 print:
   include: true
   priority: 20
   detailLevel: "detailed"
 ---
 
-# KExcel
-
 > 실무에서 경험한 엑셀 생성의 성능·복잡도 문제를 특정 보고서에 한정하지 않고, 엔진을 교체할 수 있는 Kotlin 라이브러리로 일반화했습니다.
-
-## 30초 요약
-
-### 문제
-
-Apache POI의 저수준 API를 직접 사용하면 Workbook, Sheet, Row, Cell과 스타일 객체를 반복적으로 관리해야 했습니다. 대용량 데이터와 많은 병합 영역을 다룰 때는 API 복잡도뿐 아니라 처리량과 메모리 사용 특성도 함께 고려해야 했습니다.
-
-### 판단
-
-사용자 코드는 Kotlin DSL에만 의존하도록 하고, 실제 엑셀 엔진은 `ExcelDriver` 인터페이스 뒤로 분리했습니다. 스트리밍에서 허용되지 않는 역방향 행 접근과 동일 시트 동시 쓰기는 묵시적으로 허용하지 않고 즉시 실패하도록 했습니다.
-
-### 역할
-
-개인 프로젝트로 API와 Scope 계층 설계, POI·FastExcel 드라이버 구현, 벤치마크와 최적화, 배포까지 전 과정을 수행했습니다.
-
-### 검증
-
-OpenJDK 21, 512MB heap, G1GC 환경에서 JMH 벤치마크를 구성했습니다. FastExcel DSL 오버헤드를 16.3%에서 3.1%로 낮췄고, 병합 처리량은 3.36에서 17.42 ops/s로 개선했습니다.
-
-### 한계
-
-POI의 병합 중복 검증을 우회한 최적화는 잘못된 병합 요청을 사전에 방지한다는 전제가 필요합니다. 또한 병합 메타데이터는 파일 작성이 끝날 때까지 메모리에 남습니다.
-
----
 
 ## 1. 문제의 출발점
 
@@ -150,6 +136,8 @@ Apache POI와 FastExcel은 같은 XLSX 파일을 생성하지만 API와 지원 �
 
 ```mermaid
 flowchart TD
+accTitle: KExcel 엔진 추상화 구조
+accDescr: 사용자 Kotlin DSL이 Scope 계층과 ExcelDriver를 거쳐 POI 또는 FastExcel 엔진을 선택하고, 엔진 고유 기능은 Native Extension으로 접근하는 구조
     U["사용자 코드<br/>excel { sheet { row { cell() } } }"]
     S["WorkbookScope / SheetScope<br/>DataSheetScope / RowScope"]
     D["ExcelDriver"]

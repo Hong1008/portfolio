@@ -1,0 +1,27 @@
+---
+interface Props {
+  mine: string[];
+  team?: string[];
+  external?: string[];
+}
+
+const { mine, team = [], external = [] } = Astro.props;
+const groups = [
+  { title: "직접 담당", items: mine },
+  { title: "팀", items: team },
+  { title: "외부 구성", items: external },
+].filter((group) => group.items.length > 0);
+---
+
+<div class="role-boundary">
+  {
+    groups.map((group) => (
+      <section>
+        <h3>{group.title}</h3>
+        <ul>
+          {group.items.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+    ))
+  }
+</div>

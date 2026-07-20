@@ -1,0 +1,38 @@
+---
+interface Props {
+  problem?: string;
+  decision?: string;
+  role?: string;
+  verification?: string;
+  limitation?: string;
+}
+
+const labels: Array<[keyof Props, string]> = [
+  ["problem", "문제"],
+  ["decision", "판단"],
+  ["role", "역할"],
+  ["verification", "검증"],
+  ["limitation", "한계"],
+];
+const values = Astro.props;
+const items = labels.flatMap(([key, label]) => {
+  const value = values[key];
+  return value ? [{ label, value }] : [];
+});
+---
+
+{
+  items.length > 0 && (
+    <section class="summary-card" aria-labelledby="summary-card-title">
+      <h2 id="summary-card-title">30초 요약</h2>
+      <dl>
+        {items.map((item) => (
+          <div>
+            <dt>{item.label}</dt>
+            <dd>{item.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  )
+}

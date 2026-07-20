@@ -3,6 +3,18 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
 const nullableUrl = z.string().url().nullable();
+const sourceReference = z.string().min(1).superRefine((value, context) => {
+  if (!value.startsWith("http://") && !value.startsWith("https://")) {
+    return;
+  }
+
+  if (!z.string().url().safeParse(value).success) {
+    context.addIssue({
+      code: "custom",
+      message: "HTTP source must be a valid URL",
+    });
+  }
+});
 
 const projects = defineCollection({
   loader: glob({
@@ -97,6 +109,18 @@ const projects = defineCollection({
 
     evidenceRef: z.string(),
 
+    caseSummary: z
+      .object({
+        problem: z.string().optional(),
+        decision: z.string().optional(),
+        role: z.string().optional(),
+        verification: z.string().optional(),
+        limitation: z.string().optional(),
+      })
+      .optional(),
+
+    limitations: z.array(z.string()).optional(),
+
     print: z.object({
       include: z.boolean(),
       priority: z.number().int().nullable(),
@@ -105,6 +129,86 @@ const projects = defineCollection({
   }),
 });
 
+const evidence = defineCollection({
+  loader: glob({
+    pattern: "**/*.{yaml,yml}",
+    base: "./src/data/evidence",
+  }),
+
+  schema: z
+    .object({
+      contentSlug: z
+        .string()
+        .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+      lastReviewedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      facts: z.array(
+        z.object({
+          id: z.string().min(1),
+          statement: z.string().min(1),
+          sourceType: z.enum([
+            "user-confirmed",
+            "repository",
+            "code",
+            "benchmark",
+            "resume",
+            "retrospective",
+          ]),
+          source: sourceReference,
+          scope: z.string().min(1),
+          public: z.boolean(),
+          confidence: z.enum(["confirmed", "partial", "uncertain"]),
+          note: z.string().nullable(),
+        }),
+      ),
+      metrics: z.array(
+        z.object({
+          id: z.string().min(1),
+          name: z.string().min(1),
+          value: z.number(),
+          unit: z.string().min(1),
+          baseline: z.number().nullable().optional(),
+          scope: z.string().min(1),
+          environment: z.string().min(1),
+          source: sourceReference,
+          public: z.boolean(),
+        }),
+      ),
+      contribution: z.object({
+        mine: z.array(z.string()),
+        team: z.array(z.string()),
+        external: z.array(z.string()),
+      }),
+      publication: z.object({
+        allowed: z.array(z.string()),
+        anonymize: z.array(z.string()),
+        prohibited: z.array(z.string()),
+      }),
+      risks: z.array(
+        z.object({
+          claim: z.string().min(1),
+          reason: z.string().min(1),
+          safeWording: z.string().min(1),
+        }),
+      ),
+    })
+    .superRefine((data, context) => {
+      const metricIds = new Set<string>();
+
+      for (const [index, metric] of data.metrics.entries()) {
+        if (metricIds.has(metric.id)) {
+          context.addIssue({
+            code: "custom",
+            message: `Duplicate metric ID: ${metric.id}`,
+            path: ["metrics", index, "id"],
+          });
+        }
+
+        metricIds.add(metric.id);
+      }
+    }),
+});
+
 export const collections = {
   projects,
+  evidence,
 };

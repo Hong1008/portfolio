@@ -1,0 +1,156 @@
+contentSlug: workshield
+lastReviewedAt: "2026-07-20"
+
+facts:
+  - id: project-scope
+    statement: "WorkShield는 IT·SW 계약서를 표준계약서와 조항 단위로 비교해 검토 후보와 근거를 제공하는 팀 프로젝트다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §8.1–8.2"
+    scope: "프로젝트 목표와 비목표"
+    public: true
+    confidence: confirmed
+    note: "법률 자문, 위법·합법 판단 또는 계약 안전성 보장으로 표현하지 않는다."
+
+  - id: role
+    statement: "5인 팀에서 PM, 시스템 설계와 MCP 구현을 담당했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §8.1"
+    scope: "개인 기여"
+    public: true
+    confidence: confirmed
+    note: "팀 전체 작업을 개인 단독 성과로 표현하지 않는다."
+
+  - id: deterministic-boundary
+    statement: "문서 처리·검색·재정렬·상태 분류를 수행하는 결정론적 MCP 서버와 선택적 LLM 클라이언트를 분리했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §8.3"
+    scope: "시스템 책임 경계"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: rrf-contract
+    statement: "약 0.0328 범위의 RRF 점수와 0.5 분류 임계값이 직접 비교되던 계약 오류를 실제 실행에서 확인하고 수정했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §8.6"
+    scope: "오류 진단과 수정"
+    public: true
+    confidence: confirmed
+    note: "테스트 대역은 실제 점수 범위를 재현하지 못했다."
+
+  - id: trace-evaluation
+    statement: "평가 시 검색을 재실행하지 않고 실제 판정에 사용한 후보와 점수를 trace로 보존했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §8.7"
+    scope: "평가 구조"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: repository
+    statement: "프로젝트 저장소는 공개돼 있다."
+    sourceType: repository
+    source: "https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-3rd-2Team"
+    scope: "공개 근거"
+    public: true
+    confidence: confirmed
+    note: null
+
+metrics:
+  - id: golden-total
+    name: "Golden dataset size"
+    value: 135
+    unit: "cases"
+    baseline: null
+    scope: "SI·SM·SW 유형별 45건, 각 유형 tuning 30건과 held-out 15건"
+    environment: "WorkShield golden dataset v5"
+    source: "docs/SOURCE_OF_TRUTH.md §8.7"
+    public: true
+
+  - id: v5-f1
+    name: "v5 classification baseline F1"
+    value: 0.754
+    unit: "F1"
+    baseline: null
+    scope: "정해진 골든 데이터의 1차 조항 대응 상태 분류"
+    environment: "WorkShield v5, TP 69, FP 24, FN 21, TN 21"
+    source: "docs/SOURCE_OF_TRUTH.md §8.7"
+    public: true
+
+  - id: v5-precision
+    name: "v5 classification baseline precision"
+    value: 0.742
+    unit: "precision"
+    baseline: null
+    scope: "정해진 골든 데이터의 1차 조항 대응 상태 분류"
+    environment: "WorkShield v5"
+    source: "docs/SOURCE_OF_TRUTH.md §8.7"
+    public: true
+
+  - id: v5-recall
+    name: "v5 classification baseline recall"
+    value: 0.767
+    unit: "recall"
+    baseline: null
+    scope: "정해진 골든 데이터의 1차 조항 대응 상태 분류"
+    environment: "WorkShield v5"
+    source: "docs/SOURCE_OF_TRUTH.md §8.7"
+    public: true
+
+  - id: c1-heldout-f1
+    name: "C1 SW held-out F1"
+    value: 0.800
+    unit: "F1"
+    baseline: 0.706
+    scope: "SW held-out 15건의 C1 실험"
+    environment: "WorkShield C1 experiment"
+    source: "docs/SOURCE_OF_TRUTH.md §8.7"
+    public: true
+
+contribution:
+  mine:
+    - "PM"
+    - "시스템 구조 설계"
+    - "MCP 서버 구현"
+    - "RRF 점수 계약 오류 수정"
+    - "실제 실행 trace 기반 평가 구조 개선"
+  team:
+    - "계약·표준조항 데이터 준비"
+    - "모델과 평가 실험"
+    - "데모 작업"
+  external:
+    - "Chroma와 BM25는 검색 구성 요소다."
+    - "RunPod worker는 임베딩과 rerank 모델 실행을 담당한다."
+
+publication:
+  allowed:
+    - "공개 저장소 코드와 README"
+    - "MCP 서버의 책임 경계"
+    - "검색 파이프라인과 상태 의미"
+    - "골든 데이터 구성과 평가 결과"
+    - "합성 계약서 실행 예시"
+  anonymize: []
+  prohibited:
+    - "실제 계약서와 개인정보"
+    - "법률 자문 또는 법률적 정확도로 오해할 표현"
+
+risks:
+  - claim: "계약서 법률 검토 자동화"
+    reason: "시스템은 표준 대비 검토 후보와 근거를 제공하며 법률 판단을 수행하지 않는다."
+    safeWording: "표준계약서 대비 검토 후보와 근거를 제공한다."
+
+  - claim: "F1 0.754의 법률 정확도"
+    reason: "지표는 정해진 골든 데이터에서 1차 조항 대응 상태를 분류한 기준선이다."
+    safeWording: "v5 골든 데이터의 1차 조항 대응 상태 분류 F1은 0.754다."
+
+  - claim: "RunPod로 비용과 속도를 개선"
+    reason: "비용과 처리 속도는 측정하지 않았다."
+    safeWording: "모델 의존성과 GPU 실행 환경을 MCP 애플리케이션에서 분리했다."
+
+  - claim: "C1 실험 채택"
+    reason: "F1과 FN은 개선됐지만 FP가 1건에서 2건으로 늘었다."
+    safeWording: "C1은 SW held-out F1이 0.706에서 0.800으로 변했지만 FP 증가를 함께 확인해 보류했다."
+
+  - claim: "합성 계약서 결과가 전체 품질을 증명"
+    reason: "하나의 prod 구성 실행 예시이며 모델·인덱스·코퍼스에 따라 달라질 수 있다."
+    safeWording: "2026년 7월 13일 prod 구성의 합성 계약서 실행 예시다."

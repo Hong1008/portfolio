@@ -1,0 +1,19 @@
+---
+interface Props {
+  items: string[];
+  title?: string;
+}
+
+const { items, title = "책임 범위와 한계" } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <aside class="limitation-callout" aria-labelledby="limitation-title">
+      <h2 id="limitation-title">{title}</h2>
+      <ul>
+        {items.map((item) => <li>{item}</li>)}
+      </ul>
+    </aside>
+  )
+}

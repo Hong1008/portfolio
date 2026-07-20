@@ -1,0 +1,43 @@
+---
+interface Props {
+  question: string;
+  hypothesis?: string;
+  change: string;
+  dataset?: string;
+  metric?: string;
+  result: string;
+  decision: "adopted" | "held" | "rejected";
+  limitation?: string;
+}
+
+const labels = {
+  adopted: "채택",
+  held: "보류",
+  rejected: "폐기",
+};
+const {
+  question,
+  hypothesis,
+  change,
+  dataset,
+  metric,
+  result,
+  decision,
+  limitation,
+} = Astro.props;
+---
+
+<section class="experiment-record" data-decision={decision}>
+  <header>
+    <h3>{question}</h3>
+    <strong class="decision-label">판단: {labels[decision]}</strong>
+  </header>
+  <dl>
+    {hypothesis && <div><dt>가설</dt><dd>{hypothesis}</dd></div>}
+    <div><dt>변경</dt><dd>{change}</dd></div>
+    {dataset && <div><dt>데이터셋</dt><dd>{dataset}</dd></div>}
+    {metric && <div><dt>지표</dt><dd>{metric}</dd></div>}
+    <div><dt>결과</dt><dd>{result}</dd></div>
+    {limitation && <div><dt>부작용·한계</dt><dd>{limitation}</dd></div>}
+  </dl>
+</section>

@@ -1,0 +1,45 @@
+---
+import type { CollectionEntry } from "astro:content";
+import EvidenceLinks from "./EvidenceLinks.astro";
+import MetadataList from "./MetadataList.astro";
+
+interface Props {
+  entry: CollectionEntry<"projects">;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const period = [data.startDate, data.endDate ?? "현재"].join(" – ");
+const projectKind = {
+  company: "회사 프로젝트",
+  personal: "개인 프로젝트",
+  team: "팀 프로젝트",
+  education: "교육 프로젝트",
+  "open-source": "오픈소스 프로젝트",
+  article: "기술 콘텐츠",
+}[data.projectType.kind];
+---
+
+<header class="content-header">
+  <p class="eyebrow">
+    {data.organization.displayName ?? projectKind}
+  </p>
+  <h1>{data.title}</h1>
+  <p class="content-summary">{data.summary}</p>
+
+  <MetadataList
+    items={[
+      { label: "기간", value: period },
+      { label: "형태", value: projectKind },
+      { label: "역할", value: data.role.title },
+      { label: "기술", value: data.technologies.primary.join(", ") },
+    ]}
+  />
+
+  <EvidenceLinks
+    repository={data.links.repository}
+    retrospective={data.links.retrospective}
+    article={data.links.article}
+    external={data.links.external}
+  />
+</header>

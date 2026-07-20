@@ -1,0 +1,37 @@
+---
+interface Link {
+  label: string;
+  url: string;
+}
+
+interface Props {
+  repository?: string | null;
+  retrospective?: string | null;
+  article?: string | null;
+  external?: Link[];
+}
+
+const {
+  repository,
+  retrospective,
+  article,
+  external = [],
+} = Astro.props;
+
+const links = [
+  repository && { label: "GitHub 저장소", url: repository },
+  retrospective && { label: "기술 회고", url: retrospective },
+  article && { label: "관련 글", url: article },
+  ...external,
+].filter((link): link is Link => Boolean(link));
+---
+
+{
+  links.length > 0 && (
+    <nav class="evidence-links" aria-label="프로젝트 근거와 외부 링크">
+      {links.map((link) => (
+        <a href={link.url}>{link.label}</a>
+      ))}
+    </nav>
+  )
+}

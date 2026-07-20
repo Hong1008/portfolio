@@ -1,0 +1,49 @@
+---
+import type { CollectionEntry } from "astro:content";
+import ContentHeader from "../components/content/ContentHeader.astro";
+import LimitationCallout from "../components/content/LimitationCallout.astro";
+import SummaryCard from "../components/content/SummaryCard.astro";
+import "../styles/global.css";
+
+interface Props {
+  entry: CollectionEntry<"projects">;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+---
+
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{data.title}</title>
+    <meta name="description" content={data.summary} />
+  </head>
+
+  <body>
+    <main class="case-study">
+      <nav class="breadcrumb print-hidden" aria-label="현재 위치">
+        <a href="/projects/">프로젝트 목록</a>
+      </nav>
+
+      <ContentHeader entry={entry} />
+
+      {data.caseSummary && <SummaryCard {...data.caseSummary} />}
+
+      <article class="prose">
+        <slot />
+      </article>
+
+      {
+        data.limitations && (
+          <LimitationCallout items={data.limitations} />
+        )
+      }
+
+      <nav class="case-footer print-hidden" aria-label="프로젝트 탐색">
+        <a href="/projects/">모든 프로젝트 보기</a>
+      </nav>
+    </main>
+  </body>
+</html>

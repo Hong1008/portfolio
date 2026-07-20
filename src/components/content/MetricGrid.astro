@@ -1,0 +1,26 @@
+---
+interface Metric {
+  label: string;
+  value: string;
+  note?: string;
+}
+
+interface Props {
+  metrics: Metric[];
+  label: string;
+}
+
+const { metrics, label } = Astro.props;
+---
+
+<dl class="metric-grid" aria-label={label}>
+  {
+    metrics.map((metric) => (
+      <div>
+        <dt>{metric.label}</dt>
+        <dd>{metric.value}</dd>
+        {metric.note && <dd class="metric-note">{metric.note}</dd>}
+      </div>
+    ))
+  }
+</dl>

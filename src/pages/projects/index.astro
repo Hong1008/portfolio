@@ -1,13 +1,8 @@
 ---
-import { getCollection } from "astro:content";
 import "../../styles/global.css";
+import { getPublicProjects } from "../../lib/content";
 
-const projects = (
-  await getCollection(
-    "projects",
-    ({ data }) => data.visibility === "public",
-  )
-).sort((a, b) =>
+const projects = (await getPublicProjects()).sort((a, b) =>
   b.data.startDate.localeCompare(a.data.startDate),
 );
 ---
