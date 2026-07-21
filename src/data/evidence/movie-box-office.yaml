@@ -1,0 +1,139 @@
+contentSlug: movie-box-office
+lastReviewedAt: "2026-07-21"
+
+facts:
+  - id: project-context
+    statement: "영화 흥행 예측 및 배급 시뮬레이터는 2026년 5월 SK Networks Family AI 캠프에서 진행한 5인 팀 프로젝트다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §9.1"
+    scope: "프로젝트 기간·형태·팀 규모"
+    public: true
+    confidence: confirmed
+    note: null
+  - id: contribution
+    statement: "PM으로서 2-Stage 구조 제안·설계, 데이터 수집, 모델 비교·선정과 Streamlit 데모를 담당했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §9.1–9.2"
+    scope: "개인 기여"
+    public: true
+    confidence: confirmed
+    note: "팀 전체의 데이터·모델 작업을 개인 단독 성과로 표현하지 않는다."
+  - id: dependency-problem
+    statement: "스크린 수는 흥행에 영향을 주는 동시에 영화의 기대 잠재력에 따라 결정될 수 있어, 단일 모델에서는 배급 변수의 효과와 콘텐츠 잠재력이 혼재할 수 있다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §9.1"
+    scope: "문제 정의와 모델링 가설"
+    public: true
+    confidence: confirmed
+    note: "상호 의존성을 고려한 구조이지 내생성 해결 또는 인과 효과 검증이 아니다."
+  - id: dataset
+    statement: "KOBIS와 네이버 데이터랩 데이터를 수집해 2010년부터 2025년까지 영화 2,489편, 28개 컬럼의 데이터를 MySQL에 적재하고 개봉일 기준으로 시간 분할했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §9.2"
+    scope: "데이터 수집·적재·분할"
+    public: true
+    confidence: confirmed
+    note: null
+  - id: two-stage-model
+    statement: "Stage 1은 배급 변수를 제외한 콘텐츠 잠재력을 예측하고, Stage 2는 pred_potential과 개봉 1일차 스크린 수·상영 횟수 등 배급 변수를 입력으로 사용했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §9.3"
+    scope: "2-Stage 모델 구조"
+    public: true
+    confidence: confirmed
+    note: "Stage 2는 배급 변수의 인과 효과를 추정하는 모델이 아니다."
+  - id: monotonic-constraint
+    statement: "Stage 2 XGBoost에 스크린 수 증가 시 예상 관객 수가 감소하는 비현실적인 방향을 막기 위한 단조 증가 제약을 적용했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §9.3"
+    scope: "모델 제약"
+    public: true
+    confidence: confirmed
+    note: "제약은 예측 방향을 제한하며 실제 배급 효과를 보장하지 않는다."
+
+metrics:
+  - id: dataset-movies
+    name: "영화 데이터 수"
+    value: 2489
+    unit: "films"
+    baseline: null
+    scope: "2010–2025년 최종 영화 수"
+    environment: "KOBIS·네이버 데이터랩 수집 데이터, 28개 컬럼, MySQL 적재"
+    source: "docs/SOURCE_OF_TRUTH.md §9.2"
+    public: true
+  - id: stage-1-r2
+    name: "Stage 1 R²"
+    value: 0.5638
+    unit: "R²"
+    baseline: null
+    scope: "배급 변수를 제외한 콘텐츠 잠재력 예측"
+    environment: "개봉일 기준 시간 분할"
+    source: "docs/SOURCE_OF_TRUTH.md §9.3"
+    public: true
+  - id: stage-1-rmse
+    name: "Stage 1 RMSE"
+    value: 1.3459
+    unit: "RMSE"
+    baseline: null
+    scope: "배급 변수를 제외한 콘텐츠 잠재력 예측"
+    environment: "개봉일 기준 시간 분할"
+    source: "docs/SOURCE_OF_TRUTH.md §9.3"
+    public: true
+  - id: stage-2-r2
+    name: "Stage 2 R²"
+    value: 0.5517
+    unit: "R²"
+    baseline: null
+    scope: "콘텐츠 잠재력 예측값과 배급 변수를 반영한 최종 예측"
+    environment: "개봉일 기준 시간 분할"
+    source: "docs/SOURCE_OF_TRUTH.md §9.3"
+    public: true
+  - id: stage-2-rmse
+    name: "Stage 2 RMSE"
+    value: 1.3645
+    unit: "RMSE"
+    baseline: null
+    scope: "콘텐츠 잠재력 예측값과 배급 변수를 반영한 최종 예측"
+    environment: "개봉일 기준 시간 분할"
+    source: "docs/SOURCE_OF_TRUTH.md §9.3"
+    public: true
+
+contribution:
+  mine:
+    - "PM"
+    - "2-Stage 구조 제안·설계"
+    - "KOBIS·네이버 데이터랩 기반 데이터 수집"
+    - "MySQL 데이터 적재"
+    - "모델 비교·선정"
+    - "Streamlit 데모 구현"
+  team:
+    - "5인 팀 프로젝트의 데이터·모델·데모 작업"
+  external:
+    - "KOBIS와 네이버 데이터랩이 원천 데이터를 제공"
+    - "CatBoost와 XGBoost가 모델 학습 기능을 제공"
+
+publication:
+  allowed:
+    - "2-Stage 구조와 입력 변수의 책임 분리"
+    - "데이터 기간·영화 수·컬럼 수"
+    - "개봉일 기준 시간 분할"
+    - "Stage 1 앙상블 비중"
+    - "각 Stage의 R²와 RMSE"
+    - "Stage 2 단조 증가 제약의 목적"
+  anonymize: []
+  prohibited:
+    - "사용이 금지된 미승인 평가 수치"
+    - "미확정 영화 프로젝트 저장소 URL"
+    - "실제 배급 의사결정 성과"
+    - "내생성 해결 또는 인과 효과 검증 주장"
+
+risks:
+  - claim: "내생성 문제를 해결했다"
+    reason: "2-Stage 구조는 스크린 수와 콘텐츠 잠재력의 상호 의존성을 고려하지만 인과 식별 전략이 아니다."
+    safeWording: "콘텐츠 잠재력과 배급 변수를 나눈 2-Stage 구조로 상호 의존성을 고려했다."
+  - claim: "스크린 수의 인과 효과를 증명했다"
+    reason: "관측 데이터 기반 예측 모델이며 인과 추론을 수행하지 않았다."
+    safeWording: "스크린 수를 포함한 배급 변수를 최종 예측 입력으로 반영했다."
+  - claim: "실제 배급 의사결정을 개선했다"
+    reason: "실제 배급 의사결정에 적용한 성과가 확인되지 않았다."
+    safeWording: "배급 변수에 따른 예측값을 탐색하는 시뮬레이터로 구현했다."

@@ -1,0 +1,93 @@
+contentSlug: ev-infrastructure
+lastReviewedAt: "2026-07-21"
+
+facts:
+  - id: project-context
+    statement: "전기차 충전 인프라 SOS 대시보드는 2026년 4월 SK Networks Family AI 캠프에서 진행한 5인 팀 프로젝트다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §10.1"
+    scope: "프로젝트 기간·형태·팀 규모"
+    public: true
+    confidence: confirmed
+    note: null
+  - id: contribution
+    statement: "백엔드·대시보드 구현, ERD 설계, 쿼리 작성, 데이터 적재와 Streamlit 구현을 담당했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §10.1"
+    scope: "개인 기여"
+    public: true
+    confidence: confirmed
+    note: "PM 역할은 사용자 확인이 없어 포함하지 않는다."
+  - id: data-flow
+    statement: "공공데이터의 전기차 등록 대수와 충전기 수를 사용해 17개 시·도 단위의 지역별 충전 불편지수를 산출하고, MySQL ERD·적재 쿼리와 Pandera 스키마 검증을 구현했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §10.1"
+    scope: "수집·검증·적재·분석 흐름"
+    public: true
+    confidence: confirmed
+    note: "불편지수는 팀이 정의한 분석 지표다."
+  - id: presentation
+    statement: "domain, web, config 레이어로 데이터 처리와 화면 로직을 분리하고 Streamlit·Folium으로 지도와 차트를 시각화했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §10.1"
+    scope: "애플리케이션 구조와 시각화"
+    public: true
+    confidence: confirmed
+    note: null
+  - id: repository
+    statement: "프로젝트 저장소는 공개돼 있다."
+    sourceType: repository
+    source: "https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-1st-4Team"
+    scope: "공개 근거"
+    public: true
+    confidence: confirmed
+    note: null
+
+metrics:
+  - id: region-count
+    name: "분석 지역 수"
+    value: 17
+    unit: "regions"
+    baseline: null
+    scope: "시·도 단위 분석"
+    environment: "공공데이터 기반 전기차 등록 대수·충전기 수 분석"
+    source: "docs/SOURCE_OF_TRUTH.md §10.1"
+    public: true
+
+contribution:
+  mine:
+    - "백엔드·대시보드 구현"
+    - "MySQL ERD 설계"
+    - "적재 쿼리 작성과 데이터 적재"
+    - "Streamlit 구현"
+  team:
+    - "5인 팀 프로젝트의 공공데이터 분석과 대시보드 구성"
+  external:
+    - "공공데이터가 전기차 등록 대수와 충전기 수를 제공"
+    - "Pandera가 데이터 스키마 검증 기능을 제공"
+    - "Folium이 지도 시각화 기능을 제공"
+
+publication:
+  allowed:
+    - "공공데이터 수집·검증·적재·시각화 흐름"
+    - "17개 시·도 단위 분석"
+    - "Pandera 검증과 MySQL ERD·적재 쿼리"
+    - "domain·web·config 레이어 분리"
+    - "Streamlit·Folium 사용"
+  anonymize: []
+  prohibited:
+    - "공식 정책 지표라는 표현"
+    - "실제 충전 대기 시간이나 사용자 행동 측정 결과"
+    - "운영 데이터 파이프라인 또는 자동 갱신·모니터링 구현 주장"
+    - "PM 역할"
+
+risks:
+  - claim: "충전 취약 지역을 공식적으로 판정했다"
+    reason: "불편지수는 팀이 정의한 분석 지표이며 공식 정책 지표가 아니다."
+    safeWording: "전기차 등록 대수와 충전기 수를 바탕으로 팀 정의 불편지수를 계산했다."
+  - claim: "실제 충전 대기 문제를 측정했다"
+    reason: "사용자 행동과 실제 충전 대기 시간을 직접 측정하지 않았다."
+    safeWording: "공공데이터의 등록 대수와 충전기 수 비율을 지역 단위로 시각화했다."
+  - claim: "운영 데이터 파이프라인을 구축했다"
+    reason: "주기적 자동 갱신과 모니터링 구현 여부가 확인되지 않았다."
+    safeWording: "공공데이터를 수집·검증·적재·시각화하는 프로젝트 흐름을 구현했다."

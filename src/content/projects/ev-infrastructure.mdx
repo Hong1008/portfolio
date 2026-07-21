@@ -1,0 +1,107 @@
+---
+title: "전기차 충전 인프라 SOS 대시보드"
+slug: "ev-infrastructure"
+contentType: "project"
+summary: "공공데이터의 전기차 등록 대수와 충전기 수를 수집해 Pandera로 검증하고 MySQL에 적재한 뒤, 17개 시·도별 팀 정의 충전 불편지수를 지도와 차트로 시각화했습니다. 데이터 처리와 화면 로직은 domain·web·config 레이어로 분리했습니다."
+
+startDate: "2026-04"
+endDate: "2026-04"
+datePrecision: "month"
+status: "completed"
+
+organization:
+  name: "SK Networks Family AI 캠프"
+  displayName: "SK Networks Family AI 캠프 팀 프로젝트"
+  url: null
+
+projectType:
+  kind: "team"
+  operationStatus: "prototype"
+
+team:
+  size: 5
+  composition:
+    - role: "프로젝트 팀원"
+      count: 5
+  note: "SK Networks Family AI 캠프 팀 프로젝트"
+
+role:
+  title: "백엔드·대시보드 구현"
+  responsibilities:
+    - "MySQL ERD 설계"
+    - "데이터 적재 쿼리 작성과 적재"
+    - "백엔드·대시보드 구현"
+    - "Streamlit 지도·차트 화면 구현"
+  contributionSummary: "ERD와 적재 쿼리, 데이터 적재 및 Streamlit 기반 대시보드 구현을 담당했습니다."
+
+technologies:
+  primary:
+    - "Python"
+    - "Pandas"
+    - "Pandera"
+    - "MySQL"
+  secondary:
+    - "Streamlit"
+    - "Folium"
+
+themes:
+  - "data"
+  - "architecture"
+
+featured: false
+visibility: "public"
+confidentialityNote: null
+
+links:
+  repository: "https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-1st-4Team"
+  demo: null
+  retrospective: null
+  article: null
+  external: []
+
+evidenceRef: "ev-infrastructure"
+
+caseSummary:
+  problem: "지역별 전기차 등록 대수와 충전기 수를 같은 흐름에서 검증·적재하고 비교 가능한 형태로 보여줄 필요가 있었습니다."
+  decision: "공공데이터를 Pandera로 검증한 뒤 MySQL에 적재하고, 데이터 처리와 화면 로직을 domain·web·config 레이어로 분리했습니다."
+  role: "ERD와 적재 쿼리, 데이터 적재 및 Streamlit 기반 대시보드 구현을 담당했습니다."
+  verification: "17개 시·도 단위로 전기차 등록 대수와 충전기 수를 바탕으로 계산한 불편지수를 지도와 차트로 확인했습니다."
+  limitation: "불편지수는 팀이 정의한 분석 지표이며 실제 충전 대기 시간·사용자 행동이나 공식 정책 지표를 뜻하지 않습니다."
+
+limitations:
+  - "불편지수는 전기차 등록 대수와 충전기 수로 계산한 팀 정의 분석 지표이며 공식 정책 지표가 아닙니다."
+  - "실제 충전 대기 시간과 사용자 행동을 직접 측정한 결과가 아닙니다."
+  - "운영 데이터 파이프라인이 아니며 주기적 자동 갱신과 모니터링 구현 여부는 확인되지 않았습니다."
+
+print:
+  include: true
+  priority: 90
+  detailLevel: "summary"
+---
+
+## 수집부터 시각화까지의 흐름
+
+전기차 등록 대수와 충전기 수를 공공데이터에서 수집하고, 누락·형식 문제를 Pandera 스키마로 확인한 뒤 MySQL에 적재했습니다. 17개 시·도를 같은 단위로 비교할 수 있도록 전기차 등록 대수와 충전기 수를 바탕으로 팀 정의 충전 불편지수를 계산했습니다.
+
+```mermaid
+flowchart LR
+accTitle: 전기차 충전 인프라 대시보드 데이터 흐름
+accDescr: 공공데이터를 Pandera로 검증하고 MySQL에 적재한 뒤 지역별 불편지수를 계산해 Streamlit과 Folium으로 보여주는 흐름
+    A["공공데이터<br/>전기차 등록 대수·충전기 수"] --> B["Pandera 스키마 검증"]
+    B --> C["MySQL 적재<br/>ERD·적재 쿼리"]
+    C --> D["17개 시·도<br/>팀 정의 불편지수 계산"]
+    D --> E["Streamlit·Folium<br/>지도와 차트"]
+```
+
+## 구현 경계와 검증
+
+ERD와 데이터 적재 쿼리를 작성하고, 데이터 처리와 화면 로직은 `domain`, `web`, `config` 레이어로 나눴습니다. Streamlit과 Folium을 이용해 지역별 값을 지도와 차트에서 탐색할 수 있게 했습니다.
+
+Pandera 검증은 적재 전 데이터 형태와 스키마를 확인하는 경계로 사용했습니다. 지도·차트에 표시되는 값은 17개 시·도 단위의 전기차 등록 대수와 충전기 수, 그리고 이를 바탕으로 계산한 팀 정의 불편지수입니다.
+
+이 대시보드는 공공데이터 수집·검증·적재·시각화 흐름을 구현한 프로젝트입니다. 불편지수를 공식 정책 지표로 해석하거나 실제 충전 대기 시간, 사용자 행동, 운영 환경의 충전 수요를 측정한 결과로 확대하지 않습니다.
+
+## 근거
+
+- [GitHub 저장소](https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-1st-4Team)
+- 사용자가 확인한 ERD·적재 쿼리, Pandera 검증과 레이어 분리 범위
