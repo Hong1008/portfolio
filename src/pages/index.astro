@@ -2,10 +2,18 @@
 import { getPublicExperience, getPublicProjects } from "../lib/content";
 import "../styles/global.css";
 
-const [experience, projects] = await Promise.all([
+const [experienceEntries, projectEntries] = await Promise.all([
   getPublicExperience(),
   getPublicProjects(),
 ]);
+
+const byStartDateDescending = <T extends { data: { startDate: string } }>(
+  a: T,
+  b: T,
+) => b.data.startDate.localeCompare(a.data.startDate);
+
+const experience = [...experienceEntries].sort(byStartDateDescending);
+const projects = [...projectEntries].sort(byStartDateDescending);
 
 const byPrintPriority = <T extends { data: { print: { priority: number | null } } }>(
   a: T,

@@ -1,0 +1,147 @@
+contentSlug: shopl
+lastReviewedAt: "2026-07-21"
+
+facts:
+  - id: employment
+    statement: "2022년 11월부터 2023년 8월까지 6명으로 구성된 샤플앤컴퍼니 HADA 개발팀에서 백엔드 개발자로 근무했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §3.1"
+    scope: "경력 기간·조직·직무"
+    public: true
+    confidence: confirmed
+    note: "팀은 백엔드 2명, 리드 개발자(풀스택) 1명, 프론트엔드 1명, PM(기획) 1명, 기획자 1명으로 구성됐다."
+
+  - id: implementation-boundary
+    statement: "경력 페이지에 나열한 메일 발송, 점검 보고서와 현장 이슈 관리 구현은 모두 본인이 담당했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "개인 구현 범위"
+    public: true
+    confidence: confirmed
+    note: "업무별로 기획자 1명, 프론트엔드 개발자 1명과 협업했다."
+
+  - id: operation-status
+    statement: "메일 발송, 점검 보고서와 현장 이슈 관리 업무는 모두 운영됐다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "운영 상태"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: mail-provider
+    statement: "서버 일괄 발송에 적합하지 않았던 네이버웍스 메일 API 대신 AWS SES를 사용하도록 전환했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §3.2"
+    scope: "메일 전송 방식"
+    public: true
+    confidence: confirmed
+    note: "성능이나 비용 개선 수치는 확인되지 않았다."
+
+  - id: mail-boundary
+    statement: "발송 대상자를 선별하는 배치 서버와 실제 전송을 담당하는 메일 서버를 AWS SQS로 분리했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §3.2"
+    scope: "비동기 메일 발송 책임 경계"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: duplicate-defense
+    statement: "배치 재실행은 발송 기준일을 포함한 DB UNIQUE 제약으로, SQS 메시지 중복 전달은 메일 트랜잭션 키의 DB UNIQUE 제약으로 방어했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §3.2"
+    scope: "배치 요청 생성과 메시지 소비의 중복 방지"
+    public: true
+    confidence: confirmed
+    note: "두 단계의 중복 방어이며 Exactly-once 전송 보장이 아니다."
+
+  - id: mail-reuse
+    statement: "온보딩 상태와 메일 발송 조건을 분리했고, 같은 발송 구조를 인보이스 메일에도 재사용했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §3.2"
+    scope: "메일 발송 구조 재사용"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: report-generation
+    statement: "POI 기반 점검 보고서 생성 방식을 FastExcel 기반으로 전환하고 Kotlin DSL을 사용해 반복되는 생성 흐름을 공통 빌더로 분리했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §3.3"
+    scope: "점검 보고서 생성 구조 개선"
+    public: true
+    confidence: confirmed
+    note: "회사 운영 환경의 30초에서 3초 수치는 근거가 확인되지 않아 사용하지 않는다."
+
+  - id: issue-management
+    statement: "현장 이슈 등록과 상태·변경 이력을 관리하고 AWS S3 기반 다중 이미지 첨부·수정 API를 구현했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §3.4"
+    scope: "현장 이슈 관리 API"
+    public: true
+    confidence: confirmed
+    note: "워크플로 엔진이나 이벤트 소싱으로 표현하지 않는다."
+
+metrics: []
+
+contribution:
+  mine:
+    - "AWS SES 기반 메일 전송 기능 구현"
+    - "배치 서버의 발송 대상자 선정 로직 구현"
+    - "SQS 기반 배치 서버와 메일 서버 분리"
+    - "배치 재실행 중복 방지를 위한 DB UNIQUE 제약 적용"
+    - "SQS 중복 전달 대응을 위한 메일 트랜잭션 키 UNIQUE 제약 적용"
+    - "온보딩 상태와 메일 발송 조건 분리"
+    - "동일 구조를 인보이스 메일 발송에 재사용"
+    - "POI 기반 보고서를 FastExcel 기반으로 전환"
+    - "Kotlin DSL 기반 보고서 생성 공통 빌더 구현"
+    - "현장 이슈 상태·이력·이미지 API 구현"
+  team:
+    - "업무별 기획자 1명, 프론트엔드 개발자 1명과 협업"
+  external:
+    - "AWS SES가 실제 이메일 전송을 담당"
+    - "AWS SQS는 메시지 전달을 담당하며 중복 메시지가 발생할 수 있음"
+    - "FastExcel과 Apache POI는 외부 엑셀 라이브러리"
+    - "AWS S3가 첨부 이미지를 저장"
+
+publication:
+  allowed:
+    - "AWS SES와 SQS 사용"
+    - "배치 서버와 메일 서버의 책임 분리"
+    - "DB UNIQUE 기반 중복 방지"
+    - "온보딩·인보이스 발송 사례"
+    - "POI에서 FastExcel로 전환"
+    - "보고서 공통 생성 구조"
+    - "Kotlin DSL 기반 공통 빌더"
+    - "S3 기반 다중 이미지 처리"
+  anonymize:
+    - "실제 고객사 및 현장명"
+    - "내부 테이블과 상태 코드"
+  prohibited:
+    - "사용자 이메일 주소"
+    - "AWS 계정 및 리소스 식별자"
+    - "운영 발송량과 비용"
+    - "내부 코드 원문"
+    - "실제 보고서 데이터"
+
+risks:
+  - claim: "Exactly-once 메일 발송"
+    reason: "SQS 메시지는 중복 전달될 수 있고 DB 제약으로 중복 처리를 방어한 구조다."
+    safeWording: "배치 재실행과 메시지 중복 전달을 각각 DB UNIQUE 제약으로 방어했다."
+
+  - claim: "메일 발송 자동 복구"
+    reason: "재처리와 실패 복구의 전체 범위가 확인되지 않았다."
+    safeWording: "배치 재실행과 중복 메시지를 고려한 발송 구조를 구현했다."
+
+  - claim: "보고서 생성 시간을 30초에서 3초로 개선"
+    reason: "회사 운영 환경의 원본 측정 근거가 확인되지 않았다."
+    safeWording: "POI 기반 생성 방식을 FastExcel로 전환하고 생성 흐름을 공통화했다."
+
+  - claim: "KExcel을 회사에 도입"
+    reason: "KExcel은 실무 경험을 이후 개인 프로젝트로 일반화한 결과다."
+    safeWording: "실무에서 경험한 문제를 이후 개인 프로젝트 KExcel로 확장했다."
+
+  - claim: "현장 이슈 이벤트 소싱"
+    reason: "확인된 구현은 상태 변경 이력 관리다."
+    safeWording: "현장 이슈의 상태와 변경 이력을 관리했다."

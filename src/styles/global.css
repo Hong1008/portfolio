@@ -340,7 +340,8 @@ dt {
 
 .role-boundary,
 .metric-grid,
-.failure-boundary {
+.failure-boundary,
+.idempotency-layers {
   display: grid;
   gap: 1rem;
   margin-block: var(--space-block);
@@ -349,7 +350,9 @@ dt {
 .role-boundary section,
 .failure-boundary section,
 .metric-grid > div,
-.experiment-record {
+.experiment-record,
+.idempotency-layers > li,
+.related-case {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
   padding: 1.25rem;
@@ -377,6 +380,52 @@ dt {
 
 .failure-boundary .not-recoverable {
   border-top: 0.3rem solid #cf222e;
+}
+
+.idempotency-layers {
+  padding: 0;
+  list-style: none;
+  counter-reset: layer;
+}
+
+.idempotency-layers > li {
+  border-top: 0.3rem solid var(--accent);
+}
+
+.idempotency-layers h3,
+.related-case h3 {
+  margin-block: 0.25rem 1rem;
+}
+
+.idempotency-layers dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.idempotency-layers dl div {
+  min-width: 0;
+}
+
+.idempotency-layers dt,
+.idempotency-layers dd {
+  margin: 0;
+}
+
+.layer-index {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.related-case {
+  margin-block: var(--space-block);
+  background: var(--surface-subtle);
+}
+
+.related-case > :last-child {
+  margin-bottom: 0;
 }
 
 .case-section {
@@ -531,7 +580,8 @@ dt {
   .metadata-list,
   .role-boundary,
   .metric-grid,
-  .failure-boundary {
+  .failure-boundary,
+  .idempotency-layers {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -592,7 +642,9 @@ dt {
   .role-boundary,
   .failure-boundary,
   .metric-grid,
+  .idempotency-layers,
   .experiment-record,
+  .related-case,
   table,
   pre,
   blockquote {

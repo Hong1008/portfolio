@@ -1,0 +1,15 @@
+---
+interface Props {
+  label: string;
+  href: string;
+  relationship: string;
+}
+
+const { label, href, relationship } = Astro.props;
+---
+
+<aside class="related-case" aria-label="관련 사례">
+  <p class="eyebrow">이어진 사례</p>
+  <h3><a href={href}>{label}</a></h3>
+  <p>{relationship}</p>
+</aside>

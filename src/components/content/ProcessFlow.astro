@@ -1,0 +1,107 @@
+---
+interface Step {
+  label: string;
+  description?: string;
+}
+
+interface Props {
+  steps: Step[];
+  transitions?: string[];
+  title: string;
+  description: string;
+}
+
+const {
+  steps,
+  transitions = [],
+  title,
+  description,
+} = Astro.props;
+const width = 420;
+const stepWidth = 270;
+const stepHeight = 72;
+const stepX = (width - stepWidth) / 2;
+const stepGap = 72;
+const top = 32;
+const height = top * 2 + steps.length * stepHeight +
+  (steps.length - 1) * stepGap;
+---
+
+<figure class="process-flow state-flow diagram-block">
+  <svg
+    viewBox={`0 0 ${width} ${height}`}
+    role="img"
+    aria-label={`${title}. ${description}`}
+  >
+    <title>{title}</title>
+    <desc>{description}</desc>
+    <defs>
+      <marker
+        id="process-flow-arrow"
+        viewBox="0 0 10 10"
+        refX="8"
+        refY="5"
+        markerWidth="7"
+        markerHeight="7"
+        orient="auto-start-reverse"
+      >
+        <path d="M 0 0 L 10 5 L 0 10 z"></path>
+      </marker>
+    </defs>
+
+    {
+      steps.map((step, index) => {
+        const y = top + index * (stepHeight + stepGap);
+        const nextY = y + stepHeight + stepGap;
+        const transition = transitions[index];
+
+        return (
+          <>
+            {index < steps.length - 1 && (
+              <g class="state-transition">
+                <line
+                  x1={width / 2}
+                  y1={y + stepHeight + 6}
+                  x2={width / 2}
+                  y2={nextY - 8}
+                  marker-end="url(#process-flow-arrow)"
+                />
+                {transition && (
+                  <text
+                    x={width / 2}
+                    y={y + stepHeight + stepGap / 2 - 6}
+                    text-anchor="middle"
+                  >
+                    {transition}
+                  </text>
+                )}
+              </g>
+            )}
+            <g class="state-node">
+              <rect
+                x={stepX}
+                y={y}
+                width={stepWidth}
+                height={stepHeight}
+                rx="10"
+              />
+              <text
+                x={width / 2}
+                y={y + (step.description ? 29 : 43)}
+                text-anchor="middle"
+              >
+                <tspan class="state-label">{step.label}</tspan>
+                {step.description && (
+                  <tspan class="state-description" x={width / 2} dy="24">
+                    {step.description}
+                  </tspan>
+                )}
+              </text>
+            </g>
+          </>
+        );
+      })
+    }
+  </svg>
+  <figcaption>{description}</figcaption>
+</figure>

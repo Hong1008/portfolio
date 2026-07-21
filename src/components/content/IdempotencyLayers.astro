@@ -1,0 +1,31 @@
+---
+interface Layer {
+  name: string;
+  trigger: string;
+  key: string;
+  boundary: string;
+}
+
+interface Props {
+  layers: Layer[];
+  label: string;
+}
+
+const { layers, label } = Astro.props;
+---
+
+<ol class="idempotency-layers" aria-label={label}>
+  {
+    layers.map((layer, index) => (
+      <li>
+        <p class="layer-index">방어선 {index + 1}</p>
+        <h3>{layer.name}</h3>
+        <dl>
+          <div><dt>발생 조건</dt><dd>{layer.trigger}</dd></div>
+          <div><dt>중복 키</dt><dd>{layer.key}</dd></div>
+          <div><dt>보장 범위</dt><dd>{layer.boundary}</dd></div>
+        </dl>
+      </li>
+    ))
+  }
+</ol>
