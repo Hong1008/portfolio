@@ -1,0 +1,95 @@
+contentSlug: g2e
+lastReviewedAt: "2026-07-21"
+
+facts:
+  - id: employment
+    statement: "2020년 2월부터 2021년 2월까지 지투이 개발팀에서 개발자로 근무했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §6.1"
+    scope: "경력 기간·조직·직무"
+    public: true
+    confidence: confirmed
+    note: "정확한 프로젝트 인원은 현재 확인하지 않았다."
+
+  - id: emergency-kiosk-flutter
+    statement: "Flutter 기반 Android 응급의료 키오스크 앱을 개발했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §6.2"
+    scope: "키오스크 애플리케이션"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: kiosk-common-functions
+    statement: "전역 오류 처리, 인증, 세션과 감사 로그 공통 모듈을 설계했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §6.2"
+    scope: "애플리케이션 공통 기능"
+    public: true
+    confidence: confirmed
+    note: "구체적인 인증 방식과 로그 스키마는 공개하지 않는다."
+
+  - id: kiosk-backend-api
+    statement: "키오스크에서 사용하는 백엔드 CRUD API를 개발했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §6.2"
+    scope: "백엔드 API"
+    public: true
+    confidence: confirmed
+    note: "내부 API 경로와 의료 데이터 모델은 공개하지 않는다."
+
+  - id: portal-menu-permission
+    statement: "연명의료정보포탈에서 메뉴별 세부 접근 권한 처리 로직을 구현했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §6.3"
+    scope: "접근 권한"
+    public: true
+    confidence: confirmed
+    note: "인증·인가 정책 전체를 설계했다는 의미가 아니다."
+
+metrics: []
+
+contribution:
+  mine:
+    - "Flutter 키오스크 화면 및 공통 기능 개발"
+    - "Spring Boot CRUD API 개발"
+    - "인증·세션·전역 오류 처리"
+    - "감사 로그 기능"
+    - "메뉴별 세부 접근 권한 로직"
+  team: []
+  external:
+    - "Android 실행 환경"
+    - "기존 의료정보 시스템 및 연동 대상"
+
+publication:
+  allowed:
+    - "키오스크 앱과 백엔드 API 개발 사실"
+    - "인증·세션·전역 오류·감사 로그 공통 기능"
+    - "메뉴별 접근 권한"
+  anonymize:
+    - "실제 메뉴명"
+    - "내부 권한 코드"
+    - "API 경로"
+  prohibited:
+    - "환자·사용자 데이터"
+    - "내부 시스템 식별자"
+    - "실제 감사 로그"
+    - "인증 정보"
+    - "회사 코드"
+
+risks:
+  - claim: "의료 개인정보 보안 설계"
+    reason: "확인된 경험은 애플리케이션 인증·세션·권한 구현이다."
+    safeWording: "인증·세션·접근 권한과 감사 로그 기능을 구현했다."
+
+  - claim: "전체 인증 시스템 설계"
+    reason: "전체 인증 정책과 인프라를 설계한 근거가 없다."
+    safeWording: "키오스크 앱의 인증과 세션 공통 기능을 구성했다."
+
+  - claim: "감사 추적 시스템 구축"
+    reason: "감사 로그 기능의 구체적 범위가 제한적이다."
+    safeWording: "사용자 작업을 기록하는 감사 로그 기능을 구현했다."
+
+  - claim: "권한 체계 전면 재설계"
+    reason: "메뉴별 세부 접근 권한 로직 구현만 확인됐다."
+    safeWording: "메뉴별 접근 가능 범위를 구분하는 권한 로직을 구현했다."
