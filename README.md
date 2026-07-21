@@ -43,7 +43,7 @@ npm run verify
 
 - `build`: Astro 정적 빌드와 Mermaid SVG 변환
 - `pdf`: 빌드된 `/print/` 페이지에서 A4 PDF 생성
-- `build:portfolio`: 사이트 빌드 후 `public/documents/hong-cheolmin-portfolio.pdf` 갱신
+- `build:portfolio`: 사이트 빌드 후 `public/documents/hong-chulmin-portfolio.pdf` 갱신
 - `verify`: 전체 경로와 내부 링크, SEO 메타데이터, 헤딩·SVG 접근성, 390·768·1440px 레이아웃 검증
 
 Mermaid와 PDF 생성, 화면 검증에는 headless Chrome이 필요하다.

@@ -23,7 +23,7 @@ const paths = [
   "/portfolio/404.html",
   "/portfolio/sitemap.xml",
   "/portfolio/robots.txt",
-  "/portfolio/documents/hong-cheolmin-portfolio.pdf",
+  "/portfolio/documents/hong-chulmin-portfolio.pdf",
 ];
 
 const server = createServer(async (request, response) => {

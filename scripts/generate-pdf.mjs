@@ -5,7 +5,7 @@ import { chromium } from "playwright";
 
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
-const outputName = "hong-cheolmin-portfolio.pdf";
+const outputName = "hong-chulmin-portfolio.pdf";
 const publicOutput = join(root, "public", "documents", outputName);
 const distOutput = join(dist, "documents", outputName);
 const mime = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".svg": "image/svg+xml", ".ico": "image/x-icon" };
