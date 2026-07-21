@@ -19,7 +19,7 @@ Astro 7 + MDX 기반 정적 포트폴리오다. 핵심 원칙은 기술 나열�
 
 공개 콘텐츠는 3개다.
 
-- 경력: `hodoolabs`
+- 경력: `hodoolabs`, `shopl`
 - 프로젝트: `kexcel`, `workshield`
 
 기술 구조:
