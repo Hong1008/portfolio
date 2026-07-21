@@ -1,13 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
-    <g class="brand-color">
-        <path d="M64 20 L104 40 L64 60 L24 40 Z" fill="currentColor" />
-        <path d="M64 48 L104 68 L64 88 L24 68 Z" fill="currentColor" opacity="0.75" />
-        <path d="M64 76 L104 96 L64 116 L24 96 Z" fill="currentColor" opacity="0.5" />
+    <circle cx="64" cy="64" r="56" class="bg-circle" />
+    <g class="layers">
+        <path d="M64 16 L104 36 L64 56 L24 36 Z" fill="currentColor" />
+        <path d="M64 44 L104 64 L64 84 L24 64 Z" fill="currentColor" opacity="0.8" />
+        <path d="M64 72 L104 92 L64 112 L24 92 Z" fill="currentColor" opacity="0.6" />
     </g>
     <style>
-        .brand-color { color: #075f4e; }
+        .bg-circle { fill: #075f4e; }
+        .layers { color: #fffdf8; }
         @media (prefers-color-scheme: dark) {
-            .brand-color { color: #5ce1c9; }
+            .bg-circle { fill: #03483b; }
+            .layers { color: #5ce1c9; }
         }
     </style>
 </svg>
