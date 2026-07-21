@@ -1,0 +1,113 @@
+---
+interface State {
+  id: string;
+  label: string;
+  description?: string;
+}
+
+interface Transition {
+  from: string;
+  to: string;
+  label: string;
+  failureNote?: string;
+}
+
+interface Props {
+  states: State[];
+  transitions: Transition[];
+  title: string;
+  description: string;
+}
+
+const { states, transitions, title, description } = Astro.props;
+const width = 420;
+const stateWidth = 250;
+const stateHeight = 72;
+const stateX = (width - stateWidth) / 2;
+const stateGap = 112;
+const top = 32;
+const height = top * 2 + states.length * stateHeight + (states.length - 1) * stateGap;
+const positions = new Map(
+  states.map((state, index) => [state.id, top + index * (stateHeight + stateGap)]),
+);
+---
+
+<figure class="state-flow diagram-block">
+  <svg
+    viewBox={`0 0 ${width} ${height}`}
+    role="graphics-document document"
+    aria-labelledby="state-flow-title state-flow-description"
+  >
+    <title id="state-flow-title">{title}</title>
+    <desc id="state-flow-description">{description}</desc>
+    <defs>
+      <marker
+        id="state-flow-arrow"
+        viewBox="0 0 10 10"
+        refX="8"
+        refY="5"
+        markerWidth="7"
+        markerHeight="7"
+        orient="auto-start-reverse"
+      >
+        <path d="M 0 0 L 10 5 L 0 10 z"></path>
+      </marker>
+    </defs>
+
+    {
+      transitions.map((transition) => {
+        const fromY = positions.get(transition.from);
+        const toY = positions.get(transition.to);
+        if (fromY === undefined || toY === undefined) return null;
+        const lineStart = fromY + stateHeight;
+        const lineEnd = toY;
+        const labelY = (lineStart + lineEnd) / 2 - 8;
+
+        return (
+          <g class="state-transition">
+            <line
+              x1={width / 2}
+              y1={lineStart + 6}
+              x2={width / 2}
+              y2={lineEnd - 8}
+              marker-end="url(#state-flow-arrow)"
+            />
+            <text x={width / 2} y={labelY} text-anchor="middle">
+              {transition.label}
+            </text>
+            {transition.failureNote && (
+              <text
+                class="failure-note"
+                x={width / 2}
+                y={labelY + 23}
+                text-anchor="middle"
+              >
+                {transition.failureNote}
+              </text>
+            )}
+          </g>
+        );
+      })
+    }
+
+    {
+      states.map((state) => {
+        const y = positions.get(state.id) ?? 0;
+        return (
+          <g class="state-node">
+            <rect x={stateX} y={y} width={stateWidth} height={stateHeight} rx="10" />
+            <text x={width / 2} y={y + (state.description ? 29 : 43)} text-anchor="middle">
+              <tspan class="state-label">{state.label}</tspan>
+              {state.description && (
+                <tspan class="state-description" x={width / 2} dy="24">
+                  {state.description}
+                </tspan>
+              )}
+            </text>
+          </g>
+        );
+      })
+    }
+  </svg>
+  <figcaption>{description}</figcaption>
+</figure>

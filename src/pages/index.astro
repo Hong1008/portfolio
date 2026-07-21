@@ -1,17 +1,107 @@
 ---
+import { getPublicExperience, getPublicProjects } from "../lib/content";
+import "../styles/global.css";
 
+const [experience, projects] = await Promise.all([
+  getPublicExperience(),
+  getPublicProjects(),
+]);
+
+const byPrintPriority = <T extends { data: { print: { priority: number | null } } }>(
+  a: T,
+  b: T,
+) => (a.data.print.priority ?? Number.MAX_SAFE_INTEGER) -
+  (b.data.print.priority ?? Number.MAX_SAFE_INTEGER);
+
+const featuredExperience = experience.filter(({ data }) => data.featured);
+const featuredProjects = projects.filter(({ data }) => data.featured);
+const featured = [...featuredExperience, ...featuredProjects]
+  .sort(byPrintPriority)
+  .slice(0, 3);
+
+const hrefFor = (entry: (typeof featured)[number]) =>
+  `/${entry.data.contentType === "experience" ? "experience" : "projects"}/${entry.data.slug}/`;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>홍철민 — 백엔드 개발자 포트폴리오</title>
+    <meta
+      name="description"
+      content="Java·Kotlin과 Spring 기반 백엔드 경험, 프로젝트와 기술적 판단을 기록한 포트폴리오입니다."
+    />
+  </head>
+
+  <body>
+    <main>
+      <header class="home-intro">
+        <p class="eyebrow">Backend Engineer Portfolio</p>
+        <h1>홍철민</h1>
+        <p class="home-lead">
+          Java·Kotlin과 Spring 기반 백엔드 경험을 바탕으로 실패 상태와
+          책임 경계를 구분하고, 현재는 RAG·MCP 기반 AI 서비스 백엔드로
+          경험을 확장하고 있습니다.
+        </p>
+      </header>
+
+      <section class="home-section" aria-labelledby="featured-title">
+        <h2 id="featured-title">대표 사례</h2>
+        <ul class="content-list featured-list">
+          {
+            featured.map((entry) => (
+              <li>
+                <a href={hrefFor(entry)}>
+                  <p class="eyebrow">
+                    {entry.data.contentType === "experience" ? "경력" : "프로젝트"}
+                  </p>
+                  <h3>{entry.data.title}</h3>
+                  <p>{entry.data.summary}</p>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="home-section" aria-labelledby="experience-title">
+        <h2 id="experience-title">경력</h2>
+        <ul class="compact-list">
+          {
+            experience.map((entry) => (
+              <li>
+                <a href={`/experience/${entry.data.slug}/`}>{entry.data.title}</a>
+                <span>{entry.data.startDate} – {entry.data.endDate ?? "현재"}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <a href="/experience/">경력 전체 보기</a>
+      </section>
+
+      <section class="home-section" aria-labelledby="projects-title">
+        <h2 id="projects-title">프로젝트</h2>
+        <ul class="compact-list">
+          {
+            projects.map((entry) => (
+              <li>
+                <a href={`/projects/${entry.data.slug}/`}>{entry.data.title}</a>
+                <span>{entry.data.startDate}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <a href="/projects/">프로젝트 전체 보기</a>
+      </section>
+
+      <footer class="home-footer">
+        <a href="https://github.com/Hong1008">GitHub</a>
+        <a href="https://velog.io/@hong1008/posts">기술 블로그</a>
+      </footer>
+    </main>
+  </body>
 </html>

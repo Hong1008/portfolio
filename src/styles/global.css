@@ -169,7 +169,8 @@ dt {
   padding-left: 1.25rem;
 }
 
-.project-list {
+.project-list,
+.content-list {
   display: grid;
   gap: 1rem;
   margin: 0;
@@ -177,7 +178,8 @@ dt {
   list-style: none;
 }
 
-.project-list a {
+.project-list > li > a,
+.content-list > li > a {
   display: block;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
@@ -186,16 +188,21 @@ dt {
   text-decoration: none;
 }
 
-.project-list a:hover,
-.project-list a:focus-visible {
+.project-list > li > a:hover,
+.project-list > li > a:focus-visible,
+.content-list > li > a:hover,
+.content-list > li > a:focus-visible {
   border-color: var(--accent);
 }
 
-.project-list h2 {
+.project-list h2,
+.content-list h2,
+.content-list h3 {
   margin-block: 0.25rem 0.75rem;
 }
 
-.project-list p {
+.project-list p,
+.content-list p {
   margin-block: 0;
 }
 
@@ -225,6 +232,54 @@ dt {
   margin-block: var(--space-block);
   padding: 0.75rem;
   background: var(--surface-page);
+}
+
+.diagram-block {
+  margin-block: var(--space-block);
+  margin-inline: 0;
+}
+
+.diagram-block svg {
+  width: min(100%, 26.25rem);
+  margin-inline: auto;
+}
+
+.diagram-block figcaption {
+  margin-top: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.state-flow .state-node rect {
+  fill: #eef2ff;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.state-flow .state-node text,
+.state-flow .state-transition text {
+  fill: var(--text-main);
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.state-flow .state-label {
+  font-weight: 700;
+}
+
+.state-flow .state-description,
+.state-flow .failure-note {
+  fill: var(--text-muted);
+  font-size: 13px;
+}
+
+.state-flow .state-transition line {
+  stroke: var(--text-muted);
+  stroke-width: 2;
+}
+
+.state-flow marker path {
+  fill: var(--text-muted);
 }
 
 .prose pre,
@@ -284,13 +339,15 @@ dt {
 }
 
 .role-boundary,
-.metric-grid {
+.metric-grid,
+.failure-boundary {
   display: grid;
   gap: 1rem;
   margin-block: var(--space-block);
 }
 
 .role-boundary section,
+.failure-boundary section,
 .metric-grid > div,
 .experiment-record {
   border: 1px solid var(--border-subtle);
@@ -299,6 +356,7 @@ dt {
 }
 
 .role-boundary h3,
+.failure-boundary h3,
 .experiment-record h3 {
   margin-top: 0;
 }
@@ -306,6 +364,101 @@ dt {
 .role-boundary ul {
   margin-bottom: 0;
   padding-left: 1.25rem;
+}
+
+.failure-boundary ul {
+  margin-bottom: 0;
+  padding-left: 1.25rem;
+}
+
+.failure-boundary .recoverable {
+  border-top: 0.3rem solid #18794e;
+}
+
+.failure-boundary .not-recoverable {
+  border-top: 0.3rem solid #cf222e;
+}
+
+.case-section {
+  scroll-margin-top: 2rem;
+}
+
+.case-section + .case-section {
+  border-top: 1px solid var(--border-subtle);
+  margin-top: var(--space-section);
+  padding-top: 1rem;
+}
+
+.case-section > header {
+  margin-top: var(--space-section);
+}
+
+.case-section > header > h2 {
+  margin-block: 0.5rem 0.75rem;
+}
+
+.case-label {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.case-section-summary {
+  color: #3f4b60;
+  font-size: 1.05rem;
+}
+
+.home-intro {
+  max-width: var(--content-width);
+  padding-block: clamp(2rem, 8vw, 6rem);
+}
+
+.home-intro h1 {
+  margin-block: 0.5rem 1rem;
+}
+
+.home-lead {
+  max-width: 42rem;
+  font-size: clamp(1.1rem, 3vw, 1.35rem);
+}
+
+.home-section {
+  margin-top: var(--space-section);
+}
+
+.featured-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.compact-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.compact-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.75rem;
+}
+
+.compact-list span {
+  color: var(--text-muted);
+}
+
+.home-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: var(--space-section);
+  padding-top: var(--space-block);
 }
 
 .metric-grid dt,
@@ -377,14 +530,15 @@ dt {
 
   .metadata-list,
   .role-boundary,
-  .metric-grid {
+  .metric-grid,
+  .failure-boundary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 64rem) {
   .metadata-list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   }
 
   .role-boundary {
@@ -432,9 +586,11 @@ dt {
   }
 
   .prose svg[id^="mermaid"],
+  .diagram-block,
   .summary-card,
   .limitation-callout,
   .role-boundary,
+  .failure-boundary,
   .metric-grid,
   .experiment-record,
   table,

@@ -1,0 +1,19 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  summary?: string;
+  featured?: boolean;
+}
+
+const { id, title, summary, featured = false } = Astro.props;
+---
+
+<section id={id} class:list={["case-section", { featured }]}>
+  <header>
+    {featured && <p class="case-label">대표 사례</p>}
+    <h2>{title}</h2>
+    {summary && <p class="case-section-summary">{summary}</p>}
+  </header>
+  <slot />
+</section>

@@ -1,0 +1,25 @@
+---
+import { render } from "astro:content";
+import CaseStudyLayout from "../../layouts/CaseStudyLayout.astro";
+import { getPublicExperience } from "../../lib/content";
+
+export async function getStaticPaths() {
+  const experience = await getPublicExperience();
+
+  return experience.map((entry) => ({
+    params: {
+      slug: entry.data.slug,
+    },
+    props: {
+      entry,
+    },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<CaseStudyLayout entry={entry}>
+  <Content />
+</CaseStudyLayout>

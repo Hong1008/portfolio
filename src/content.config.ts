@@ -3,51 +3,89 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
 const nullableUrl = z.string().url().nullable();
-const sourceReference = z.string().min(1).superRefine((value, context) => {
-  if (!value.startsWith("http://") && !value.startsWith("https://")) {
-    return;
-  }
+const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+const status = z.enum([
+  "completed",
+  "ongoing",
+  "archived",
+  "cancelled",
+  "unpublished",
+]);
 
-  if (!z.string().url().safeParse(value).success) {
-    context.addIssue({
-      code: "custom",
-      message: "HTTP source must be a valid URL",
-    });
-  }
-});
+const commonEntryFields = {
+  title: z.string(),
+  slug,
+  summary: z.string(),
+  startDate: z.string().regex(/^\d{4}-\d{2}$/),
+  endDate: z.string().regex(/^\d{4}-\d{2}$/).nullable(),
+  datePrecision: z.enum(["month", "year"]),
+  status,
+  organization: z.object({
+    name: z.string().nullable(),
+    displayName: z.string().nullable(),
+    url: nullableUrl,
+  }),
+  team: z.object({
+    size: z.number().int().positive().nullable(),
+    composition: z.array(
+      z.object({
+        role: z.string(),
+        count: z.number().int().positive(),
+      }),
+    ),
+    note: z.string().nullable(),
+  }),
+  role: z.object({
+    title: z.string(),
+    responsibilities: z.array(z.string()),
+    contributionSummary: z.string(),
+  }),
+  technologies: z.object({
+    primary: z.array(z.string()),
+    secondary: z.array(z.string()),
+  }),
+  themes: z.array(z.string()),
+  featured: z.boolean(),
+  visibility: z.enum(["public", "private-draft"]),
+  confidentialityNote: z.string().nullable(),
+  links: z.object({
+    repository: nullableUrl,
+    demo: nullableUrl,
+    retrospective: nullableUrl,
+    article: nullableUrl,
+    external: z.array(
+      z.object({
+        label: z.string(),
+        url: z.string().url(),
+      }),
+    ),
+  }),
+  evidenceRef: z.string(),
+  caseSummary: z
+    .object({
+      problem: z.string().optional(),
+      decision: z.string().optional(),
+      role: z.string().optional(),
+      verification: z.string().optional(),
+      limitation: z.string().optional(),
+    })
+    .optional(),
+  limitations: z.array(z.string()).optional(),
+  print: z.object({
+    include: z.boolean(),
+    priority: z.number().int().nullable(),
+    detailLevel: z.enum(["summary", "standard", "detailed"]),
+  }),
+};
 
 const projects = defineCollection({
   loader: glob({
     pattern: "**/*.{md,mdx}",
     base: "./src/content/projects",
   }),
-
   schema: z.object({
-    title: z.string(),
-    slug: z
-      .string()
-      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-
+    ...commonEntryFields,
     contentType: z.literal("project"),
-    summary: z.string(),
-
-    startDate: z.string().regex(/^\d{4}-\d{2}$/),
-    endDate: z.string().regex(/^\d{4}-\d{2}$/).nullable(),
-    datePrecision: z.enum(["month", "year"]),
-    status: z.enum([
-      "completed",
-      "ongoing",
-      "archived",
-      "cancelled",
-      "unpublished",
-    ]),
-
-    organization: z.object({
-      name: z.string().nullable(),
-      displayName: z.string().nullable(),
-      url: nullableUrl,
-    }),
-
     projectType: z.object({
       kind: z.enum([
         "company",
@@ -65,68 +103,49 @@ const projects = defineCollection({
         "not-applicable",
       ]),
     }),
-
-    team: z.object({
-      size: z.number().int().positive().nullable(),
-      composition: z.array(
-        z.object({
-          role: z.string(),
-          count: z.number().int().positive(),
-        }),
-      ),
-      note: z.string().nullable(),
-    }),
-
-    role: z.object({
-      title: z.string(),
-      responsibilities: z.array(z.string()),
-      contributionSummary: z.string(),
-    }),
-
-    technologies: z.object({
-      primary: z.array(z.string()),
-      secondary: z.array(z.string()),
-    }),
-
-    themes: z.array(z.string()),
-
-    featured: z.boolean(),
-    visibility: z.enum(["public", "private-draft"]),
-    confidentialityNote: z.string().nullable(),
-
-    links: z.object({
-      repository: nullableUrl,
-      demo: nullableUrl,
-      retrospective: nullableUrl,
-      article: nullableUrl,
-      external: z.array(
-        z.object({
-          label: z.string(),
-          url: z.string().url(),
-        }),
-      ),
-    }),
-
-    evidenceRef: z.string(),
-
-    caseSummary: z
-      .object({
-        problem: z.string().optional(),
-        decision: z.string().optional(),
-        role: z.string().optional(),
-        verification: z.string().optional(),
-        limitation: z.string().optional(),
-      })
-      .optional(),
-
-    limitations: z.array(z.string()).optional(),
-
-    print: z.object({
-      include: z.boolean(),
-      priority: z.number().int().nullable(),
-      detailLevel: z.enum(["summary", "standard", "detailed"]),
-    }),
   }),
+});
+
+const experience = defineCollection({
+  loader: glob({
+    pattern: "**/*.{md,mdx}",
+    base: "./src/content/experience",
+  }),
+  schema: z.object({
+    ...commonEntryFields,
+    contentType: z.literal("experience"),
+    employment: z.object({
+      type: z.enum(["full-time", "contract", "internship"]),
+      department: z.string(),
+      position: z.string(),
+    }),
+    operationStatus: z.enum([
+      "production",
+      "pre-release",
+      "internal",
+      "discontinued",
+    ]),
+    cases: z.array(
+      z.object({
+        id: slug,
+        title: z.string(),
+        featured: z.boolean(),
+      }),
+    ),
+  }),
+});
+
+const sourceReference = z.string().min(1).superRefine((value, context) => {
+  if (!value.startsWith("http://") && !value.startsWith("https://")) {
+    return;
+  }
+
+  if (!z.string().url().safeParse(value).success) {
+    context.addIssue({
+      code: "custom",
+      message: "HTTP source must be a valid URL",
+    });
+  }
 });
 
 const evidence = defineCollection({
@@ -134,12 +153,9 @@ const evidence = defineCollection({
     pattern: "**/*.{yaml,yml}",
     base: "./src/data/evidence",
   }),
-
   schema: z
     .object({
-      contentSlug: z
-        .string()
-        .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+      contentSlug: slug,
       lastReviewedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
       facts: z.array(
         z.object({
@@ -210,5 +226,6 @@ const evidence = defineCollection({
 
 export const collections = {
   projects,
+  experience,
   evidence,
 };

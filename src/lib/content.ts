@@ -1,54 +1,70 @@
 import { getCollection } from "astro:content";
 
-export async function getPublicProjects() {
-  const [projects, evidenceEntries] = await Promise.all([
+async function getValidatedContent() {
+  const [projects, experience, evidenceEntries] = await Promise.all([
     getCollection("projects"),
+    getCollection("experience"),
     getCollection("evidence"),
   ]);
 
-  const projectsBySlug = new Map(
-    projects.map((project) => [project.data.slug, project]),
-  );
+  const entries = [...projects, ...experience];
+  const entriesBySlug = new Map<string, (typeof entries)[number]>();
   const evidenceById = new Map(
     evidenceEntries.map((evidence) => [evidence.id, evidence]),
   );
   const evidenceSlugs = new Set<string>();
 
+  for (const entry of entries) {
+    if (entriesBySlug.has(entry.data.slug)) {
+      throw new Error(`Duplicate content slug "${entry.data.slug}".`);
+    }
+
+    entriesBySlug.set(entry.data.slug, entry);
+  }
+
   for (const evidence of evidenceEntries) {
-    if (!projectsBySlug.has(evidence.data.contentSlug)) {
+    if (!entriesBySlug.has(evidence.data.contentSlug)) {
       throw new Error(
-        `Evidence "${evidence.id}" references missing project slug "${evidence.data.contentSlug}".`,
+        `Evidence "${evidence.id}" references missing content slug "${evidence.data.contentSlug}".`,
       );
     }
 
     if (evidenceSlugs.has(evidence.data.contentSlug)) {
       throw new Error(
-        `Multiple evidence files reference project slug "${evidence.data.contentSlug}".`,
+        `Multiple evidence files reference content slug "${evidence.data.contentSlug}".`,
       );
     }
 
     evidenceSlugs.add(evidence.data.contentSlug);
   }
 
-  const publicProjects = projects.filter(
+  for (const entry of entries.filter(
     ({ data }) => data.visibility === "public",
-  );
-
-  for (const project of publicProjects) {
-    const evidence = evidenceById.get(project.data.evidenceRef);
+  )) {
+    const evidence = evidenceById.get(entry.data.evidenceRef);
 
     if (!evidence) {
       throw new Error(
-        `Public project "${project.data.slug}" references missing evidence "${project.data.evidenceRef}".`,
+        `Public content "${entry.data.slug}" references missing evidence "${entry.data.evidenceRef}".`,
       );
     }
 
-    if (evidence.data.contentSlug !== project.data.slug) {
+    if (evidence.data.contentSlug !== entry.data.slug) {
       throw new Error(
-        `Evidence "${evidence.id}" belongs to "${evidence.data.contentSlug}", not "${project.data.slug}".`,
+        `Evidence "${evidence.id}" belongs to "${evidence.data.contentSlug}", not "${entry.data.slug}".`,
       );
     }
   }
 
-  return publicProjects;
+  return { projects, experience };
+}
+
+export async function getPublicProjects() {
+  const { projects } = await getValidatedContent();
+  return projects.filter(({ data }) => data.visibility === "public");
+}
+
+export async function getPublicExperience() {
+  const { experience } = await getValidatedContent();
+  return experience.filter(({ data }) => data.visibility === "public");
 }

@@ -1,0 +1,117 @@
+contentSlug: hodoolabs
+lastReviewedAt: "2026-07-21"
+
+facts:
+  - id: employment
+    statement: "2021년 2월부터 2021년 8월까지 호두랩스 플랫폼팀에서 백엔드 개발자로 근무했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §5.1"
+    scope: "경력 기간·조직·직무"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: payment-team
+    statement: "통합 결제 시스템에 직접 관여한 인원은 백엔드 개발자 본인 1명과 DBA 1명이다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §5.1"
+    scope: "팀과 개인 기여 경계"
+    public: true
+    confidence: confirmed
+    note: "Stored Procedure와 DB 처리 구조는 DBA가 설계했다."
+
+  - id: payment-state
+    statement: "주문 상태를 REQUESTED, PURCHASED, COMPLETED로 구분했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §5.2"
+    scope: "결제 상태 흐름"
+    public: true
+    confidence: confirmed
+    note: "외부 승인과 내부 재화 제공 완료를 분리해 추적하기 위한 상태다."
+
+  - id: duplicate-defense
+    statement: "DB 주문 상태 검증과 결제 트랜잭션 식별키 UNIQUE 제약을 중복 방어선으로 사용했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §5.2"
+    scope: "중복 승인 반영·재화 지급 방지"
+    public: true
+    confidence: confirmed
+    note: "synchronized(this)는 단일 JVM 범위이며 완전한 분산 동시성 제어가 아니다."
+
+  - id: recovery-batch
+    statement: "Redis의 PURCHASED 정보를 약 300초 TTL로 관리하고 약 130초 이하로 남은 미완료 주문을 복구 배치 대상으로 조회했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §5.2"
+    scope: "미완료 주문 복구 배치"
+    public: true
+    confidence: confirmed
+    note: "ShedLock은 여러 WAS의 복구 스케줄러 중복 실행을 방지하는 범위다."
+
+  - id: platform-payment
+    statement: "Google Play 구독 연장과 구매 확인, Apple 인앱 결제 영수증 검증을 구현했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §5.2"
+    scope: "플랫폼별 결제 구현"
+    public: true
+    confidence: confirmed
+    note: "두 플랫폼에서 동일한 구독 갱신 범위를 구현했다고 표현하지 않는다."
+
+  - id: legacy-refactoring
+    statement: "호두잉글리쉬의 PG사별 결제 로직을 공통 인터페이스와 개별 구현체로 분리했다."
+    sourceType: user-confirmed
+    source: "docs/SOURCE_OF_TRUTH.md §5.3"
+    scope: "레거시 결제 리팩터링"
+    public: true
+    confidence: confirmed
+    note: "통합 결제 API와 별도 사례이며 완전 재설계로 표현하지 않는다."
+
+metrics: []
+
+contribution:
+  mine:
+    - "PG 결제 API 구현"
+    - "Google Play 영수증 검증과 구매 확인 처리"
+    - "Apple 인앱 결제 영수증 검증"
+    - "REQUESTED·PURCHASED·COMPLETED 상태 흐름 구현"
+    - "Redis TTL 기반 미완료 주문 복구 배치 구현"
+    - "ShedLock을 이용한 복구 배치 중복 실행 방지"
+    - "PG사별 결제 로직을 공통 인터페이스와 구현체로 분리"
+  team:
+    - "통합 결제 시스템 직접 관여 인원은 백엔드 1명과 DBA 1명"
+  external:
+    - "Stored Procedure와 DB 처리 구조는 DBA가 설계"
+    - "중복 PG 승인은 PG사의 동작과 DB 상태 검증에도 의존"
+
+publication:
+  allowed:
+    - "호두랩스 및 땅콩스쿨 실명"
+    - "REQUESTED·PURCHASED·COMPLETED 상태"
+    - "Redis TTL 약 300초"
+    - "복구 대상 TTL 약 130초 이하"
+    - "ShedLock"
+    - "Stored Procedure 연동"
+    - "영수증 식별키 UNIQUE 제약"
+  anonymize: []
+  prohibited:
+    - "실제 결제키"
+    - "사용자 영수증"
+    - "PG 인증 정보"
+    - "회사 코드 원문"
+    - "전체 DB 스키마"
+
+risks:
+  - claim: "결제 유실 자동 복구"
+    reason: "승인 후 DB 상태 저장이 실패한 경우에는 복구할 수 없다."
+    safeWording: "결제 승인 후 재화 제공 미완료 주문을 재처리했다."
+
+  - claim: "완전한 분산 동시성 제어"
+    reason: "synchronized는 단일 JVM에만 적용되고 다중 WAS의 영수증 검증은 동시에 실행될 수 있다."
+    safeWording: "애플리케이션 사전 검증과 DB UNIQUE 제약을 중복 방어선으로 사용했다."
+
+  - claim: "ShedLock으로 결제 멱등성 보장"
+    reason: "ShedLock은 복구 스케줄러의 중복 실행만 방지한다."
+    safeWording: "여러 WAS에서 복구 배치가 동시에 실행되지 않도록 했다."
+
+  - claim: "결제 시스템 전체 단독 설계"
+    reason: "Stored Procedure와 DB 처리 구조는 DBA가 설계했다."
+    safeWording: "애플리케이션 결제 흐름을 구현하고 DB 처리 구조를 담당한 DBA와 협업했다."

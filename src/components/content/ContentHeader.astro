@@ -4,37 +4,61 @@ import EvidenceLinks from "./EvidenceLinks.astro";
 import MetadataList from "./MetadataList.astro";
 
 interface Props {
-  entry: CollectionEntry<"projects">;
+  entry: CollectionEntry<"projects"> | CollectionEntry<"experience">;
 }
 
 const { entry } = Astro.props;
 const { data } = entry;
 const period = [data.startDate, data.endDate ?? "현재"].join(" – ");
-const projectKind = {
-  company: "회사 프로젝트",
-  personal: "개인 프로젝트",
-  team: "팀 프로젝트",
-  education: "교육 프로젝트",
-  "open-source": "오픈소스 프로젝트",
-  article: "기술 콘텐츠",
-}[data.projectType.kind];
+const employmentType = {
+  "full-time": "정규직",
+  contract: "계약직",
+  internship: "인턴",
+};
+const experienceOperationStatus = {
+  production: "운영",
+  "pre-release": "출시 전",
+  internal: "내부 사용",
+  discontinued: "서비스 종료",
+};
+
+const projectKind = data.contentType === "project"
+  ? {
+      company: "회사 프로젝트",
+      personal: "개인 프로젝트",
+      team: "팀 프로젝트",
+      education: "교육 프로젝트",
+      "open-source": "오픈소스 프로젝트",
+      article: "기술 콘텐츠",
+    }[data.projectType.kind]
+  : null;
+
+const metadata = data.contentType === "experience"
+  ? [
+      { label: "기간", value: period },
+      { label: "고용", value: employmentType[data.employment.type] },
+      { label: "부서", value: data.employment.department },
+      { label: "직책", value: data.employment.position },
+      { label: "담당 역할", value: data.role.title },
+      { label: "운영 상태", value: experienceOperationStatus[data.operationStatus] },
+      { label: "기술", value: data.technologies.primary.join(", ") },
+    ]
+  : [
+      { label: "기간", value: period },
+      { label: "형태", value: projectKind ?? "프로젝트" },
+      { label: "역할", value: data.role.title },
+      { label: "기술", value: data.technologies.primary.join(", ") },
+    ];
 ---
 
 <header class="content-header">
   <p class="eyebrow">
-    {data.organization.displayName ?? projectKind}
+    {data.organization.displayName ?? projectKind ?? "경력"}
   </p>
   <h1>{data.title}</h1>
   <p class="content-summary">{data.summary}</p>
 
-  <MetadataList
-    items={[
-      { label: "기간", value: period },
-      { label: "형태", value: projectKind },
-      { label: "역할", value: data.role.title },
-      { label: "기술", value: data.technologies.primary.join(", ") },
-    ]}
-  />
+  <MetadataList items={metadata} />
 
   <EvidenceLinks
     repository={data.links.repository}

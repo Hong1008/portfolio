@@ -1,0 +1,23 @@
+---
+interface Props {
+  recoverable: string[];
+  notRecoverable: string[];
+}
+
+const { recoverable, notRecoverable } = Astro.props;
+---
+
+<div class="failure-boundary" aria-label="복구 처리 책임 범위">
+  <section class="recoverable">
+    <h3>복구 가능한 범위</h3>
+    <ul>
+      {recoverable.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+  <section class="not-recoverable">
+    <h3>이 흐름으로 복구하지 못하는 범위</h3>
+    <ul>
+      {notRecoverable.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+</div>

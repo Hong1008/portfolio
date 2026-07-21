@@ -6,11 +6,17 @@ import SummaryCard from "../components/content/SummaryCard.astro";
 import "../styles/global.css";
 
 interface Props {
-  entry: CollectionEntry<"projects">;
+  entry: CollectionEntry<"projects"> | CollectionEntry<"experience">;
 }
 
 const { entry } = Astro.props;
 const { data } = entry;
+const collectionPath = data.contentType === "experience"
+  ? "/experience/"
+  : "/projects/";
+const collectionLabel = data.contentType === "experience"
+  ? "경력 목록"
+  : "프로젝트 목록";
 ---
 
 <html lang="ko">
@@ -24,7 +30,7 @@ const { data } = entry;
   <body>
     <main class="case-study">
       <nav class="breadcrumb print-hidden" aria-label="현재 위치">
-        <a href="/projects/">프로젝트 목록</a>
+        <a href={collectionPath}>{collectionLabel}</a>
       </nav>
 
       <ContentHeader entry={entry} />
@@ -41,8 +47,8 @@ const { data } = entry;
         )
       }
 
-      <nav class="case-footer print-hidden" aria-label="프로젝트 탐색">
-        <a href="/projects/">모든 프로젝트 보기</a>
+      <nav class="case-footer print-hidden" aria-label="콘텐츠 탐색">
+        <a href={collectionPath}>{collectionLabel} 보기</a>
       </nav>
     </main>
   </body>

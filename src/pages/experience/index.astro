@@ -1,0 +1,44 @@
+---
+import { getPublicExperience } from "../../lib/content";
+import "../../styles/global.css";
+
+const experience = (await getPublicExperience()).sort((a, b) =>
+  b.data.startDate.localeCompare(a.data.startDate),
+);
+---
+
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>경력</title>
+    <meta name="description" content="조직에서 수행한 업무와 기술적 판단을 정리한 경력 사례입니다." />
+  </head>
+
+  <body>
+    <main>
+      <nav class="breadcrumb" aria-label="현재 위치">
+        <a href="/">홈</a>
+      </nav>
+      <header class="page-header">
+        <p class="eyebrow">Experience</p>
+        <h1>경력</h1>
+        <p>조직의 제약 안에서 담당한 범위와 기술적 판단을 정리했습니다.</p>
+      </header>
+
+      <ul class="content-list">
+        {
+          experience.map((entry) => (
+            <li>
+              <a href={`/experience/${entry.data.slug}/`}>
+                <p class="eyebrow">{entry.data.organization.displayName}</p>
+                <h2>{entry.data.title}</h2>
+                <p>{entry.data.summary}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </main>
+  </body>
+</html>
