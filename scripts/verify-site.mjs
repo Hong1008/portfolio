@@ -64,6 +64,17 @@ try {
       const unnamedLinks = [...document.querySelectorAll("a")].filter((item) => !(item.textContent ?? "").trim() && !item.getAttribute("aria-label")).length;
       const inaccessibleSvg = [...document.querySelectorAll("svg")].filter((item) => !item.querySelector("title") && !item.getAttribute("aria-label") && !item.getAttribute("aria-labelledby")).length;
       const tablesWithoutHeaders = [...document.querySelectorAll("table")].filter((item) => !item.querySelector("th")).length;
+      const mermaidOutOfViewBox = [...document.querySelectorAll('svg[id^="mermaid"]')]
+        .map((svg) => {
+          const viewBox = svg.viewBox.baseVal;
+          const bounds = svg.getBBox();
+          const tolerance = 2;
+          return bounds.x < viewBox.x - tolerance
+            || bounds.y < viewBox.y - tolerance
+            || bounds.x + bounds.width > viewBox.x + viewBox.width + tolerance
+            || bounds.y + bounds.height > viewBox.y + viewBox.height + tolerance;
+        })
+        .filter(Boolean).length;
       return {
         h1: document.querySelectorAll("h1").length,
         title: document.title,
@@ -74,6 +85,7 @@ try {
         unnamedLinks,
         inaccessibleSvg,
         tablesWithoutHeaders,
+        mermaidOutOfViewBox,
         overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
         internalLinks: [...document.querySelectorAll("a[href]")]
           .map((item) => item.getAttribute("href"))
@@ -87,6 +99,7 @@ try {
     check(audit.unnamedLinks === 0, `${path}: ${audit.unnamedLinks} unnamed links`);
     check(audit.inaccessibleSvg === 0, `${path}: ${audit.inaccessibleSvg} SVGs without accessible names`);
     check(audit.tablesWithoutHeaders === 0, `${path}: tables without headers`);
+    check(audit.mermaidOutOfViewBox === 0, `${path}: ${audit.mermaidOutOfViewBox} Mermaid SVGs exceed their viewBox`);
     check(!audit.overflow, `${path}: horizontal document overflow at 1440px`);
   }
   for (const href of internalLinks) {

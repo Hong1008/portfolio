@@ -235,6 +235,9 @@ dt {
 }
 
 .prose svg[id^="mermaid"] {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
   margin-block: var(--space-block);
