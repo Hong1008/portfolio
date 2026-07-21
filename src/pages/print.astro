@@ -51,7 +51,11 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
           <li><span>0{index + 1}</span><strong>{entry.data.title}</strong><p>{entry.data.caseSummary?.decision}</p></li>
         ))}
       </ol>
-      <footer class="print-contact"><span>github.com/Hong1008</span><span>velog.io/@hong1008/posts</span><span>{DEPLOYED_SITE_URL}</span></footer>
+      <footer class="print-contact">
+        <a href="https://github.com/Hong1008" target="_blank" rel="noopener noreferrer">github.com/Hong1008</a>
+        <a href="https://velog.io/@hong1008/posts" target="_blank" rel="noopener noreferrer">velog.io/@hong1008/posts</a>
+        <a href={DEPLOYED_SITE_URL}>{DEPLOYED_SITE_URL}</a>
+      </footer>
     </section>
 
     <section class="print-page">
@@ -139,7 +143,16 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
           <article><p class="eyebrow">{entry.data.organization.displayName}</p><h3>{entry.data.title}</h3><p>{entry.data.summary}</p><dl><div><dt>역할</dt><dd>{entry.data.role.title}</dd></div><div><dt>검증</dt><dd>{entry.data.caseSummary?.verification}</dd></div><div><dt>한계</dt><dd>{entry.data.caseSummary?.limitation}</dd></div></dl></article>
         ))}
       </div>
-      <section class="print-links"><h3>상세 자료</h3><p>각 사례의 구조, 측정 조건, 근거와 전체 한계는 HTML 포트폴리오에서 확인할 수 있습니다.</p><ul><li><strong>Portfolio</strong><span>{DEPLOYED_SITE_URL}</span></li><li><strong>GitHub</strong><span>https://github.com/Hong1008</span></li><li><strong>기술 블로그</strong><span>https://velog.io/@hong1008/posts</span></li><li><strong>Email</strong><span>zxcbnm6404@gmail.com</span></li></ul></section>
+      <section class="print-links">
+        <h3>상세 자료</h3>
+        <p>각 사례의 구조, 측정 조건, 근거와 전체 한계는 HTML 포트폴리오에서 확인할 수 있습니다.</p>
+        <ul>
+          <li><strong>Portfolio</strong><a href={DEPLOYED_SITE_URL}>{DEPLOYED_SITE_URL}</a></li>
+          <li><strong>GitHub</strong><a href="https://github.com/Hong1008" target="_blank" rel="noopener noreferrer">https://github.com/Hong1008</a></li>
+          <li><strong>기술 블로그</strong><a href="https://velog.io/@hong1008/posts" target="_blank" rel="noopener noreferrer">https://velog.io/@hong1008/posts</a></li>
+          <li><strong>Email</strong><a href="mailto:zxcbnm6404@gmail.com">zxcbnm6404@gmail.com</a></li>
+        </ul>
+      </section>
       <footer class="print-final">홍철민 · Backend Engineer Portfolio · 2026</footer>
     </section>
   </main>
