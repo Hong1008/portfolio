@@ -238,10 +238,15 @@
   - QueryDSL
   - MySQL
   - AWS VPC
+  - AWS S3
+  - AWS CloudFront
+  - AWS Route 53
   - ECS Fargate
   - ECR
   - RDS
   - ALB
+  - NAT Gateway
+  - Internet Gateway
   - Docker
   - Jenkins
 
@@ -263,6 +268,7 @@ Redis는 실제 구현 근거가 확인되는 사례에서만 핵심 기술로 �
 - 백엔드와 인프라를 중심으로 개발했다.
 - 상품·이용권·프로모션·회원·수업·주문으로 책임을 분리한 신규 데이터 모델을 설계했다.
 - 기존 데이터를 직접 마이그레이션하지 않고 별도 신규 시스템으로 구축했다.
+- 기존 PHP 서비스와 신규 Spring 서비스가 개발 기간 동안 공존했다.
 - 기존 회원 정보는 인증 서비스를 통해 연동했다.
 - 회원·상품 관리와 메뉴별 권한 설정을 위한 어드민 API를 개발했다.
 - 키오스크 결제 API를 개발했다.
@@ -296,7 +302,11 @@ Redis는 실제 구현 근거가 확인되는 사례에서만 핵심 기술로 �
 ### 본인 수행
 
 - AWS VPC를 구성했다.
-- ECS Fargate, ECR, RDS, ALB 기반 실행 환경을 구성했다.
+- 프론트엔드 빌드 결과물을 S3에 배포하고 CloudFront를 통해 제공했다.
+- Route 53으로 백엔드 서비스 도메인을 ALB에 연결했다.
+- Spring Boot 애플리케이션을 실행하는 ECS Fargate Task를 Private Subnet에 배치했다.
+- Private Subnet의 Task가 외부 통신할 수 있도록 Public Subnet에 NAT Gateway를 구성하고 Internet Gateway로 연결했다.
+- 애플리케이션 데이터베이스로 Amazon RDS를 사용했다.
 - Jenkins에서 Docker 이미지를 빌드했다.
 - 이미지를 ECR에 업로드했다.
 - ECS 배포까지 이어지는 CI/CD 파이프라인을 구성했다.
@@ -305,14 +315,22 @@ Redis는 실제 구현 근거가 확인되는 사례에서만 핵심 기술로 �
 ### 안전한 결과 표현
 
 - Docker 이미지 빌드부터 ECR 업로드와 ECS 배포까지 자동화했다.
-- 관리형 컨테이너 실행 환경을 구성했다.
-- 신규 버전 전환과 배포 실패 시 롤백 가능한 배포 방식을 사용했다.
+- S3의 프론트엔드 정적 파일을 CloudFront를 통해 제공했다.
+- Route 53, ALB와 Private Subnet의 ECS Fargate Task로 백엔드 요청·실행 경로를 구성했다.
+- ECS의 롤링 배포와 롤백 기능을 사용하도록 구성했다.
 
 ### 주의
 
 - 실제 무중단 배포를 운영 트래픽에서 검증했다고 표현하지 않는다.
 - 고가용성 또는 장애 복구 성과를 수치 없이 단정하지 않는다.
 - EC2와 Fargate를 실제로 비교 검토했다는 근거가 없으면 대안 비교를 만들지 않는다.
+- Jenkins가 프론트엔드 S3 배포까지 담당했다고 표현하지 않는다.
+- CloudFront 캐시 정책, 성능 개선, S3 공개 설정과 OAI·OAC를 추정하지 않는다.
+- Availability Zone과 Subnet 수, NAT Gateway 수, ALB의 구체적인 Subnet 배치를 추정하지 않는다.
+- RDS의 세부 Subnet과 Multi-AZ 구성을 추정하지 않는다.
+- Auto Scaling, Security Group, Network ACL, ACM과 HTTPS 구성을 추가하지 않는다.
+- 실제 도메인, CIDR과 AWS 리소스 식별자를 공개하지 않는다.
+- 외부 블로그의 VPC 이미지는 구조 이해에만 사용하고 공개 페이지에 포함하지 않는다.
 
 ---
 

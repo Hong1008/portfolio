@@ -1,0 +1,227 @@
+contentSlug: hunik
+lastReviewedAt: "2026-07-21"
+
+facts:
+  - id: employment-and-team
+    statement: "2021년 9월부터 2022년 10월까지 휴니크 개발팀에서 근무했고, 4인 개발팀의 개발 리드로 백엔드와 인프라를 담당했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "경력 기간·팀 구성·역할"
+    public: true
+    confidence: confirmed
+    note: "백엔드 개발자 1명, 프론트엔드 개발자 2명과 협업했다."
+
+  - id: legacy-payment-table
+    statement: "기존 payment 테이블에 상품, 이용권, 프로모션, 회원, 수업과 주문 관련 정보가 30개 이상의 컬럼으로 결합돼 있었다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "레거시 데이터 구조"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: separate-system
+    statement: "기존 구조를 직접 크게 변경하거나 그대로 복제하지 않고 별도 신규 시스템으로 개발했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "레거시와 신규 시스템의 책임 경계"
+    public: true
+    confidence: confirmed
+    note: "실제 데이터 마이그레이션이나 운영 트래픽 전환은 수행하지 않았다."
+
+  - id: domain-boundaries
+    statement: "신규 시스템 내부에서 상품, 이용권, 프로모션, 회원, 수업과 주문의 데이터 책임을 구분했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "신규 도메인·데이터 모델"
+    public: true
+    confidence: confirmed
+    note: "각 도메인이 독립 배포되는 마이크로서비스 구조를 의미하지 않는다."
+
+  - id: legacy-new-coexistence
+    statement: "기존 PHP 서비스와 신규 Spring 서비스가 공존했으며, 기존 회원 인증 결과와 식별 정보를 신규 시스템에서 사용했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "신규·레거시 시스템 연동"
+    public: true
+    confidence: confirmed
+    note: "구체적인 인증 프로토콜과 토큰 공유 방식은 현재 확인할 수 없다."
+
+  - id: application-scope
+    statement: "어드민 API와 키오스크 결제 API를 개발하고 JWT·Spring Security 기반 인증과 어드민 메뉴별 접근 권한을 적용했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "백엔드 구현 범위"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: multi-module
+    statement: "인증, 예외 처리와 공통 응답 등 반복 코드를 멀티모듈 공통 영역으로 분리했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "공통 코드 구조"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: pre-release
+    statement: "젤로텍 v2 프로젝트는 실제 출시 전에 종료됐다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "프로젝트 상태와 검증 범위"
+    public: true
+    confidence: confirmed
+    note: "운영 트래픽, 배포 성과와 사용자·비즈니스 성과를 확인할 수 없다."
+
+  - id: frontend-s3-cloudfront
+    statement: "프론트엔드 빌드 결과물을 Amazon S3에 배포하고 CloudFront를 통해 제공했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "프론트엔드 제공 경로"
+    public: true
+    confidence: confirmed
+    note: "Jenkins 자동 배포, 버킷 공개 설정, OAI·OAC와 캐시 정책은 현재 확인할 수 없다."
+
+  - id: backend-entrypoint
+    statement: "Route 53으로 백엔드 서비스 도메인을 Application Load Balancer에 연결했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "백엔드 요청 진입점"
+    public: true
+    confidence: confirmed
+    note: "실제 도메인과 ALB의 Subnet 배치는 공개하거나 추정하지 않는다."
+
+  - id: ecs-private-subnet
+    statement: "Spring Boot 애플리케이션을 실행하는 ECS Fargate Task를 Private Subnet에 배치했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "백엔드 실행 환경"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: nat-public-subnet
+    statement: "Private Subnet의 Task가 외부 통신할 수 있도록 Public Subnet에 NAT Gateway를 구성하고 Internet Gateway로 연결했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "백엔드 외부 통신 경로"
+    public: true
+    confidence: confirmed
+    note: "NAT Gateway 개수, Availability Zone 수와 Subnet 개수는 확인할 수 없다."
+
+  - id: rds
+    statement: "애플리케이션 데이터베이스로 Amazon RDS를 사용했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "데이터베이스"
+    public: true
+    confidence: confirmed
+    note: "RDS의 세부 Subnet과 Multi-AZ 구성은 현재 확인할 수 없다."
+
+  - id: deployment-pipeline
+    statement: "Jenkins에서 Spring Boot 애플리케이션의 Docker 이미지를 빌드하고 ECR에 업로드한 뒤 ECS Fargate에 배포하도록 구성했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "백엔드 CI/CD"
+    public: true
+    confidence: confirmed
+    note: "프론트엔드의 S3 배포가 같은 파이프라인에 포함됐는지는 확인할 수 없다."
+
+  - id: ecs-deployment-features
+    statement: "ECS의 롤링 배포와 롤백 기능을 사용하도록 구성했다."
+    sourceType: user-confirmed
+    source: "사용자 확인"
+    scope: "백엔드 배포 방식"
+    public: true
+    confidence: confirmed
+    note: "실제 운영 트래픽에서 무중단 배포를 검증한 결과가 아니다."
+
+metrics: []
+
+contribution:
+  mine:
+    - "4인 개발팀 리드"
+    - "신규 도메인과 데이터 모델 설계"
+    - "어드민·키오스크 API 개발"
+    - "기존 회원 인증 연동"
+    - "JWT·Spring Security 기반 인증·권한 처리"
+    - "멀티모듈 공통 코드 구성"
+    - "AWS VPC와 애플리케이션 실행 환경 구성"
+    - "프론트엔드 S3 배포와 CloudFront 제공 환경 구성"
+    - "Jenkins·Docker·ECR·ECS 백엔드 배포 흐름 구성"
+  team:
+    - "백엔드 개발자 1명과 API 개발 협업"
+    - "프론트엔드 개발자 2명이 사용자 화면 구현"
+  external:
+    - "기존 인증 서비스가 회원 인증 결과와 식별 정보를 제공"
+    - "Amazon S3와 CloudFront가 프론트엔드 파일의 저장과 제공을 담당"
+    - "Application Load Balancer가 백엔드 요청 진입점 역할을 수행"
+    - "ECS Fargate가 Spring Boot 컨테이너를 실행"
+    - "Amazon RDS가 애플리케이션 데이터베이스를 제공"
+
+publication:
+  allowed:
+    - "젤로텍 v2 프로젝트명"
+    - "4인 팀 구성과 본인 역할"
+    - "기존 payment 테이블의 30개 이상 컬럼"
+    - "분리한 도메인 범위"
+    - "기존 PHP·신규 Spring 시스템 공존"
+    - "기존 회원 인증 연동"
+    - "S3와 CloudFront를 사용한 프론트엔드 제공"
+    - "Route 53과 ALB를 사용한 백엔드 진입점"
+    - "ECS Fargate Task의 Private Subnet 실행"
+    - "Public Subnet의 NAT Gateway와 Internet Gateway"
+    - "RDS와 ECR 사용"
+    - "Jenkins 기반 백엔드 배포 흐름"
+    - "출시 전 종료 사실"
+  anonymize:
+    - "실제 도메인"
+    - "내부 서비스명과 모듈명"
+    - "내부 테이블과 컬럼명"
+    - "메뉴와 권한 코드"
+  prohibited:
+    - "회사 내부 코드"
+    - "회원과 결제 데이터"
+    - "AWS 계정·버킷·리소스 식별자"
+    - "Security Group과 Network ACL 규칙"
+    - "환경 변수와 인증 정보"
+    - "내부 API 명세 전문"
+    - "외부 블로그의 VPC 이미지"
+
+risks:
+  - claim: "레거시 시스템 전환 완료"
+    reason: "신규 시스템은 출시 전에 종료됐고 실제 운영 전환이 완료되지 않았다."
+    safeWording: "기존 구조를 그대로 복제하지 않고 별도 신규 시스템을 개발했다."
+
+  - claim: "마이크로서비스 아키텍처 전환"
+    reason: "도메인 책임을 분리했지만 독립 배포 서비스였다는 근거가 없다."
+    safeWording: "신규 시스템 내부의 도메인과 데이터 책임을 분리했다."
+
+  - claim: "무중단 마이그레이션"
+    reason: "실제 데이터와 트래픽 전환을 수행하지 않았다."
+    safeWording: "기존 PHP 서비스와 분리된 Spring 시스템을 개발했다."
+
+  - claim: "고가용성 AWS 인프라"
+    reason: "Availability Zone, 장애 전환 구성과 가용성 지표가 확인되지 않았다."
+    safeWording: "VPC, ALB, ECS Fargate와 RDS 기반 실행 환경을 구성했다."
+
+  - claim: "무중단 배포"
+    reason: "ECS 롤링 배포 기능을 구성했지만 운영 트래픽에서 검증하지 못했다."
+    safeWording: "ECS의 롤링 배포와 롤백 기능을 사용하도록 구성했다."
+
+  - claim: "CloudFront를 통한 성능 개선"
+    reason: "캐시 정책과 전후 성능 수치가 없다."
+    safeWording: "S3의 프론트엔드 정적 파일을 CloudFront를 통해 제공했다."
+
+  - claim: "S3 보안 구성"
+    reason: "버킷 공개 설정과 OAI·OAC 구성은 확인할 수 없다."
+    safeWording: "프론트엔드 결과물을 S3에 배포했다."
+
+  - claim: "NAT Gateway 이중화"
+    reason: "NAT Gateway 개수와 Availability Zone 배치를 확인할 수 없다."
+    safeWording: "Public Subnet에 NAT Gateway를 구성했다."
+
+  - claim: "RDS Private Subnet·Multi-AZ"
+    reason: "RDS의 세부 네트워크 배치를 확인할 수 없다."
+    safeWording: "애플리케이션 데이터베이스로 Amazon RDS를 사용했다."
