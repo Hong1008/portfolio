@@ -1,0 +1,79 @@
+---
+import SiteFooter from "../components/site/SiteFooter.astro";
+import SiteHeader from "../components/site/SiteHeader.astro";
+import {
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  absoluteSiteUrl,
+  withBase,
+} from "../lib/site";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
+  ogType?: "website" | "profile" | "article";
+  bodyClass?: string;
+  hideChrome?: boolean;
+}
+
+const {
+  title = SITE_NAME,
+  description = SITE_DESCRIPTION,
+  canonicalPath = "",
+  ogType = "website",
+  bodyClass,
+  hideChrome = false,
+} = Astro.props;
+const pageTitle = title === SITE_NAME ? title : `${title} | 홍철민`;
+const canonical = absoluteSiteUrl(canonicalPath);
+const profileSchema = {
+  "@context": "https://schema.org",
+  "@type": canonicalPath ? "ProfilePage" : "Person",
+  name: pageTitle,
+  url: canonical,
+  description,
+  mainEntity: canonicalPath
+    ? {
+        "@type": "Person",
+        name: "홍철민",
+        jobTitle: "백엔드 개발자",
+        url: absoluteSiteUrl(),
+        sameAs: [
+          "https://github.com/Hong1008",
+          "https://velog.io/@hong1008/posts",
+        ],
+      }
+    : undefined,
+};
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#f7f5ef" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={withBase("favicon.svg")} />
+    <link rel="icon" href={withBase("favicon.ico")} />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={absoluteSiteUrl("og-default.svg")} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(profileSchema)} />
+  </head>
+  <body class={bodyClass}>
+    {!hideChrome && <SiteHeader />}
+    <slot />
+    {!hideChrome && <SiteFooter />}
+  </body>
+</html>

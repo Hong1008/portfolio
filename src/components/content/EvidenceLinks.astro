@@ -6,6 +6,7 @@ interface Link {
 
 interface Props {
   repository?: string | null;
+  demo?: string | null;
   retrospective?: string | null;
   article?: string | null;
   external?: Link[];
@@ -13,6 +14,7 @@ interface Props {
 
 const {
   repository,
+  demo,
   retrospective,
   article,
   external = [],
@@ -20,6 +22,7 @@ const {
 
 const links = [
   repository && { label: "GitHub 저장소", url: repository },
+  demo && { label: "데모", url: demo },
   retrospective && { label: "기술 회고", url: retrospective },
   article && { label: "관련 글", url: article },
   ...external,

@@ -8,6 +8,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "pdf": "node scripts/generate-pdf.mjs",
+    "verify": "node scripts/verify-site.mjs",
+    "build:portfolio": "npm run build && npm run pdf",
     "preview": "astro preview",
     "astro": "astro"
   },

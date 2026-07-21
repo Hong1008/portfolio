@@ -1,0 +1,33 @@
+---
+import { withBase } from "../../lib/site";
+
+const path = Astro.url.pathname;
+const items = [
+  { label: "소개", href: withBase(), active: path === withBase() },
+  { label: "경력", href: withBase("experience/"), active: path.includes("/experience") },
+  { label: "프로젝트", href: withBase("projects/"), active: path.includes("/projects") },
+  { label: "기술 기록", href: "https://velog.io/@hong1008/posts", active: false },
+  { label: "PDF", href: withBase("documents/hong-cheolmin-portfolio.pdf"), active: false },
+];
+---
+
+<a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+<header class="site-header print-hidden">
+  <div class="site-header-inner">
+    <a class="site-brand" href={withBase()} aria-label="홍철민 포트폴리오 홈">
+      <span>홍철민</span>
+      <small>Backend Engineer</small>
+    </a>
+    <nav aria-label="주요 탐색">
+      <ul>
+        {items.map((item) => (
+          <li>
+            <a href={item.href} aria-current={item.active ? "page" : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>

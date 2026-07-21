@@ -1,115 +1,119 @@
 ---
+import BaseLayout from "../layouts/BaseLayout.astro";
 import { getPublicExperience, getPublicProjects } from "../lib/content";
-import "../styles/global.css";
+import { contentPath, formatPeriod, withBase } from "../lib/site";
 
 const [experienceEntries, projectEntries] = await Promise.all([
   getPublicExperience(),
   getPublicProjects(),
 ]);
-
-const byStartDateDescending = <T extends { data: { startDate: string } }>(
-  a: T,
-  b: T,
-) => b.data.startDate.localeCompare(a.data.startDate);
-
-const experience = [...experienceEntries].sort(byStartDateDescending);
-const projects = [...projectEntries].sort(byStartDateDescending);
-
-const byPrintPriority = <T extends { data: { print: { priority: number | null } } }>(
-  a: T,
-  b: T,
-) => (a.data.print.priority ?? Number.MAX_SAFE_INTEGER) -
+const experience = [...experienceEntries].sort((a, b) =>
+  b.data.startDate.localeCompare(a.data.startDate));
+const projects = [...projectEntries].sort((a, b) =>
+  b.data.startDate.localeCompare(a.data.startDate));
+const priority = <T extends { data: { print: { priority: number | null } } }>(a: T, b: T) =>
+  (a.data.print.priority ?? Number.MAX_SAFE_INTEGER) -
   (b.data.print.priority ?? Number.MAX_SAFE_INTEGER);
-
-const featuredExperience = experience.filter(({ data }) => data.featured);
-const featuredProjects = projects.filter(({ data }) => data.featured);
-const featured = [...featuredExperience, ...featuredProjects]
-  .sort(byPrintPriority)
+const featured = [...experience, ...projects]
+  .filter(({ data }) => data.featured)
+  .sort(priority)
   .slice(0, 3);
-
-const hrefFor = (entry: (typeof featured)[number]) =>
-  `/${entry.data.contentType === "experience" ? "experience" : "projects"}/${entry.data.slug}/`;
+const additionalProjects = projects.filter(({ data }) => !data.featured);
 ---
 
-<html lang="ko">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content={Astro.generator} />
-    <title>홍철민 — 백엔드 개발자 포트폴리오</title>
-    <meta
-      name="description"
-      content="Java·Kotlin과 Spring 기반 백엔드 경험, 프로젝트와 기술적 판단을 기록한 포트폴리오입니다."
-    />
-  </head>
-
-  <body>
-    <main>
-      <header class="home-intro">
+<BaseLayout canonicalPath="">
+  <main id="main-content" class="home-page">
+    <header class="home-hero">
+      <div>
         <p class="eyebrow">Backend Engineer Portfolio</p>
-        <h1>홍철민</h1>
-        <p class="home-lead">
-          Java·Kotlin과 Spring 기반 백엔드 경험을 바탕으로 실패 상태와
-          책임 경계를 구분하고, 현재는 RAG·MCP 기반 AI 서비스 백엔드로
-          경험을 확장하고 있습니다.
-        </p>
-      </header>
+        <h1>백엔드 개발자<br /><span>홍철민</span></h1>
+      </div>
+      <div class="hero-statement">
+        <p>실패 가능성을 전제로<br /><strong>시스템의 상태와 책임 경계를 설계합니다.</strong></p>
+        <p>Java/Kotlin·Spring 기반 백엔드 경험을 바탕으로 결제 상태, 비동기 메시징, 대용량 파일 처리와 AI 서비스 백엔드를 다뤘습니다.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#featured">대표 사례 보기</a>
+          <a class="button" href={withBase("documents/hong-cheolmin-portfolio.pdf")}>PDF 다운로드</a>
+        </div>
+      </div>
+    </header>
 
-      <section class="home-section" aria-labelledby="featured-title">
+    <section id="featured" class="home-section featured-section" aria-labelledby="featured-title">
+      <div class="section-heading">
+        <p class="eyebrow">Selected work</p>
         <h2 id="featured-title">대표 사례</h2>
-        <ul class="content-list featured-list">
-          {
-            featured.map((entry) => (
-              <li>
-                <a href={hrefFor(entry)}>
-                  <p class="eyebrow">
-                    {entry.data.contentType === "experience" ? "경력" : "프로젝트"}
-                  </p>
-                  <h3>{entry.data.title}</h3>
-                  <p>{entry.data.summary}</p>
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </section>
+        <p>서로 다른 문제에서 상태, 책임 경계와 검증 범위를 어떻게 다뤘는지 보여주는 세 사례입니다.</p>
+      </div>
+      <ol class="featured-cases">
+        {featured.map((entry, index) => (
+          <li>
+            <a href={contentPath(entry.data.contentType, entry.data.slug)}>
+              <span class="case-number">0{index + 1}</span>
+              <div>
+                <p class="eyebrow">{entry.data.contentType === "experience" ? "경력" : "프로젝트"}</p>
+                <h3>{entry.data.title}</h3>
+              </div>
+              <dl>
+                <div><dt>문제</dt><dd>{entry.data.caseSummary?.problem}</dd></div>
+                <div><dt>판단</dt><dd>{entry.data.caseSummary?.decision}</dd></div>
+                <div><dt>검증</dt><dd>{entry.data.caseSummary?.verification}</dd></div>
+              </dl>
+              <span class="detail-link">상세 보기 <span aria-hidden="true">→</span></span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </section>
 
-      <section class="home-section" aria-labelledby="experience-title">
-        <h2 id="experience-title">경력</h2>
-        <ul class="compact-list">
-          {
-            experience.map((entry) => (
-              <li>
-                <a href={`/experience/${entry.data.slug}/`}>{entry.data.title}</a>
-                <span>{entry.data.startDate} – {entry.data.endDate ?? "현재"}</span>
-              </li>
-            ))
-          }
-        </ul>
-        <a href="/experience/">경력 전체 보기</a>
-      </section>
+    <section class="home-section timeline-section" aria-labelledby="timeline-title">
+      <div class="section-heading">
+        <p class="eyebrow">Experience</p>
+        <h2 id="timeline-title">경력 타임라인</h2>
+      </div>
+      <ol class="career-timeline">
+        {experience.map((entry) => (
+          <li>
+            <p class="timeline-period">{formatPeriod(entry.data.startDate, entry.data.endDate, entry.data.datePrecision)}</p>
+            <div>
+              <h3><a href={contentPath("experience", entry.data.slug)}>{entry.data.title}</a></h3>
+              <p class="timeline-role">{entry.data.role.title}</p>
+              <ul>{entry.data.role.responsibilities.slice(0, 2).map((item) => <li>{item}</li>)}</ul>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <a class="text-link" href={withBase("experience/")}>경력 전체 보기 →</a>
+    </section>
 
-      <section class="home-section" aria-labelledby="projects-title">
-        <h2 id="projects-title">프로젝트</h2>
-        <ul class="compact-list">
-          {
-            projects.map((entry) => (
-              <li>
-                <a href={`/projects/${entry.data.slug}/`}>{entry.data.title}</a>
-                <span>{entry.data.startDate}</span>
-              </li>
-            ))
-          }
-        </ul>
-        <a href="/projects/">프로젝트 전체 보기</a>
-      </section>
+    <section class="home-section projects-section" aria-labelledby="additional-title">
+      <div class="section-heading">
+        <p class="eyebrow">More projects</p>
+        <h2 id="additional-title">추가 프로젝트</h2>
+      </div>
+      <ul class="additional-projects">
+        {additionalProjects.map((entry) => (
+          <li>
+            <a href={contentPath("project", entry.data.slug)}>
+              <div><p class="eyebrow">{entry.data.projectType.operationStatus}</p><h3>{entry.data.title}</h3></div>
+              <p>{entry.data.summary}</p>
+              <span aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <a class="text-link" href={withBase("projects/")}>프로젝트 전체 보기 →</a>
+    </section>
 
-      <footer class="home-footer">
-        <a href="https://github.com/Hong1008">GitHub</a>
-        <a href="https://velog.io/@hong1008/posts">기술 블로그</a>
-      </footer>
-    </main>
-  </body>
-</html>
+    <section class="home-section principles-section" aria-labelledby="principles-title">
+      <div class="section-heading">
+        <p class="eyebrow">Engineering principles</p>
+        <h2 id="principles-title">개발 원칙</h2>
+      </div>
+      <ol>
+        <li><strong>실패 상태를 먼저 구분합니다.</strong><span>정상 흐름뿐 아니라 중복, 재실행과 외부 연동 실패를 상태와 제약으로 드러냅니다.</span></li>
+        <li><strong>책임 경계를 명확히 합니다.</strong><span>애플리케이션, 데이터베이스, 외부 서비스와 팀 구성원이 보장하는 범위를 나눕니다.</span></li>
+        <li><strong>측정 범위를 함께 기록합니다.</strong><span>벤치마크와 모델 지표를 운영 성과로 확대하지 않고 환경, 데이터와 한계를 함께 제시합니다.</span></li>
+      </ol>
+    </section>
+  </main>
+</BaseLayout>

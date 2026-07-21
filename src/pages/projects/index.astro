@@ -1,45 +1,22 @@
 ---
-import "../../styles/global.css";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getPublicProjects } from "../../lib/content";
-
+import { contentPath, formatPeriod, withBase } from "../../lib/site";
 const projects = (await getPublicProjects()).sort((a, b) =>
-  b.data.startDate.localeCompare(a.data.startDate),
-);
+  b.data.startDate.localeCompare(a.data.startDate));
 ---
 
-<html lang="ko">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1"
-    />
-    <title>프로젝트</title>
-  </head>
-
-  <body>
-    <main>
-      <header class="page-header">
-        <p class="eyebrow">Portfolio</p>
-        <h1>프로젝트</h1>
-        <p>문제와 판단, 구현 범위와 검증 결과를 기록한 프로젝트입니다.</p>
-      </header>
-
-      <ul class="project-list">
-        {
-          projects.map((project) => (
-            <li>
-              <a href={`/projects/${project.data.slug}/`}>
-                <p class="eyebrow">
-                  {project.data.organization.displayName}
-                </p>
-                <h2>{project.data.title}</h2>
-                <p>{project.data.summary}</p>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </main>
-  </body>
-</html>
+<BaseLayout title="프로젝트" description="문제와 판단, 구현 범위와 검증 결과를 기록한 프로젝트입니다." canonicalPath="projects/">
+  <main id="main-content" class="listing-page">
+    <nav class="breadcrumb" aria-label="현재 위치"><a href={withBase()}>홈</a><span>/</span><span>프로젝트</span></nav>
+    <header class="page-header"><p class="eyebrow">Projects</p><h1>프로젝트</h1><p>개인·팀 기여, 실험과 측정 조건, 구현이 책임지지 않는 범위를 함께 정리했습니다.</p></header>
+    <ol class="listing-cards project-cards">
+      {projects.map((entry) => (
+        <li><a href={contentPath("project", entry.data.slug)}>
+          <div class="listing-meta"><span>{formatPeriod(entry.data.startDate, entry.data.endDate, entry.data.datePrecision)}</span><span>{entry.data.projectType.operationStatus}</span></div>
+          <h2>{entry.data.title}</h2><p class="listing-role">{entry.data.role.title}</p><p>{entry.data.summary}</p><span class="detail-link">상세 보기 →</span>
+        </a></li>
+      ))}
+    </ol>
+  </main>
+</BaseLayout>

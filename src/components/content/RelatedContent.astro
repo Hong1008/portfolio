@@ -1,0 +1,31 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { contentPath } from "../../lib/site";
+
+type Entry = CollectionEntry<"projects"> | CollectionEntry<"experience">;
+interface RelatedItem {
+  entry: Entry;
+  label: string;
+}
+interface Props {
+  items: RelatedItem[];
+}
+const { items } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section class="related-content" aria-labelledby="related-content-title">
+    <p class="eyebrow">Related cases</p>
+    <h2 id="related-content-title">관련 사례</h2>
+    <ul>
+      {items.map(({ entry, label }) => (
+        <li>
+          <a href={contentPath(entry.data.contentType, entry.data.slug)}>
+            <strong>{entry.data.title}</strong>
+            <span>{label}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

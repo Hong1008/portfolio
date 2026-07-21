@@ -1,10 +1,11 @@
 import { getCollection } from "astro:content";
 
 async function getValidatedContent() {
-  const [projects, experience, evidenceEntries] = await Promise.all([
+  const [projects, experience, evidenceEntries, relationEntries] = await Promise.all([
     getCollection("projects"),
     getCollection("experience"),
     getCollection("evidence"),
+    getCollection("relations"),
   ]);
 
   const entries = [...projects, ...experience];
@@ -56,7 +57,17 @@ async function getValidatedContent() {
     }
   }
 
-  return { projects, experience };
+  const relations = relationEntries.flatMap((entry) => entry.data.relations);
+
+  for (const relation of relations) {
+    if (!entriesBySlug.has(relation.from) || !entriesBySlug.has(relation.to)) {
+      throw new Error(
+        `Relation "${relation.from}" → "${relation.to}" references missing content.`,
+      );
+    }
+  }
+
+  return { projects, experience, evidenceEntries, relations };
 }
 
 export async function getPublicProjects() {
@@ -67,4 +78,49 @@ export async function getPublicProjects() {
 export async function getPublicExperience() {
   const { experience } = await getValidatedContent();
   return experience.filter(({ data }) => data.visibility === "public");
+}
+
+export async function getPublicEntries() {
+  const { projects, experience } = await getValidatedContent();
+  return [...experience, ...projects].filter(
+    ({ data }) => data.visibility === "public",
+  );
+}
+
+export async function getPortfolioContent() {
+  const { projects, experience, evidenceEntries } = await getValidatedContent();
+  return {
+    projects: projects.filter(({ data }) => data.visibility === "public"),
+    experience: experience.filter(({ data }) => data.visibility === "public"),
+    evidence: evidenceEntries,
+  };
+}
+
+export async function getEntryNavigation(slug: string, contentType: "experience" | "project") {
+  const { projects, experience, relations } = await getValidatedContent();
+  const publicEntries = [...experience, ...projects].filter(
+    ({ data }) => data.visibility === "public",
+  );
+  const entriesBySlug = new Map(publicEntries.map((entry) => [entry.data.slug, entry]));
+  const related = relations.flatMap((relation) => {
+    if (relation.from === slug) {
+      const entry = entriesBySlug.get(relation.to);
+      return entry ? [{ entry, label: relation.label }] : [];
+    }
+    if (relation.to === slug) {
+      const entry = entriesBySlug.get(relation.from);
+      return entry ? [{ entry, label: relation.label }] : [];
+    }
+    return [];
+  });
+  const collection = (contentType === "experience" ? experience : projects)
+    .filter(({ data }) => data.visibility === "public")
+    .sort((a, b) => b.data.startDate.localeCompare(a.data.startDate));
+  const index = collection.findIndex(({ data }) => data.slug === slug);
+
+  return {
+    related,
+    previous: index > 0 ? collection[index - 1] : null,
+    next: index >= 0 && index < collection.length - 1 ? collection[index + 1] : null,
+  };
 }

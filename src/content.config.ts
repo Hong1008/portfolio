@@ -224,8 +224,35 @@ const evidence = defineCollection({
     }),
 });
 
+const relations = defineCollection({
+  loader: glob({
+    pattern: "**/*.{yaml,yml}",
+    base: "./src/data/relations",
+  }),
+  schema: z.object({
+    relations: z.array(
+      z.object({
+        from: slug,
+        to: slug,
+        type: z.enum([
+          "generalized-into",
+          "follows-from",
+          "explained-by",
+          "benchmarked-by",
+          "same-principle",
+          "related-learning",
+          "predecessor",
+          "successor",
+        ]),
+        label: z.string().min(1),
+      }),
+    ),
+  }),
+});
+
 export const collections = {
   projects,
   experience,
   evidence,
+  relations,
 };

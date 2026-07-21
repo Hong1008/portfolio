@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">홍철민 백엔드 개발자 포트폴리오</title>
+  <desc id="desc">실패 처리, 성능 분석과 AI 서비스 백엔드 사례</desc>
+  <rect width="1200" height="630" fill="#f7f5ef"/>
+  <circle cx="1090" cy="60" r="300" fill="#d0e2d8"/>
+  <path d="M80 88h1040" stroke="#d8d5cc"/>
+  <text x="80" y="170" fill="#075f4e" font-family="Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="2">BACKEND ENGINEER PORTFOLIO</text>
+  <text x="80" y="305" fill="#17211d" font-family="Arial, sans-serif" font-size="76" font-weight="800">홍철민</text>
+  <text x="80" y="390" fill="#17211d" font-family="Arial, sans-serif" font-size="38" font-weight="700">상태와 책임 경계를 설계합니다.</text>
+  <text x="80" y="500" fill="#5e6761" font-family="Arial, sans-serif" font-size="27">실패 처리 · 성능 분석 · AI 서비스 백엔드</text>
+  <path d="M80 548h210" stroke="#075f4e" stroke-width="8"/>
+</svg>

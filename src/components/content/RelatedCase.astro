@@ -5,11 +5,14 @@ interface Props {
   relationship: string;
 }
 
+import { withBase } from "../../lib/site";
+
 const { label, href, relationship } = Astro.props;
+const resolvedHref = href.startsWith("/") ? withBase(href) : href;
 ---
 
 <aside class="related-case" aria-label="관련 사례">
   <p class="eyebrow">이어진 사례</p>
-  <h3><a href={href}>{label}</a></h3>
+  <h3><a href={resolvedHref}>{label}</a></h3>
   <p>{relationship}</p>
 </aside>

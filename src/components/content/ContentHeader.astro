@@ -2,6 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import EvidenceLinks from "./EvidenceLinks.astro";
 import MetadataList from "./MetadataList.astro";
+import { formatPeriod } from "../../lib/site";
 
 interface Props {
   entry: CollectionEntry<"projects"> | CollectionEntry<"experience">;
@@ -9,7 +10,7 @@ interface Props {
 
 const { entry } = Astro.props;
 const { data } = entry;
-const period = [data.startDate, data.endDate ?? "현재"].join(" – ");
+const period = formatPeriod(data.startDate, data.endDate, data.datePrecision);
 const employmentType = {
   "full-time": "정규직",
   contract: "계약직",
@@ -32,6 +33,15 @@ const projectKind = data.contentType === "project"
       article: "기술 콘텐츠",
     }[data.projectType.kind]
   : null;
+const projectOperationStatus = data.contentType === "project"
+  ? {
+      production: "운영",
+      "pre-release": "출시 전",
+      prototype: "프로토타입",
+      study: "학습",
+      "not-applicable": "해당 없음",
+    }[data.projectType.operationStatus]
+  : null;
 
 const metadata = data.contentType === "experience"
   ? [
@@ -47,6 +57,8 @@ const metadata = data.contentType === "experience"
       { label: "기간", value: period },
       { label: "형태", value: projectKind ?? "프로젝트" },
       { label: "역할", value: data.role.title },
+      { label: "상태", value: projectOperationStatus ?? "프로젝트" },
+      { label: "팀", value: data.team.size ? `${data.team.size}명` : "확인되지 않음" },
       { label: "기술", value: data.technologies.primary.join(", ") },
     ];
 ---
@@ -62,8 +74,10 @@ const metadata = data.contentType === "experience"
 
   <EvidenceLinks
     repository={data.links.repository}
+    demo={data.links.demo}
     retrospective={data.links.retrospective}
     article={data.links.article}
     external={data.links.external}
   />
+  {data.confidentialityNote && <p class="confidentiality-note">{data.confidentialityNote}</p>}
 </header>

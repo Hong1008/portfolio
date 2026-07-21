@@ -6,6 +6,9 @@ import rehypeMermaid from 'rehype-mermaid';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://hong1008.github.io',
+  base: '/portfolio',
+  trailingSlash: 'always',
   markdown: {
     syntaxHighlight: false,
     processor: unified({

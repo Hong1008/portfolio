@@ -1,158 +1,53 @@
 # Portfolio
 
-소프트웨어 엔지니어의 경력과 프로젝트를 장기적으로 관리하는 정적 포트폴리오 사이트입니다.
+홍철민의 경력과 프로젝트를 문제, 판단, 검증과 책임 범위 중심으로 관리하는 Astro 정적 포트폴리오다.
 
-## 프로젝트 성격
+## 현재 구성
 
-Astro 7 + MDX 기반 정적 포트폴리오다. 핵심 원칙은 기술 나열보다 문제·판단·검증·기여 범위·한계를 근거와 함께 서술하는 것이다.
+- 경력 4개: 샤플앤컴퍼니, 휴니크, 호두랩스, 지투이
+- 프로젝트 4개: WorkShield, KExcel, 영화 흥행 예측, 전기차 충전 인프라
+- 명시적 관련 사례 연결과 이전·다음 탐색
+- 7페이지 제출용 PDF 자동 생성
+- GitHub Pages base path, sitemap, robots, 404, SEO·Open Graph 메타데이터
+- 정적 경로·내부 링크·반응형·기초 접근성 자동 검증
 
-작업 전 반드시 다음 순서로 읽는다.
+## 작업 전 읽을 문서
 
-1. [AGENTS.md](/home/hong/project/my/portfolio/AGENTS.md)
-2. [SOURCE_OF_TRUTH.md](/home/hong/project/my/portfolio/docs/SOURCE_OF_TRUTH.md)
-3. [CONTENT_MODEL.md](/home/hong/project/my/portfolio/docs/CONTENT_MODEL.md)
-4. [CLAIM_AUDIT.md](/home/hong/project/my/portfolio/docs/CLAIM_AUDIT.md)
+1. [AGENTS.md](./AGENTS.md)
+2. [SOURCE_OF_TRUTH.md](./docs/SOURCE_OF_TRUTH.md)
+3. [CONTENT_MODEL.md](./docs/CONTENT_MODEL.md)
+4. [CONTENT_INVENTORY.md](./docs/CONTENT_INVENTORY.md)
+5. [CLAIM_AUDIT.md](./docs/CLAIM_AUDIT.md)
 
-사실 충돌 시 `사용자 확인 → 실행 코드 → 공식 문서·테스트 → 이력서 → 회고 → README` 순으로 판단한다. 확인되지 않은 정보는 채우지 않는다.
-
-## 현재 구현
-
-공개 콘텐츠는 3개다.
-
-- 경력: `hodoolabs`, `shopl`
-- 프로젝트: `kexcel`, `workshield`
-
-기술 구조:
+## 데이터 흐름
 
 ```text
-MDX 콘텐츠
-  → Astro Content Collection + Zod 스키마
-  → 공개 여부 및 evidence 연결 검증
-  → 목록·홈·정적 상세 경로 자동 생성
-  → 공통 CaseStudyLayout
+MDX 콘텐츠 + YAML evidence + 명시적 relations
+  → Astro Content Collection / Zod 검증
+  → 홈·목록·상세·관련 사례·인쇄 페이지
+  → GitHub Pages 정적 빌드 + PDF
 ```
 
-핵심 파일:
+콘텐츠는 `src/content`, 근거는 `src/data/evidence`, 관계는 `src/data/relations`에서 관리한다. 공개 콘텐츠는 같은 slug의 evidence가 없거나 관계가 존재하지 않는 slug를 참조하면 빌드가 실패한다.
 
-- 스키마: [content.config.ts](/home/hong/project/my/portfolio/src/content.config.ts)
-- 조회·교차 검증: [content.ts](/home/hong/project/my/portfolio/src/lib/content.ts)
-- 상세 레이아웃: [CaseStudyLayout.astro](/home/hong/project/my/portfolio/src/layouts/CaseStudyLayout.astro)
-- 공통 컴포넌트: [src/components/content](/home/hong/project/my/portfolio/src/components/content)
-- 스타일·인쇄 CSS: [global.css](/home/hong/project/my/portfolio/src/styles/global.css)
-- 대표 경력 예제: [hodoolabs.mdx](/home/hong/project/my/portfolio/src/content/experience/hodoolabs.mdx)
-- 대표 프로젝트 예제: [workshield.mdx](/home/hong/project/my/portfolio/src/content/projects/workshield.mdx)
-- 벤치마크 중심 예제: [kexcel.mdx](/home/hong/project/my/portfolio/src/content/projects/kexcel.mdx)
+## 실행과 검증
 
-## 경력·프로젝트 추가 방법
-
-페이지나 홈 카드 배열은 수정하지 않는다.
-
-```text
-1. SOURCE_OF_TRUTH에서 해당 사례의 확인된 사실과 공개 범위를 찾는다.
-2. src/data/evidence/[slug].yaml을 먼저 작성한다.
-3. src/content/experience/[slug].mdx
-   또는 src/content/projects/[slug].mdx를 작성한다.
-4. 핵심 주장을 docs/CLAIM_AUDIT.md에 추가한다.
-5. npm run build로 스키마·참조·정적 렌더링을 검증한다.
-```
-
-콘텐츠 파일을 추가하면 다음이 자동 생성된다.
-
-- 홈의 공개/대표 콘텐츠
-- 경력 또는 프로젝트 목록
-- `/experience/[slug]/` 또는 `/projects/[slug]/` 상세 페이지
-
-`visibility: public`인 콘텐츠는 다음 조건을 만족해야 한다.
-
-- `evidenceRef`와 같은 ID의 evidence 파일이 존재
-- evidence의 `contentSlug`가 콘텐츠 `slug`와 일치
-- 전체 경력·프로젝트에서 slug가 중복되지 않음
-
-`featured: true`이면 홈 대표 사례 후보가 되고, `print.priority`가 작은 콘텐츠부터 최대 3개가 노출된다.
-
-## 콘텐츠 작성 패턴
-
-상단 frontmatter는 스키마를 그대로 따른다. 대표 콘텐츠에는 사실상 다음이 필요하다.
-
-- `summary`
-- `role`과 개인 기여 범위
-- `caseSummary`: 문제, 판단, 역할, 검증, 한계
-- `limitations`
-- 운영 또는 출시 상태
-- 공개 가능한 evidence
-- `print` 설정
-
-본문은 구조화된 데이터가 아니라 자유로운 MDX다. 사례 성격에 맞춰 섹션을 선택한다.
-
-- 운영 문제: 현상 → 가설 → 확인 → 개선 → 남은 실패 범위
-- 신규 시스템: 기존 문제 → 제약 → 선택 → 구현 범위 → 출시 상태
-- 성능: 병목 → 측정 환경 → 변경 → 재측정 → 트레이드오프
-- AI 실험: 문제 → 실험 → 평가 → 채택·보류·폐기
-- 회사 경력의 복수 사례: `CaseSection`
-- 책임 분리: `RoleBoundary`
-- 복구 범위: `FailureBoundary`
-- 상태 전이: `StateFlow`
-- 수치 요약: `MetricGrid`
-- 실험 기록: `ExperimentRecord`
-- 복잡한 흐름: Mermaid 코드 블록
-
-회사 사례는 내부 구조를 재구성했다는 공개 범위 안내를 본문에 직접 넣어야 한다. `confidentialityNote`는 현재 자동 렌더링되지 않는다.
-
-## Evidence 작성 원칙
-
-Evidence에는 다음을 분리한다.
-
-```yaml
-facts:            # 확인된 사실과 출처
-metrics:          # 값, 단위, 환경, 비교 기준, 출처
-contribution:
-  mine:
-  team:
-  external:
-publication:
-  allowed:
-  anonymize:
-  prohibited:
-risks:            # 위험한 주장과 안전한 표현
-```
-
-수치는 본문에 먼저 쓰지 말고 evidence에 측정 환경과 적용 범위를 먼저 기록한다. 회사 업무와 이를 일반화한 개인 프로젝트의 결과를 섞지 않는다.
-
-## 현재 자동화되지 않은 영역
-
-문서에는 목표로 적혀 있지만 아직 구현되지 않았다.
-
-- Article 컬렉션과 `/articles` 라우팅
-- `relations.yaml`과 관련 콘텐츠
-- 검색과 태그 페이지
-- 전용 PDF 생성
-- `print.include`, `detailLevel`에 따른 콘텐츠 선별
-- 자동 링크 검사, Claim Audit 검사, 금지 표현 검사
-- 접근성·모바일 시각 회귀 테스트
-- 404, sitemap, robots
-- GitHub Pages 배포 설정과 `base` 경로 처리
-
-현재 PDF 지원은 브라우저 인쇄용 CSS뿐이다. `print` 필드 대부분은 아직 렌더링 제어에 사용되지 않는다.
-
-또한 다음 필드는 스키마에는 있지만 화면 반영이 제한적이다.
-
-- `datePrecision`
-- 프로젝트 `operationStatus`
-- `team`
-- `links.demo`
-- `confidentialityNote`
-
-이 기능이 필요한 작업이라면 특정 콘텐츠에 하드코딩하지 말고 공통 레이아웃 또는 컴포넌트로 연결해야 한다.
-
-## 검증 명령
+Node.js 22.12 이상이 필요하다.
 
 ```bash
-npm run build
+npm ci
 npm run dev
+npm run build:portfolio
+npm run verify
 ```
 
-Node 요구 버전은 `>=22.12.0`이다.
+- `build`: Astro 정적 빌드와 Mermaid SVG 변환
+- `pdf`: 빌드된 `/print/` 페이지에서 A4 PDF 생성
+- `build:portfolio`: 사이트 빌드 후 `public/documents/hong-cheolmin-portfolio.pdf` 갱신
+- `verify`: 전체 경로와 내부 링크, SEO 메타데이터, 헤딩·SVG 접근성, 390·768·1440px 레이아웃 검증
 
-빌드 시 Mermaid를 inline SVG로 변환하기 위해 headless Chrome을 실행한다. 제한된 샌드박스에서는 Chrome의 `setsockopt` 오류로 실패할 수 있지만, 권한이 허용된 환경에서 현재 빌드는 정상 통과하며 6개 정적 페이지가 생성된다.
+Mermaid와 PDF 생성, 화면 검증에는 headless Chrome이 필요하다.
 
-현재 테스트·lint·링크 검사 스크립트는 없다. 작업 트리는 깨끗하며 이번 파악 과정에서 소스 파일은 수정하지 않았다.
+## 배포
+
+배포 주소는 `https://hong1008.github.io/portfolio/`다. `main` 또는 `master` 브랜치에 반영되면 `.github/workflows/deploy.yml`이 사이트와 PDF를 생성해 GitHub Pages에 배포한다.

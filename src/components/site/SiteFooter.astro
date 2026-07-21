@@ -1,0 +1,16 @@
+---
+import { DEPLOYED_SITE_URL, withBase } from "../../lib/site";
+---
+
+<footer class="site-footer print-hidden">
+  <div>
+    <p><strong>홍철민</strong> · Backend Engineer</p>
+    <p class="footer-note">문제와 판단, 검증 범위와 한계를 함께 기록합니다.</p>
+  </div>
+  <nav aria-label="외부 링크">
+    <a href="https://github.com/Hong1008">GitHub</a>
+    <a href="https://velog.io/@hong1008/posts">기술 블로그</a>
+    <a href={withBase("documents/hong-cheolmin-portfolio.pdf")}>PDF</a>
+    <a href={DEPLOYED_SITE_URL}>배포 주소</a>
+  </nav>
+</footer>

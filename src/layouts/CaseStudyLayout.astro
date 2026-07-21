@@ -2,8 +2,11 @@
 import type { CollectionEntry } from "astro:content";
 import ContentHeader from "../components/content/ContentHeader.astro";
 import LimitationCallout from "../components/content/LimitationCallout.astro";
+import RelatedContent from "../components/content/RelatedContent.astro";
 import SummaryCard from "../components/content/SummaryCard.astro";
-import "../styles/global.css";
+import BaseLayout from "./BaseLayout.astro";
+import { getEntryNavigation } from "../lib/content";
+import { contentPath, withBase } from "../lib/site";
 
 interface Props {
   entry: CollectionEntry<"projects"> | CollectionEntry<"experience">;
@@ -12,24 +15,25 @@ interface Props {
 const { entry } = Astro.props;
 const { data } = entry;
 const collectionPath = data.contentType === "experience"
-  ? "/experience/"
-  : "/projects/";
+  ? withBase("experience/")
+  : withBase("projects/");
 const collectionLabel = data.contentType === "experience"
   ? "경력 목록"
   : "프로젝트 목록";
+const navigation = await getEntryNavigation(data.slug, data.contentType);
+const canonicalPath = `${data.contentType === "experience" ? "experience" : "projects"}/${data.slug}/`;
 ---
 
-<html lang="ko">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{data.title}</title>
-    <meta name="description" content={data.summary} />
-  </head>
-
-  <body>
-    <main class="case-study">
+<BaseLayout
+  title={data.title}
+  description={data.summary}
+  canonicalPath={canonicalPath}
+  ogType="article"
+>
+    <main id="main-content" class="case-study">
       <nav class="breadcrumb print-hidden" aria-label="현재 위치">
+        <a href={withBase()}>홈</a>
+        <span aria-hidden="true">/</span>
         <a href={collectionPath}>{collectionLabel}</a>
       </nav>
 
@@ -47,9 +51,27 @@ const collectionLabel = data.contentType === "experience"
         )
       }
 
+      <RelatedContent items={navigation.related} />
+
       <nav class="case-footer print-hidden" aria-label="콘텐츠 탐색">
-        <a href={collectionPath}>{collectionLabel} 보기</a>
+        <div class="case-pagination">
+          {navigation.previous && (
+            <a href={contentPath(navigation.previous.data.contentType, navigation.previous.data.slug)}>
+              <span>이전</span>
+              <strong>{navigation.previous.data.title}</strong>
+            </a>
+          )}
+          {navigation.next && (
+            <a href={contentPath(navigation.next.data.contentType, navigation.next.data.slug)}>
+              <span>다음</span>
+              <strong>{navigation.next.data.title}</strong>
+            </a>
+          )}
+        </div>
+        <div class="case-footer-links">
+          <a href={collectionPath}>{collectionLabel} 보기</a>
+          <a href="#main-content">페이지 상단으로</a>
+        </div>
       </nav>
     </main>
-  </body>
-</html>
+</BaseLayout>
