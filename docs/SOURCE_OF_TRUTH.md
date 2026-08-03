@@ -45,7 +45,8 @@
 각 프로젝트별 사실 원본 문서는 포트폴리오 Slug와 1:1로 대응된다.
 
 - **[KExcel (`kexcel`)](file:///home/hong/project/my/portfolio/docs/source_of_truth/projects/kexcel.md)**: Kotlin DSL 대용량 엑셀 라이브러리 (POI/FastExcel Driver 분리, 핫패스 최적화, JMH 벤치마크, Fail-Fast)
-- **[WorkShield (`workshield`)](file:///home/hong/project/my/portfolio/docs/source_of_truth/projects/workshield.md)**: 계약서 분석 MCP 서버 (결정론적 1차 MCP / 2차 LLM 분리, RRF 점수 계약 오류 교정, Trace 기반 평가 구조)
+- **[WorkShield MCP (`workshield-mcp`)](file:///home/hong/project/my/portfolio/docs/source_of_truth/projects/workshield-mcp.md)**: 3차 팀 프로젝트 - 계약서 분석 MCP 서버 (결정론적 1차 MCP / 2차 LLM 분리, RRF 점수 계약 오류 교정, Trace 기반 평가 구조)
+- **[WorkShield Web Platform (`workshield-web`)](file:///home/hong/project/my/portfolio/docs/source_of_truth/projects/workshield-web.md)**: 4차 팀 프로젝트 - MCP 연동 웹 서비스 (익명 세션, Review 상태 머신, Chat SSE 스트리밍, LLM 안전장치, AWS CDK 배포)
 - **[영화 흥행 예측 및 배급 시뮬레이터 (`movie-box-office`)](file:///home/hong/project/my/portfolio/docs/source_of_truth/projects/movie-box-office.md)**: 2-Stage 흥행 예측 모델 (CatBoost/XGBoost 앙상블, 단조 증가 제약 배급 효과 분리)
 - **[전기차 충전 인프라 SOS 대시보드 (`ev-infrastructure`)](file:///home/hong/project/my/portfolio/docs/source_of_truth/projects/ev-infrastructure.md)**: 공공데이터 기반 17개 시·도 충전 불편지수 대시보드 (Pandera 데이터 검증)
 

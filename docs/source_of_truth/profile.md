@@ -133,7 +133,8 @@
 ### 프로젝트
 
 - KExcel: https://github.com/Hong1008/kexcel
-- WorkShield: https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-3rd-2Team
+- WorkShield (MCP Engine): https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-3rd-2Team
+- WorkShield (Web Platform): https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-4th-2Team
 - EV SOS: https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-1st-4Team
 
 영화 프로젝트 저장소 URL은 공개 전 최종 확인한다.

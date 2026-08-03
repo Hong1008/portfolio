@@ -1,10 +1,10 @@
-# WorkShield
+# WorkShield (MCP Engine)
 
 ## 1. 기본 정보
 
-- 프로젝트명: WorkShield
+- 프로젝트명: WorkShield (MCP Engine)
 - 기간: 2026.06–2026.07
-- 형태: SK Networks Family AI 캠프 팀 프로젝트
+- 형태: SK Networks Family AI 캠프 3차 팀 프로젝트
 - 팀 규모: 5명
 - 본인 역할:
   - PM
@@ -197,7 +197,7 @@ server
 
 안전한 표현:
 
-- 평가 과정에서 검색을 다시 실행하지 않고 실제 판정에 사용한 후보와 점수를 보존했다.
+- 평가 과정에서 검색를 다시 실행하지 않고 실제 판정에 사용한 후보와 점수를 보존했다.
 
 ### 골든 데이터
 
