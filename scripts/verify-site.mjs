@@ -15,7 +15,8 @@ const paths = [
   "/portfolio/experience/hodoolabs/",
   "/portfolio/experience/g2e/",
   "/portfolio/projects/",
-  "/portfolio/projects/workshield/",
+  "/portfolio/projects/workshield-mcp/",
+  "/portfolio/projects/workshield-web/",
   "/portfolio/projects/kexcel/",
   "/portfolio/projects/movie-box-office/",
   "/portfolio/projects/ev-infrastructure/",
@@ -122,10 +123,15 @@ try {
   check(await page.locator(".skip-link").evaluate((item) =>
     document.activeElement === item && item.getBoundingClientRect().top >= 0), "skip link is not visible on keyboard focus");
 
+  await page.goto("http://127.0.0.1:4174/portfolio/projects/workshield-web/", { waitUntil: "networkidle" });
+  check(!(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1)), "workshield-web: horizontal overflow at 390px");
+  await page.screenshot({ path: `${screenshotDir}/workshield-web-390.png`, fullPage: true });
+
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto("http://127.0.0.1:4174/portfolio/print/", { waitUntil: "networkidle" });
   check((await page.locator(".print-page").count()) === 7, "print page does not contain exactly seven sections");
   await page.locator(".print-page").first().screenshot({ path: `${screenshotDir}/print-cover.png` });
+  await page.locator(".print-page").nth(4).screenshot({ path: `${screenshotDir}/print-workshield-web.png` });
 
   if (failures.length) {
     console.error(`Site verification failed:\n- ${failures.join("\n- ")}`);

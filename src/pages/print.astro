@@ -17,7 +17,7 @@ const bySlug = new Map(entries.map((entry) => [entry.data.slug, entry]));
 const evidenceBySlug = new Map(evidence.map((item) => [item.data.contentSlug, item.data]));
 const hodoolabs = bySlug.get("hodoolabs")!;
 const kexcel = bySlug.get("kexcel")!;
-const workshield = bySlug.get("workshield")!;
+const workshieldWeb = bySlug.get("workshield-web")!;
 const otherExperience = experience
   .filter(({ data }) => data.slug !== "hodoolabs" && data.print.include)
   .sort((a, b) => b.data.startDate.localeCompare(a.data.startDate));
@@ -25,7 +25,7 @@ const otherProjects = projects
   .filter(({ data }) => !data.featured && data.print.include)
   .sort((a, b) => b.data.startDate.localeCompare(a.data.startDate));
 const kexcelMetrics = evidenceBySlug.get("kexcel")?.metrics ?? [];
-const workshieldMetrics = evidenceBySlug.get("workshield")?.metrics ?? [];
+const workshieldWebMetrics = evidenceBySlug.get("workshield-web")?.metrics ?? [];
 const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) => item.id === id);
 ---
 
@@ -47,7 +47,7 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
       <p class="cover-description">Java/Kotlin·Spring 기반 백엔드 경험을 바탕으로 결제 상태, 비동기 메시징, 대용량 파일 처리와 AI 서비스 백엔드를 다뤘습니다.</p>
       <div class="cover-skills"><span>Java · Kotlin</span><span>Spring</span><span>MySQL · Redis</span><span>AWS</span><span>Python · MCP</span></div>
       <ol class="cover-cases">
-        {[hodoolabs, workshield, kexcel].map((entry, index) => (
+        {[hodoolabs, workshieldWeb, kexcel].map((entry, index) => (
           <li><span>0{index + 1}</span><strong>{entry.data.title}</strong><p>{entry.data.caseSummary?.decision}</p></li>
         ))}
       </ol>
@@ -107,20 +107,20 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
 
     <section class="print-page">
       <header class="print-page-header"><p>Selected case 03</p><span>AI service backend</span></header>
-      <h2>{workshield.data.title}</h2>
-      <p class="print-lead">{workshield.data.summary}</p>
-      <div class="workshield-boundary"><section><small>결정론적 경로</small><strong>MCP 서버</strong><span>문서 처리 → 검색 → RRF → rerank → 상태 분류</span></section><b>↔</b><section><small>선택적 경로</small><strong>LLM 클라이언트</strong><span>근거를 바탕으로 자연어 설명</span></section></div>
+      <h2>{workshieldWeb.data.title}</h2>
+      <p class="print-lead">{workshieldWeb.data.summary}</p>
+      <div class="workshield-boundary"><section><small>결정론적 상태 경로</small><strong>FastAPI</strong><span>멱등 요청 → Review 상태 → 근거·출처 결합</span></section><b>↔</b><section><small>외부 실행 경계</small><strong>MCP · LLM</strong><span>검색·분류와 근거 범위의 자연어 생성</span></section></div>
       <div class="print-two-column">
-        <section><h3>RRF 점수 계약 오류</h3><p>실제 RRF 점수 범위 약 0.0328과 후속 분류 임계값 0.5가 직접 비교돼 모든 조항이 매칭 실패하던 모듈 간 계약을 수정했습니다.</p><p class="print-caveat">검색 모델 성능 개선이 아니라 점수 의미와 범위가 맞지 않던 인터페이스 오류 수정입니다.</p></section>
-        <section><h3>평가 구조</h3><p>검색을 다시 실행하지 않고 실제 판정에 사용한 후보와 점수를 trace로 보존했습니다. 유형별 데이터를 tuning과 held-out으로 분리해 회귀 기준선을 관리했습니다.</p></section>
+        <section><h3>중복과 상태 경쟁</h3><p>Review 상태 전이를 Aggregate에 모으고, 멱등 키·세션별 active UNIQUE 제약·낙관적 잠금을 서로 다른 방어선으로 사용했습니다.</p><p class="print-caveat">단일 worker·SQLite 범위이며 분산 환경의 Exactly-once 실행을 의미하지 않습니다.</p></section>
+        <section><h3>LLM 책임 경계</h3><p>질문 대상과 근거를 AnswerPlan에서 먼저 확정하고, 모델은 출처 종류만 선택하게 했습니다. 실제 출처 ID는 백엔드가 검증된 근거에 결합합니다.</p></section>
       </div>
       <dl class="print-metrics">
-        <div><dt>골든 데이터</dt><dd>{metric(workshieldMetrics, "golden-total")?.value}건</dd><small>SI · SM · SW 각 45건</small></div>
-        <div><dt>v5 기준선</dt><dd>{metric(workshieldMetrics, "v5-f1")?.value}</dd><small>F1 · 1차 상태 분류</small></div>
-        <div><dt>Precision / Recall</dt><dd>{metric(workshieldMetrics, "v5-precision")?.value} / {metric(workshieldMetrics, "v5-recall")?.value}</dd><small>법률 정확도가 아님</small></div>
+        <div><dt>합성 fixture 최종 PASS</dt><dd>{metric(workshieldWebMetrics, "qwen-final-pass")?.value} / 16</dd><small>8개 × 2회 · repair 포함</small></div>
+        <div><dt>모델 latency p50</dt><dd>{metric(workshieldWebMetrics, "qwen-latency-p50")?.value}s</dd><small>concurrency 1</small></div>
+        <div><dt>모델 latency p95</dt><dd>{metric(workshieldWebMetrics, "qwen-latency-p95")?.value}s</dd><small>고정 합성 fixture</small></div>
       </dl>
-      <aside class="print-note"><strong>책임 범위</strong><p>{workshield.data.caseSummary?.limitation}</p></aside>
-      <a class="print-detail-url" href="https://hong1008.github.io/portfolio/projects/workshield/">상세 HTML · hong1008.github.io/portfolio/projects/workshield/</a>
+      <aside class="print-note"><strong>책임 범위</strong><p>{workshieldWeb.data.caseSummary?.limitation}</p></aside>
+      <a class="print-detail-url" href="https://hong1008.github.io/portfolio/projects/workshield-web/">상세 HTML · hong1008.github.io/portfolio/projects/workshield-web/</a>
     </section>
 
     <section class="print-page">
