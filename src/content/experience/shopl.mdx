@@ -2,7 +2,7 @@
 title: "샤플앤컴퍼니"
 slug: "shopl"
 contentType: "experience"
-summary: "배치 재실행과 메시지 중복 전달을 서로 다른 DB 제약으로 방어하는 메일 발송 구조를 구현했습니다. 점검 보고서의 엑셀 생성 방식을 전환하고 반복되는 생성 흐름과 라이브러리 종속 영역을 분리했습니다."
+summary: "운영 중인 현장 관리 서비스에서 배치 재실행과 SQS 메시지 중복 전달을 서로 구분해 처리해야 했습니다. 배치·메일 서버를 분리하고 두 단계에 다른 DB UNIQUE 제약을 적용하기로 판단했습니다. 메일 구조와 보고서 빌더를 구현하고 재실행·재전달 시나리오별 방어 범위를 대조했습니다. Exactly-once 전송을 보장하지 않는 한계를 명시해 실패 지점별 멱등 경계를 나눈 사례입니다."
 
 startDate: "2022-11"
 endDate: "2023-08"
@@ -47,12 +47,12 @@ role:
 technologies:
   primary:
     - "Kotlin"
-    - "Spring Boot"
     - "Spring Batch"
     - "MySQL"
     - "AWS SQS"
-    - "AWS SES"
   secondary:
+    - "Spring Boot"
+    - "AWS SES"
     - "JPA"
     - "QueryDSL"
     - "FastExcel"
@@ -66,7 +66,8 @@ themes:
   - "performance"
   - "maintenance"
 
-featured: true
+featured: false
+featuredOrder: null
 visibility: "public"
 confidentialityNote: "회사 코드와 사용자·현장 데이터는 포함하지 않고 공개 가능한 범위에서 처리 구조를 재구성했습니다."
 
@@ -93,13 +94,19 @@ cases:
     featured: false
 
 evidenceRef: "shopl"
+evidenceHighlights:
+  - "duplicate-defense"
+  - "report-generation"
+  - "operation-status"
 
 caseSummary:
+  context: "운영 중인 현장 관리 서비스에서 일괄 메일, 점검 보고서와 이슈 관리 백엔드를 개발했습니다."
   problem: "서버 일괄 메일의 대상 선정과 실제 전송을 분리하면서, 배치 재실행과 SQS 메시지 중복 전달을 각각 처리해야 했습니다."
   decision: "배치 서버와 메일 서버를 SQS로 분리하고 발송 요청과 메시지 소비 단계에 서로 다른 DB UNIQUE 제약을 적용했습니다."
   role: "메일 발송 구조와 중복 방어, Kotlin DSL 보고서 공통 빌더, 현장 이슈 관리 API를 직접 구현했습니다."
   verification: "배치 재실행과 메시지 재전달 시나리오를 분리해 각 UNIQUE 키와 방어 범위를 대조했습니다."
   limitation: "DB 제약은 확인된 두 단계의 중복 처리를 방어하지만 메일의 Exactly-once 전송이나 전체 실패 복구를 보장하지 않습니다."
+  demonstrates: "재실행과 중복 전달을 하나의 추상적 멱등성으로 묶지 않고 각 실패 지점에 맞는 DB 제약으로 나누는 역량을 보여줍니다."
 
 limitations:
   - "두 DB UNIQUE 제약은 발송 요청 생성과 메시지 소비의 중복을 각각 방어하며, 메일의 Exactly-once 전송을 보장하지 않습니다."

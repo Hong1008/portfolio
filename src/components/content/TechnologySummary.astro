@@ -1,0 +1,26 @@
+---
+interface Props {
+  primary: string[];
+  secondary: string[];
+}
+
+const { primary, secondary } = Astro.props;
+---
+
+<section class="technology-summary" aria-labelledby="technology-summary-title">
+  <p class="eyebrow">사용 기술</p>
+  <h2 id="technology-summary-title">구현에 직접 연결된 기술</h2>
+  <ul class="technology-list">
+    {primary.map((technology) => <li>{technology}</li>)}
+  </ul>
+  {
+    secondary.length > 0 && (
+      <details>
+        <summary>보조 기술 보기</summary>
+        <ul class="technology-list secondary">
+          {secondary.map((technology) => <li>{technology}</li>)}
+        </ul>
+      </details>
+    )
+  }
+</section>

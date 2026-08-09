@@ -2,7 +2,7 @@
 title: "휴니크"
 slug: "hunik"
 contentType: "experience"
-summary: "여러 도메인이 결합된 레거시 결제 구조를 그대로 이전하지 않고 상품·이용권·프로모션·회원·수업·주문의 책임을 분리한 신규 시스템을 개발했습니다. 4인 팀의 개발 리드로 백엔드와 AWS 인프라를 담당했으며, 프로젝트는 실제 출시 전에 종료됐습니다."
+summary: "레거시 결제 테이블에 상품·이용권·프로모션·회원·수업·주문 책임이 결합된 상황에서 신규 시스템을 개발했습니다. 기존 구조를 복제하지 않고 도메인별 책임을 나눈 별도 Spring 시스템을 선택했습니다. 4인 팀의 개발 리드로 API와 AWS 배포 환경까지 구현했지만 출시 전 종료돼 운영 트래픽에서는 검증하지 못했습니다. 구조 분리의 구현 범위와 운영 성과의 경계를 구분한 사례입니다."
 
 startDate: "2021-09"
 endDate: "2022-10"
@@ -49,11 +49,11 @@ technologies:
     - "Java"
     - "Spring Boot"
     - "Spring Security"
+    - "AWS ECS Fargate"
+  secondary:
     - "JPA"
     - "QueryDSL"
     - "MySQL"
-    - "AWS ECS Fargate"
-  secondary:
     - "AWS VPC"
     - "AWS S3"
     - "AWS CloudFront"
@@ -71,6 +71,7 @@ themes:
   - "security"
 
 featured: false
+featuredOrder: null
 visibility: "public"
 confidentialityNote: "내부 코드와 데이터는 포함하지 않고, 공개 가능한 범위에서 당시 구조를 재구성했습니다."
 
@@ -92,13 +93,19 @@ cases:
     featured: true
 
 evidenceRef: "hunik"
+evidenceHighlights:
+  - "domain-boundaries"
+  - "deployment-pipeline"
+  - "pre-release"
 
 caseSummary:
+  context: "레거시 PHP 서비스와 공존할 신규 Spring 시스템을 4인 팀에서 개발한 출시 전 프로젝트입니다."
   problem: "기존 payment 테이블에는 주문뿐 아니라 상품, 이용권, 프로모션, 회원과 수업 정보가 30개 이상의 컬럼으로 함께 관리되고 있었습니다."
   decision: "기존 구조를 그대로 신규 시스템에 복제하지 않고 도메인별 책임을 분리한 별도 Spring 시스템을 개발했습니다. 기존 회원은 기존 인증 서비스와 연결했습니다."
   role: "4인 팀의 개발 리드로 백엔드 구조, API와 AWS 인프라를 담당했습니다."
   verification: "주요 어드민·키오스크 API와 프론트엔드·백엔드 배포 환경까지 구현했습니다. 다만 프로젝트가 출시 전에 종료돼 실제 사용자 트래픽에서는 검증하지 못했습니다."
   limitation: "운영 이전과 데이터 마이그레이션까지 완료한 사례가 아니라, 신규 시스템의 설계·구현 및 배포 환경 구성 범위를 설명하는 사례입니다."
+  demonstrates: "레거시 구조를 그대로 복제하지 않고 도메인 책임과 배포 경계를 나누되, 출시되지 않은 결과를 운영 성과로 과장하지 않는 판단을 보여줍니다."
 
 limitations:
   - "주요 백엔드 기능과 배포 환경까지 구현했지만 프로젝트가 출시 전에 종료돼 실제 사용자 트래픽에서 검증하지 못했습니다."

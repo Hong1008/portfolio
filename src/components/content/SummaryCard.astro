@@ -1,18 +1,22 @@
 ---
 interface Props {
+  context?: string;
   problem?: string;
   decision?: string;
   role?: string;
   verification?: string;
   limitation?: string;
+  demonstrates?: string;
 }
 
 const labels: Array<[keyof Props, string]> = [
+  ["context", "맥락"],
   ["problem", "문제"],
   ["decision", "판단"],
   ["role", "역할"],
   ["verification", "검증"],
   ["limitation", "한계"],
+  ["demonstrates", "증명하는 역량"],
 ];
 const values = Astro.props;
 const items = labels.flatMap(([key, label]) => {

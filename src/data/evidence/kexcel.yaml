@@ -225,7 +225,7 @@ risks:
     safeWording: "DSL 실행당 추가 할당량을 약 200KB에서 364B로 축소했다."
 
   - claim: "POI 병합 문제를 안전하게 완전히 해결"
-    reason: "addMergedRegionUnsafe는 중복 검증을 우회하며 병합 메타데이터의 memory residency가 남는다."
+    reason: "addMergedRegionUnsafe는 중복 검증을 우회하며 병합 메타데이터가 메모리에 계속 유지되는 비용은 남는다."
     safeWording: "병합 중복 검증을 우회해 CPU 병목을 줄였으며, 잘못된 병합 방지와 메모리 비용은 별도 제약으로 남는다."
 
   - claim: "회사 업무에서 KExcel 전체 기능을 구현"

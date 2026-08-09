@@ -45,11 +45,12 @@ const server = createServer(async (request, response) => {
 
 const failures = [];
 const check = (condition, message) => { if (!condition) failures.push(message); };
+const countPdfPages = (pdf) => (pdf.toString("latin1").match(/\/Type\s*\/Page\b/g) ?? []).length;
 await mkdir(screenshotDir, { recursive: true });
 await new Promise((resolve) => server.listen(4174, "127.0.0.1", resolve));
 let browser;
 try {
-  browser = await chromium.launch({ channel: "chrome", args: ["--no-sandbox"] });
+  browser = await chromium.launch({ args: ["--no-sandbox"] });
   for (const path of paths) {
     const response = await fetch(`http://127.0.0.1:4174${path}`);
     check(response.ok, `${path}: HTTP ${response.status}`);
@@ -108,13 +109,58 @@ try {
     check(response.ok, `internal link ${href}: HTTP ${response.status}`);
   }
 
+  const generatedPdf = await readFile(join(dist, "documents", "hong-chulmin-portfolio.pdf"));
+  check(countPdfPages(generatedPdf) === 7, `generated PDF: expected 7 physical pages, found ${countPdfPages(generatedPdf)}`);
+
+  const responsivePaths = [
+    "/portfolio/",
+    "/portfolio/experience/",
+    "/portfolio/projects/",
+    "/portfolio/experience/hodoolabs/",
+    "/portfolio/projects/kexcel/",
+    "/portfolio/projects/workshield-web/",
+  ];
   for (const width of [390, 768, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
+    for (const path of responsivePaths) {
+      await page.goto(`http://127.0.0.1:4174${path}`, { waitUntil: "networkidle" });
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+      check(!overflow, `${path}: horizontal overflow at ${width}px`);
+    }
     await page.goto("http://127.0.0.1:4174/portfolio/", { waitUntil: "networkidle" });
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
-    check(!overflow, `home: horizontal overflow at ${width}px`);
     await page.screenshot({ path: `${screenshotDir}/home-${width}.png`, fullPage: true });
   }
+  const homeAudit = await page.evaluate(() => {
+    const text = document.body.innerText;
+    const featuredTitles = [...document.querySelectorAll(".featured-cases h3")].map((item) => item.textContent?.trim());
+    const parseRgb = (value) => (value.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+    const luminance = (rgb) => {
+      const [r, g, b] = rgb.map((channel) => {
+        const value = channel / 255;
+        return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const ratio = (foreground, background) => {
+      const values = [luminance(parseRgb(foreground)), luminance(parseRgb(background))].sort((a, b) => b - a);
+      return (values[0] + 0.05) / (values[1] + 0.05);
+    };
+    const primary = document.querySelector(".button.primary");
+    const primaryStyle = primary ? getComputedStyle(primary) : null;
+    return {
+      text,
+      featuredTitles,
+      primaryContrast: primaryStyle ? ratio(primaryStyle.color, primaryStyle.backgroundColor) : 0,
+    };
+  });
+  check(homeAudit.text.includes("약 4년"), "home: missing approximate experience label");
+  check(homeAudit.text.includes("Java/Kotlin·Spring"), "home: missing JVM backend foundation");
+  check(homeAudit.text.includes("중복·재실행") && homeAudit.text.includes("외부 연동 실패"), "home: missing core problem signals");
+  check(homeAudit.text.includes("AI 서비스 백엔드"), "home: missing AI service backend expansion signal");
+  check(!/\bJunior\b|AI Engineer|생산성.{0,8}(향상|개선)/i.test(homeAudit.text), "home: contains disallowed rebranding or unsupported productivity claim");
+  check(!/Selected work|More projects|Engineering principles/.test(homeAudit.text), "home: contains decorative English section labels");
+  check(homeAudit.featuredTitles.join("|") === "호두랩스|KExcel — Kotlin DSL 기반 대용량 엑셀 생성 라이브러리|WorkShield Web — 실패 경계를 설계한 AI 서비스 백엔드", "home: featured case order mismatch");
+  check(homeAudit.primaryContrast >= 4.5, `home: primary button contrast ${homeAudit.primaryContrast.toFixed(2)} is below 4.5`);
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto("http://127.0.0.1:4174/portfolio/experience/hodoolabs/", { waitUntil: "networkidle" });
   check(!(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1)), "hodoolabs: horizontal overflow at 390px");
@@ -125,6 +171,22 @@ try {
 
   await page.goto("http://127.0.0.1:4174/portfolio/projects/workshield-web/", { waitUntil: "networkidle" });
   check(!(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1)), "workshield-web: horizontal overflow at 390px");
+  const workshieldSummaryAudit = await page.evaluate(() => {
+    const summary = document.querySelector(".summary-card");
+    const technologies = document.querySelector(".technology-summary");
+    const metadataLabels = [...document.querySelectorAll(".metadata-list dt")].map((item) => item.textContent?.trim());
+    const summaryText = document.querySelector(".content-summary")?.textContent ?? "";
+    return {
+      summaryBeforeTechnologies: Boolean(summary && technologies && (summary.compareDocumentPosition(technologies) & Node.DOCUMENT_POSITION_FOLLOWING)),
+      metadataLabels,
+      primaryTechnologyCount: document.querySelectorAll(".technology-summary > .technology-list > li").length,
+      summaryText,
+    };
+  });
+  check(workshieldSummaryAudit.summaryBeforeTechnologies, "workshield-web: technology list must follow the 30-second summary");
+  check(!workshieldSummaryAudit.metadataLabels.includes("기술"), "workshield-web: technology list still appears in header metadata");
+  check(workshieldSummaryAudit.primaryTechnologyCount <= 4, `workshield-web: expected at most four primary technologies, found ${workshieldSummaryAudit.primaryTechnologyCount}`);
+  check(!/Review Aggregate|낙관적 잠금|CDK synth|partial UNIQUE index/.test(workshieldSummaryAudit.summaryText), "workshield-web: first summary still contains implementation-heavy terms");
   await page.screenshot({ path: `${screenshotDir}/workshield-web-390.png`, fullPage: true });
 
   await page.setViewportSize({ width: 1200, height: 900 });

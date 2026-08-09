@@ -46,6 +46,7 @@ const commonEntryFields = {
   }),
   themes: z.array(z.string()),
   featured: z.boolean(),
+  featuredOrder: z.number().int().positive().nullable().default(null),
   visibility: z.enum(["public", "private-draft"]),
   confidentialityNote: z.string().nullable(),
   links: z.object({
@@ -61,13 +62,16 @@ const commonEntryFields = {
     ),
   }),
   evidenceRef: z.string(),
+  evidenceHighlights: z.array(z.string().min(1)).default([]),
   caseSummary: z
     .object({
+      context: z.string().optional(),
       problem: z.string().optional(),
       decision: z.string().optional(),
       role: z.string().optional(),
       verification: z.string().optional(),
       limitation: z.string().optional(),
+      demonstrates: z.string().optional(),
     })
     .optional(),
   limitations: z.array(z.string()).optional(),
@@ -78,32 +82,98 @@ const commonEntryFields = {
   }),
 };
 
+type FeaturedEntry = {
+  featured: boolean;
+  featuredOrder: number | null;
+  evidenceHighlights: string[];
+  caseSummary?: {
+    context?: string;
+    problem?: string;
+    decision?: string;
+    role?: string;
+    verification?: string;
+    limitation?: string;
+    demonstrates?: string;
+  };
+};
+
+const validateFeaturedEntry = (data: FeaturedEntry, context: z.RefinementCtx) => {
+  if (!data.featured) {
+    if (data.featuredOrder !== null) {
+      context.addIssue({
+        code: "custom",
+        message: "featuredOrder must be null when featured is false",
+        path: ["featuredOrder"],
+      });
+    }
+    return;
+  }
+
+  if (data.featuredOrder === null) {
+    context.addIssue({
+      code: "custom",
+      message: "Featured content requires featuredOrder",
+      path: ["featuredOrder"],
+    });
+  }
+
+  const requiredSummaryFields = [
+    "context",
+    "problem",
+    "decision",
+    "role",
+    "verification",
+    "limitation",
+    "demonstrates",
+  ] as const;
+
+  for (const field of requiredSummaryFields) {
+    if (!data.caseSummary?.[field]) {
+      context.addIssue({
+        code: "custom",
+        message: `Featured content requires caseSummary.${field}`,
+        path: ["caseSummary", field],
+      });
+    }
+  }
+
+  if (data.evidenceHighlights.length === 0) {
+    context.addIssue({
+      code: "custom",
+      message: "Featured content requires at least one evidence highlight",
+      path: ["evidenceHighlights"],
+    });
+  }
+};
+
 const projects = defineCollection({
   loader: glob({
     pattern: "**/*.{md,mdx}",
     base: "./src/content/projects",
   }),
-  schema: z.object({
-    ...commonEntryFields,
-    contentType: z.literal("project"),
-    projectType: z.object({
-      kind: z.enum([
-        "company",
-        "personal",
-        "team",
-        "education",
-        "open-source",
-        "article",
-      ]),
-      operationStatus: z.enum([
-        "production",
-        "pre-release",
-        "prototype",
-        "study",
-        "not-applicable",
-      ]),
-    }),
-  }),
+  schema: z
+    .object({
+      ...commonEntryFields,
+      contentType: z.literal("project"),
+      projectType: z.object({
+        kind: z.enum([
+          "company",
+          "personal",
+          "team",
+          "education",
+          "open-source",
+          "article",
+        ]),
+        operationStatus: z.enum([
+          "production",
+          "pre-release",
+          "prototype",
+          "study",
+          "not-applicable",
+        ]),
+      }),
+    })
+    .superRefine(validateFeaturedEntry),
 });
 
 const experience = defineCollection({
@@ -111,28 +181,30 @@ const experience = defineCollection({
     pattern: "**/*.{md,mdx}",
     base: "./src/content/experience",
   }),
-  schema: z.object({
-    ...commonEntryFields,
-    contentType: z.literal("experience"),
-    employment: z.object({
-      type: z.enum(["full-time", "contract", "internship"]),
-      department: z.string(),
-      position: z.string(),
-    }),
-    operationStatus: z.enum([
-      "production",
-      "pre-release",
-      "internal",
-      "discontinued",
-    ]),
-    cases: z.array(
-      z.object({
-        id: slug,
-        title: z.string(),
-        featured: z.boolean(),
+  schema: z
+    .object({
+      ...commonEntryFields,
+      contentType: z.literal("experience"),
+      employment: z.object({
+        type: z.enum(["full-time", "contract", "internship"]),
+        department: z.string(),
+        position: z.string(),
       }),
-    ),
-  }),
+      operationStatus: z.enum([
+        "production",
+        "pre-release",
+        "internal",
+        "discontinued",
+      ]),
+      cases: z.array(
+        z.object({
+          id: slug,
+          title: z.string(),
+          featured: z.boolean(),
+        }),
+      ),
+    })
+    .superRefine(validateFeaturedEntry),
 });
 
 const sourceReference = z.string().min(1).superRefine((value, context) => {

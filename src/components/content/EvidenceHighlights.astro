@@ -1,0 +1,72 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  ids: string[];
+  evidence: CollectionEntry<"evidence">["data"];
+}
+
+const { ids, evidence } = Astro.props;
+const factsById = new Map(evidence.facts.map((fact) => [fact.id, fact]));
+const metricsById = new Map(evidence.metrics.map((metric) => [metric.id, metric]));
+const number = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 3 });
+const isExternal = (source: string) => /^https?:\/\//.test(source);
+const sourceTypeLabel = {
+  "user-confirmed": "사용자 확인",
+  repository: "공개 저장소",
+  code: "코드",
+  benchmark: "벤치마크",
+  resume: "이력서",
+  retrospective: "회고",
+};
+const items = ids.map((id) => {
+  const fact = factsById.get(id);
+  if (fact) {
+    return {
+      id,
+      label: sourceTypeLabel[fact.sourceType],
+      scope: fact.scope,
+      statement: fact.statement,
+      detail: fact.note,
+      source: fact.source,
+    };
+  }
+
+  const metric = metricsById.get(id)!;
+  return {
+    id,
+    label: "측정 결과",
+    scope: metric.scope,
+    statement: `${metric.name}: ${number.format(metric.value)} ${metric.unit}`,
+    detail: metric.environment,
+    source: metric.source,
+  };
+});
+---
+
+{
+  items.length > 0 && (
+    <section class="evidence-highlights" aria-labelledby="evidence-highlights-title">
+      <div class="evidence-highlights-heading">
+        <p class="eyebrow">검증과 근거</p>
+        <h2 id="evidence-highlights-title">확인 가능한 근거</h2>
+        <p>주장의 적용 범위와 측정 조건을 함께 표시합니다.</p>
+      </div>
+      <ol>
+        {items.map((item) => (
+          <li>
+            <div class="evidence-highlight-meta">
+              <span>{item.label}</span>
+              <strong>{item.scope}</strong>
+            </div>
+            <p>{item.statement}</p>
+            {item.detail && <small>{item.detail}</small>}
+            {isExternal(item.source) && (
+              <a href={item.source}>원문 근거 보기 <span aria-hidden="true">→</span></a>
+            )}
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}

@@ -18,7 +18,6 @@ export default defineConfig({
           {
             strategy: 'inline-svg',
             launchOptions: {
-              channel: 'chrome',
               args: ['--no-sandbox'],
             },
             mermaidConfig: {

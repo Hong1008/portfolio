@@ -51,7 +51,6 @@ const metadata = data.contentType === "experience"
       { label: "직책", value: data.employment.position },
       { label: "담당 역할", value: data.role.title },
       { label: "운영 상태", value: experienceOperationStatus[data.operationStatus] },
-      { label: "기술", value: data.technologies.primary.join(", ") },
     ]
   : [
       { label: "기간", value: period },
@@ -59,7 +58,6 @@ const metadata = data.contentType === "experience"
       { label: "역할", value: data.role.title },
       { label: "상태", value: projectOperationStatus ?? "프로젝트" },
       { label: "팀", value: data.team.size ? `${data.team.size}명` : "확인되지 않음" },
-      { label: "기술", value: data.technologies.primary.join(", ") },
     ];
 ---
 

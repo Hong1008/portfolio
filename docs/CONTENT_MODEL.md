@@ -130,6 +130,7 @@ themes:
   - maintenance
 
 featured: boolean
+featuredOrder: number | null
 visibility: public | private-draft
 confidentialityNote: string | null
 
@@ -143,6 +144,17 @@ links:
       url: string
 
 evidenceRef: string
+evidenceHighlights:
+  - fact-or-metric-id
+
+caseSummary:
+  context: string
+  problem: string
+  decision: string
+  role: string
+  verification: string
+  limitation: string
+  demonstrates: string
 
 print:
   include: boolean
@@ -204,6 +216,24 @@ print:
 ### evidenceRef
 
 `src/data/evidence/[evidenceRef].yaml` 파일을 가리킨다. 대표 콘텐츠는 근거 파일 없이 공개하지 않는다.
+
+### featuredOrder
+
+- 홈 대표 사례의 순서만 관리하며 PDF의 `print.priority`와 분리한다.
+- `featured: true`인 공개 콘텐츠는 1부터 시작하는 중복 없는 연속 순서를 가져야 한다.
+- `featured: false`인 콘텐츠는 `null`을 사용한다.
+
+### evidenceHighlights
+
+- 30초 요약 바로 아래에 노출할 핵심 근거 ID 목록이다.
+- 동일 콘텐츠의 evidence 파일에 존재하고 `public: true`인 fact 또는 metric만 참조할 수 있다.
+- 참조가 없거나 비공개 ID를 가리키면 빌드가 실패한다.
+
+### caseSummary
+
+- 상세 페이지의 30초 요약과 홈·목록의 요약 카드가 함께 사용한다.
+- 대표 콘텐츠는 `context`, `problem`, `decision`, `role`, `verification`, `limitation`, `demonstrates`를 모두 작성한다.
+- `demonstrates`는 추상적 자기평가가 아니라 앞선 문제·판단·검증으로 확인되는 역량을 한 문장으로 설명한다.
 
 ---
 

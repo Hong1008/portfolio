@@ -1,5 +1,5 @@
 contentSlug: workshield-mcp
-lastReviewedAt: "2026-07-20"
+lastReviewedAt: "2026-08-10"
 
 facts:
   - id: project-scope
@@ -39,13 +39,22 @@ facts:
     note: "테스트 대역은 실제 점수 범위를 재현하지 못했다."
 
   - id: trace-evaluation
-    statement: "평가 시 검색을 재실행하지 않고 실제 판정에 사용한 후보와 점수를 trace로 보존했다."
+    statement: "평가 시 검색을 재실행하지 않고 실제 판정에 사용한 후보와 점수를 실행 기록으로 보존했다."
     sourceType: user-confirmed
     source: "docs/SOURCE_OF_TRUTH.md §8.7"
     scope: "평가 구조"
     public: true
     confidence: confirmed
     note: null
+
+  - id: ai-scope-control
+    statement: "AI 제안으로 검색 도구의 범위가 검증하기 어려운 상세 비교까지 커진 뒤, 실제 실행 기록과 평가 가능성을 기준으로 상세 비교 기능을 제외하고 목표·비목표와 실험의 채택·중단 기준을 다시 정했다."
+    sourceType: retrospective
+    source: "https://velog.io/@hong1008/ai-camp-3rd-project"
+    scope: "AI 보조 개발의 범위 통제와 중단 판단"
+    public: true
+    confidence: confirmed
+    note: "도구 사용 자체의 성과가 아니라 문제 정의·검증·중단 판단의 책임을 사람이 소유한 사례로 표현한다."
 
   - id: repository
     statement: "프로젝트 저장소는 공개돼 있다."
@@ -62,7 +71,7 @@ metrics:
     value: 135
     unit: "cases"
     baseline: null
-    scope: "SI·SM·SW 유형별 45건, 각 유형 tuning 30건과 held-out 15건"
+    scope: "SI·SM·SW 유형별 45건, 각 유형 조정용 30건과 분리 평가용 15건"
     environment: "WorkShield golden dataset v5"
     source: "docs/SOURCE_OF_TRUTH.md §8.7"
     public: true
@@ -98,11 +107,11 @@ metrics:
     public: true
 
   - id: c1-heldout-f1
-    name: "C1 SW held-out F1"
+    name: "C1 SW 분리 평가 F1"
     value: 0.800
     unit: "F1"
     baseline: 0.706
-    scope: "SW held-out 15건의 C1 실험"
+    scope: "SW 분리 평가 15건의 C1 실험"
     environment: "WorkShield C1 experiment"
     source: "docs/SOURCE_OF_TRUTH.md §8.7"
     public: true
@@ -113,14 +122,14 @@ contribution:
     - "시스템 구조 설계"
     - "MCP 서버 구현"
     - "RRF 점수 계약 오류 수정"
-    - "실제 실행 trace 기반 평가 구조 개선"
+    - "실제 실행 기록 기반 평가 구조 개선"
   team:
     - "계약·표준조항 데이터 준비"
     - "모델과 평가 실험"
     - "데모 작업"
   external:
     - "Chroma와 BM25는 검색 구성 요소다."
-    - "RunPod worker는 임베딩과 rerank 모델 실행을 담당한다."
+    - "RunPod 실행 프로세스는 임베딩과 rerank 모델 실행을 담당한다."
 
 publication:
   allowed:
@@ -149,8 +158,12 @@ risks:
 
   - claim: "C1 실험 채택"
     reason: "F1과 FN은 개선됐지만 FP가 1건에서 2건으로 늘었다."
-    safeWording: "C1은 SW held-out F1이 0.706에서 0.800으로 변했지만 FP 증가를 함께 확인해 보류했다."
+    safeWording: "C1은 SW 분리 평가 F1이 0.706에서 0.800으로 변했지만 FP 증가를 함께 확인해 보류했다."
 
   - claim: "합성 계약서 결과가 전체 품질을 증명"
     reason: "하나의 prod 구성 실행 예시이며 모델·인덱스·코퍼스에 따라 달라질 수 있다."
     safeWording: "2026년 7월 13일 prod 구성의 합성 계약서 실행 예시다."
+
+  - claim: "AI 활용으로 개발 생산성을 높였다"
+    reason: "회고가 확인하는 핵심은 생산성 향상이 아니라 검증하기 어려운 범위 확장을 중단하고 평가 기준선을 다시 세운 과정이다."
+    safeWording: "AI 제안으로 커진 범위를 실제 실행 기록과 평가 가능성으로 재검토하고 목표·비목표와 중단 기준을 다시 정했다."

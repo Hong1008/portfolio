@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { portfolioProfile } from "../data/profile";
 import { getPortfolioContent } from "../lib/content";
 import {
   DEPLOYED_SITE_URL,
@@ -18,11 +19,12 @@ const evidenceBySlug = new Map(evidence.map((item) => [item.data.contentSlug, it
 const hodoolabs = bySlug.get("hodoolabs")!;
 const kexcel = bySlug.get("kexcel")!;
 const workshieldWeb = bySlug.get("workshield-web")!;
+const workshieldMcp = bySlug.get("workshield-mcp")!;
 const otherExperience = experience
   .filter(({ data }) => data.slug !== "hodoolabs" && data.print.include)
   .sort((a, b) => b.data.startDate.localeCompare(a.data.startDate));
 const otherProjects = projects
-  .filter(({ data }) => !data.featured && data.print.include)
+  .filter(({ data }) => !data.featured && data.print.include && data.slug !== "workshield-mcp")
   .sort((a, b) => b.data.startDate.localeCompare(a.data.startDate));
 const kexcelMetrics = evidenceBySlug.get("kexcel")?.metrics ?? [];
 const workshieldWebMetrics = evidenceBySlug.get("workshield-web")?.metrics ?? [];
@@ -38,16 +40,16 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
 >
   <main id="main-content" class="print-document">
     <section class="print-page print-cover">
-      <p class="print-kicker">Backend Engineer Portfolio · 2026</p>
+      <p class="print-kicker">{portfolioProfile.experienceLabel} · {portfolioProfile.foundation} {portfolioProfile.role}</p>
       <div class="cover-title">
         <p>백엔드 개발자</p>
         <h1>홍철민</h1>
       </div>
-      <p class="cover-message">실패 가능성을 전제로<br /><strong>시스템의 상태와 책임 경계를 설계합니다.</strong></p>
-      <p class="cover-description">Java/Kotlin·Spring 기반 백엔드 경험을 바탕으로 결제 상태, 비동기 메시징, 대용량 파일 처리와 AI 서비스 백엔드를 다뤘습니다.</p>
-      <div class="cover-skills"><span>Java · Kotlin</span><span>Spring</span><span>MySQL · Redis</span><span>AWS</span><span>Python · MCP</span></div>
+      <p class="cover-message">{portfolioProfile.headline}</p>
+      <p class="cover-description">{portfolioProfile.description}</p>
+      <div class="cover-skills"><span>Java · Kotlin</span><span>Spring</span><span>MySQL · Redis</span><span>AWS</span><span>Python · RAG · MCP</span></div>
       <ol class="cover-cases">
-        {[hodoolabs, workshieldWeb, kexcel].map((entry, index) => (
+        {[hodoolabs, kexcel, workshieldWeb].map((entry, index) => (
           <li><span>0{index + 1}</span><strong>{entry.data.title}</strong><p>{entry.data.caseSummary?.decision}</p></li>
         ))}
       </ol>
@@ -59,7 +61,7 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
     </section>
 
     <section class="print-page">
-      <header class="print-page-header"><p>Selected case 01</p><span>Experience</span></header>
+      <header class="print-page-header"><p>대표 사례 01</p><span>경력</span></header>
       <h2>{hodoolabs.data.title} 통합 결제</h2>
       <p class="print-lead">{hodoolabs.data.caseSummary?.problem}</p>
       <div class="print-meta"><span>{formatPeriod(hodoolabs.data.startDate, hodoolabs.data.endDate, hodoolabs.data.datePrecision)}</span><span>{hodoolabs.data.role.title}</span><span>{hodoolabs.data.technologies.primary.join(" · ")}</span></div>
@@ -75,7 +77,7 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
     </section>
 
     <section class="print-page">
-      <header class="print-page-header"><p>Selected case 01</p><span>Failure boundary</span></header>
+      <header class="print-page-header"><p>대표 사례 01</p><span>복구 경계</span></header>
       <h2>복구 흐름과 책임 범위</h2>
       <p class="print-lead">외부 승인이 끝났다는 사실과 내부 재화 제공이 끝났다는 사실을 분리해, 재처리가 가능한 실패만 복구 대상으로 삼았습니다.</p>
       <div class="recovery-flow"><div>DB<br /><strong>PURCHASED</strong></div><b>+</b><div>Redis<br /><strong>미완료 정보</strong><small>TTL 약 300초</small></div><b>→</b><div><strong>복구 배치</strong><small>TTL 약 130초 이하</small></div><b>→</b><div>DB 재확인<br /><strong>COMPLETED</strong></div></div>
@@ -88,7 +90,7 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
     </section>
 
     <section class="print-page">
-      <header class="print-page-header"><p>Selected case 02</p><span>Open source</span></header>
+      <header class="print-page-header"><p>대표 사례 02</p><span>오픈소스</span></header>
       <h2>{kexcel.data.title}</h2>
       <p class="print-lead">{kexcel.data.caseSummary?.problem}</p>
       <div class="driver-diagram"><div>사용자 Kotlin DSL</div><b>→</b><div>Scope 계층</div><b>→</b><div>ExcelDriver</div><b>→</b><div><span>POI</span><span>FastExcel</span></div></div>
@@ -106,25 +108,25 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
     </section>
 
     <section class="print-page">
-      <header class="print-page-header"><p>Selected case 03</p><span>AI service backend</span></header>
+      <header class="print-page-header"><p>대표 사례 03</p><span>AI 서비스 백엔드</span></header>
       <h2>{workshieldWeb.data.title}</h2>
       <p class="print-lead">{workshieldWeb.data.summary}</p>
       <div class="workshield-boundary"><section><small>결정론적 상태 경로</small><strong>FastAPI</strong><span>멱등 요청 → Review 상태 → 근거·출처 결합</span></section><b>↔</b><section><small>외부 실행 경계</small><strong>MCP · LLM</strong><span>검색·분류와 근거 범위의 자연어 생성</span></section></div>
       <div class="print-two-column">
-        <section><h3>중복과 상태 경쟁</h3><p>Review 상태 전이를 Aggregate에 모으고, 멱등 키·세션별 active UNIQUE 제약·낙관적 잠금을 서로 다른 방어선으로 사용했습니다.</p><p class="print-caveat">단일 worker·SQLite 범위이며 분산 환경의 Exactly-once 실행을 의미하지 않습니다.</p></section>
-        <section><h3>LLM 책임 경계</h3><p>질문 대상과 근거를 AnswerPlan에서 먼저 확정하고, 모델은 출처 종류만 선택하게 했습니다. 실제 출처 ID는 백엔드가 검증된 근거에 결합합니다.</p></section>
+        <section><h3>중복과 상태 경쟁</h3><p>검토 상태 규칙을 한곳에 모으고, 같은 요청의 재전송·중복 생성·동시 변경을 각각 다른 저장 규칙으로 막았습니다.</p><p class="print-caveat">단일 실행 프로세스·SQLite 범위이며 분산 환경에서 한 번만 실행됨을 보장하지 않습니다.</p></section>
+        <section><h3>모델 책임 경계</h3><p>질문 대상과 사용할 근거를 백엔드가 먼저 확정하고, 모델은 출처 종류만 선택하게 했습니다. 실제 출처 ID는 백엔드가 검증한 근거에 결합합니다.</p></section>
       </div>
       <dl class="print-metrics">
-        <div><dt>합성 fixture 최종 PASS</dt><dd>{metric(workshieldWebMetrics, "qwen-final-pass")?.value} / 16</dd><small>8개 × 2회 · repair 포함</small></div>
-        <div><dt>모델 latency p50</dt><dd>{metric(workshieldWebMetrics, "qwen-latency-p50")?.value}s</dd><small>concurrency 1</small></div>
-        <div><dt>모델 latency p95</dt><dd>{metric(workshieldWebMetrics, "qwen-latency-p95")?.value}s</dd><small>고정 합성 fixture</small></div>
+        <div><dt>합성 데이터 최종 통과</dt><dd>{metric(workshieldWebMetrics, "qwen-final-pass")?.value} / 16</dd><small>8개 × 2회 · 보정 포함</small></div>
+        <div><dt>모델 응답 시간 p50</dt><dd>{metric(workshieldWebMetrics, "qwen-latency-p50")?.value}초</dd><small>동시 요청 1개</small></div>
+        <div><dt>모델 응답 시간 p95</dt><dd>{metric(workshieldWebMetrics, "qwen-latency-p95")?.value}초</dd><small>고정 합성 검증 데이터</small></div>
       </dl>
       <aside class="print-note"><strong>책임 범위</strong><p>{workshieldWeb.data.caseSummary?.limitation}</p></aside>
       <a class="print-detail-url" href="https://hong1008.github.io/portfolio/projects/workshield-web/">상세 HTML · hong1008.github.io/portfolio/projects/workshield-web/</a>
     </section>
 
     <section class="print-page">
-      <header class="print-page-header"><p>Experience</p><span>Career summary</span></header>
+      <header class="print-page-header"><p>경력</p><span>경력 요약</span></header>
       <h2>경력 요약</h2>
       <p class="print-lead">Java·Kotlin과 Spring 기반 애플리케이션 개발에서 시작해 결제, 비동기 메시징, 도메인 분리와 배포 환경을 다뤘습니다.</p>
       <ol class="print-careers">
@@ -135,25 +137,26 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
       <aside class="print-note"><strong>경력 사례 공개 원칙</strong><p>회사 내부 코드와 실제 사용자 데이터는 포함하지 않았으며, 운영·출시 상태와 개인·팀의 책임 범위를 확인 가능한 수준으로 제한했습니다.</p></aside>
     </section>
 
-    <section class="print-page">
-      <header class="print-page-header"><p>Projects</p><span>Additional work</span></header>
+    <section class="print-page print-additional">
+      <header class="print-page-header"><p>프로젝트</p><span>추가 작업</span></header>
       <h2>추가 프로젝트</h2>
       <div class="print-projects">
+        <article class="print-project-feature"><p class="eyebrow">AI 보조 개발의 범위 통제</p><h3>{workshieldMcp.data.title}</h3><p>AI 제안으로 검색 도구가 검증하기 어려운 상세 비교까지 커진 뒤, 실제 실행 기록과 평가 가능성을 기준으로 상세 비교를 제외하고 목표·비목표를 다시 정했습니다.</p><dl><div><dt>판단</dt><dd>실제 판정 후보와 점수를 보존하고, 실험 전에 가설·채택·보류·중단 조건과 되돌릴 기준선을 기록했습니다.</dd></div><div><dt>역할과 한계</dt><dd>PM·MCP 구현을 담당했습니다. 이 과정은 도구 사용 자체의 성과가 아니라 문제 정의·검증·중단 판단의 책임을 사람이 소유한 사례입니다.</dd></div></dl></article>
         {otherProjects.map((entry) => (
-          <article><p class="eyebrow">{entry.data.organization.displayName}</p><h3>{entry.data.title}</h3><p>{entry.data.summary}</p><dl><div><dt>역할</dt><dd>{entry.data.role.title}</dd></div><div><dt>검증</dt><dd>{entry.data.caseSummary?.verification}</dd></div><div><dt>한계</dt><dd>{entry.data.caseSummary?.limitation}</dd></div></dl></article>
+          <article><p class="eyebrow">{entry.data.organization.displayName}</p><h3>{entry.data.title}</h3><p>{entry.data.caseSummary?.decision}</p><dl><div><dt>역할</dt><dd>{entry.data.role.title}</dd></div><div><dt>검증·한계</dt><dd>{entry.data.caseSummary?.verification} {entry.data.caseSummary?.limitation}</dd></div></dl></article>
         ))}
       </div>
       <section class="print-links">
         <h3>상세 자료</h3>
         <p>각 사례의 구조, 측정 조건, 근거와 전체 한계는 HTML 포트폴리오에서 확인할 수 있습니다.</p>
         <ul>
-          <li><strong>Portfolio</strong><a href={DEPLOYED_SITE_URL}>{DEPLOYED_SITE_URL}</a></li>
+          <li><strong>포트폴리오</strong><a href={DEPLOYED_SITE_URL}>{DEPLOYED_SITE_URL}</a></li>
           <li><strong>GitHub</strong><a href="https://github.com/Hong1008" target="_blank" rel="noopener noreferrer">https://github.com/Hong1008</a></li>
           <li><strong>기술 블로그</strong><a href="https://velog.io/@hong1008/posts" target="_blank" rel="noopener noreferrer">https://velog.io/@hong1008/posts</a></li>
-          <li><strong>Email</strong><a href="mailto:zxcbnm6404@gmail.com">zxcbnm6404@gmail.com</a></li>
+          <li><strong>이메일</strong><a href="mailto:zxcbnm6404@gmail.com">zxcbnm6404@gmail.com</a></li>
         </ul>
       </section>
-      <footer class="print-final">홍철민 · Backend Engineer Portfolio · 2026</footer>
+      <footer class="print-final">홍철민 · 백엔드 개발자 포트폴리오 · 2026</footer>
     </section>
   </main>
 </BaseLayout>
