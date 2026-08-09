@@ -2,7 +2,7 @@
 title: "영화 흥행 예측 및 배급 시뮬레이터"
 slug: "movie-box-office"
 contentType: "project"
-summary: "스크린 수가 흥행에 영향을 주는 동시에 콘텐츠 잠재력에 따라 결정될 수 있다는 점을 고려해, 콘텐츠 잠재력과 배급 변수를 나눈 2-Stage 예측 구조를 설계했습니다. 2010–2025년 영화 2,489편을 개봉일 기준으로 분할해 모델을 비교하고, 단조 증가 제약을 적용한 최종 예측을 구현했습니다."
+summary: "5인 팀의 영화 흥행 예측 프로토타입에서 스크린 수와 콘텐츠 잠재력의 상호 의존성을 한 모델에 섞지 않아야 했습니다. 콘텐츠 잠재력과 배급 변수를 나눈 2-Stage 구조를 선택했습니다. PM으로 구조·데이터 수집·모델 비교를 담당해 2,489편을 개봉일 기준으로 시간 분할해 평가했습니다. 인과 효과나 실제 배급 성과를 뜻하지 않는 한계를 명시해 예측 구조와 인과 해석을 구분한 사례입니다."
 
 startDate: "2026-05"
 endDate: "2026-05"
@@ -51,6 +51,7 @@ themes:
   - "architecture"
 
 featured: false
+featuredOrder: null
 visibility: "public"
 confidentialityNote: null
 
@@ -62,13 +63,19 @@ links:
   external: []
 
 evidenceRef: "movie-box-office"
+evidenceHighlights:
+  - "two-stage-model"
+  - "dataset-movies"
+  - "stage-1-r2"
 
 caseSummary:
+  context: "영화의 콘텐츠 잠재력과 배급 조건을 구분해 탐색한 5인 팀의 예측 프로토타입입니다."
   problem: "스크린 수는 흥행에 영향을 주지만, 영화의 기대 잠재력이 스크린 수 결정에도 영향을 줄 수 있어 단일 모델의 입력 변수로만 다루기 어려웠습니다."
   decision: "배급 변수를 제외한 콘텐츠 잠재력을 먼저 예측하고, 그 예측값과 배급 변수를 다음 단계에서 함께 반영하는 2-Stage 구조를 사용했습니다."
   role: "PM으로서 구조를 제안·설계하고 데이터 수집, 모델 비교·선정과 Streamlit 데모를 담당했습니다."
   verification: "2010–2025년 2,489편·28개 컬럼 데이터를 개봉일 기준으로 시간 분할해 각 Stage의 R²와 RMSE를 기록했습니다."
   limitation: "관측 데이터 기반 예측 구조로, 스크린 수의 인과 효과를 검증하거나 실제 배급 의사결정을 대체하지 않습니다."
+  demonstrates: "변수 간 의존성을 모델 구조에 반영하고 예측 결과와 인과 효과를 구분하는 실험 설계 역량을 보여줍니다."
 
 limitations:
   - "2-Stage 구조는 스크린 수와 콘텐츠 잠재력의 상호 의존성을 고려한 예측 구조이며, 내생성을 해결하거나 인과 효과를 식별한 것이 아닙니다."

@@ -2,7 +2,7 @@
 title: "KExcel — Kotlin DSL 기반 대용량 엑셀 생성 라이브러리"
 slug: "kexcel"
 contentType: "project"
-summary: "Apache POI 기반 엑셀 생성에서 경험한 저수준 API 복잡도와 성능 문제를 일반화해, 동일한 Kotlin DSL로 POI와 FastExcel을 선택할 수 있는 라이브러리를 개발했습니다. 스트리밍 제약과 동시 쓰기 오용을 Fail-Fast로 드러내고, JMH로 DSL 오버헤드와 병합 병목을 측정했습니다."
+summary: "엑셀 보고서를 만드는 개발자가 저수준 객체와 좌표·스타일 수명주기를 반복 관리해야 하는 문제를 개인 오픈소스 라이브러리로 일반화했습니다. Kotlin DSL과 POI·FastExcel 구현을 ExcelDriver로 분리하고 스트리밍·동시 쓰기 오용은 즉시 실패하도록 판단했습니다. 설계·구현·공개를 맡아 OpenJDK 21·512MB heap에서 JMH로 오버헤드와 병합 처리량을 측정했습니다. 안전 검증 우회와 메모리 비용을 한계로 남겨 추상화의 편의와 런타임 비용을 함께 검증한 사례입니다."
 
 startDate: "2026-05"
 endDate: "2026-05"
@@ -53,6 +53,7 @@ themes:
   - "maintenance"
 
 featured: true
+featuredOrder: 2
 visibility: "public"
 confidentialityNote: null
 
@@ -68,13 +69,19 @@ links:
       url: "https://github.com/Hong1008/kexcel/blob/main/docs/BENCHMARK.ko.md"
 
 evidenceRef: "kexcel"
+evidenceHighlights:
+  - "engine-abstraction"
+  - "fast-excel-dsl-overhead"
+  - "merge-throughput"
 
 caseSummary:
+  context: "엑셀 보고서를 만드는 개발자가 저수준 객체와 좌표·스타일 수명주기를 반복 관리해야 하는 문제를 개인 오픈소스 라이브러리로 일반화했습니다."
   problem: "Apache POI의 저수준 API를 직접 사용하면 객체와 좌표, 스타일 생명주기를 반복해서 관리해야 했고, 엔진을 바꾸면 보고서 코드도 함께 변경해야 했습니다."
   decision: "사용자 DSL과 실제 엑셀 엔진을 ExcelDriver 인터페이스로 분리하고, 스트리밍 제약과 동일 시트 동시 쓰기 오용은 즉시 실패하도록 했습니다."
   role: "개인 프로젝트로 API와 Scope 계층 설계, POI·FastExcel 드라이버 구현, 벤치마크와 배포를 수행했습니다."
   verification: "OpenJDK 21, 512MB heap, G1GC 환경에서 JMH로 DSL 오버헤드와 병합 처리량을 측정했습니다."
   limitation: "병합 중복 검증을 우회한 최적화는 잘못된 병합 요청을 사전에 방지해야 하며, 병합 메타데이터의 메모리 비용은 남습니다."
+  demonstrates: "API 추상화의 편의뿐 아니라 오용 정책과 런타임 비용을 벤치마크로 함께 검증하는 역량을 보여줍니다."
 
 limitations:
   - "addMergedRegionUnsafe는 POI의 병합 중복 검증을 우회하므로 잘못된 병합 요청을 별도로 방지해야 합니다."
@@ -414,7 +421,7 @@ POI의 표준 `addMergedRegion`은 새로운 병합 영역을 추가할 때 기�
 - POI와 FastExcel의 모든 기능을 같은 의미로 추상화할 수 없습니다.
 - Native Extension을 사용한 코드는 특정 엔진에 의존합니다.
 - 병합 검증 우회는 잘못된 병합 영역을 별도로 방지해야 합니다.
-- 병합 메타데이터의 memory residency는 남아 있습니다.
+- 병합 메타데이터가 파일 작성이 끝날 때까지 메모리에 유지되는 비용은 남아 있습니다.
 - 공개 초기 버전으로 외부 사용자의 장기 호환성 검증은 제한적입니다.
 - 벤치마크는 특정 JVM·heap·라이브러리 버전에서 수행한 재현 결과입니다.
 

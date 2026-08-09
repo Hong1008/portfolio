@@ -1,5 +1,5 @@
 contentSlug: workshield-web
-lastReviewedAt: "2026-08-03"
+lastReviewedAt: "2026-08-10"
 
 facts:
   - id: project-scope
@@ -23,7 +23,7 @@ facts:
   - id: review-state
     statement: "Review Aggregate는 QUEUED, REVIEWING, COMPLETED, FAILED, CANCELLED, EXPIRED 상태와 단조 진행률 규칙을 관리한다."
     sourceType: code
-    source: "docs/source_of_truth/projects/workshield-web.md §5"
+    source: "https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-4th-2Team/pull/23"
     scope: "비동기 검토 상태"
     public: true
     confidence: confirmed
@@ -68,7 +68,7 @@ facts:
   - id: source-binding
     statement: "Suggestions 모델은 닫힌 집합의 근거 종류만 선택하고, 실제 출처 ID는 백엔드가 현재 요청의 검증된 근거에 결합한다."
     sourceType: code
-    source: "docs/source_of_truth/projects/workshield-web.md §9"
+    source: "https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-4th-2Team/pull/31"
     scope: "LLM 출력과 출처 무결성"
     public: true
     confidence: confirmed
@@ -77,7 +77,7 @@ facts:
   - id: deployment-boundary
     statement: "AWS CDK와 GitHub Actions로 배포를 구성하고, GitHub OIDC 배포 역할과 고권한 인프라·비밀·RunPod 수명주기를 분리했다."
     sourceType: code
-    source: "docs/source_of_truth/projects/workshield-web.md §11"
+    source: "https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-4th-2Team/pull/48"
     scope: "인프라와 배포 권한"
     public: true
     confidence: confirmed
@@ -85,42 +85,42 @@ facts:
 
 metrics:
   - id: qwen-final-pass
-    name: "Qwen3.5 9B final gate pass"
+    name: "Qwen3.5 9B 최종 검사 통과"
     value: 16
-    unit: "passes"
+    unit: "회"
     baseline: null
-    scope: "고정 합성 fixture 8개를 2회 실행한 repair 포함 최종 결과"
-    environment: "JSON Schema, thinking off, temperature 0, top_p 1, seed 42, concurrency 1, timeout 60초"
+    scope: "고정 합성 검증 데이터 8개를 2회 실행한 보정 포함 최종 결과"
+    environment: "JSON Schema, thinking off, temperature 0, top_p 1, seed 42, 동시 요청 1개, 제한 시간 60초"
     source: "docs/source_of_truth/projects/workshield-web.md §10"
     public: true
 
   - id: qwen-latency-p50
-    name: "Qwen3.5 9B latency p50"
+    name: "Qwen3.5 9B 응답 시간 p50"
     value: 7.102
-    unit: "seconds"
+    unit: "초"
     baseline: null
-    scope: "고정 합성 fixture 모델 비교 호출"
-    environment: "Qwen3.5 9B FP8 dynamic, concurrency 1"
+    scope: "고정 합성 검증 데이터 모델 비교 호출"
+    environment: "Qwen3.5 9B FP8 dynamic, 동시 요청 1개"
     source: "docs/source_of_truth/projects/workshield-web.md §10"
     public: true
 
   - id: qwen-latency-p95
-    name: "Qwen3.5 9B latency p95"
+    name: "Qwen3.5 9B 응답 시간 p95"
     value: 16.416
-    unit: "seconds"
+    unit: "초"
     baseline: null
-    scope: "고정 합성 fixture 모델 비교 호출"
-    environment: "Qwen3.5 9B FP8 dynamic, concurrency 1"
+    scope: "고정 합성 검증 데이터 모델 비교 호출"
+    environment: "Qwen3.5 9B FP8 dynamic, 동시 요청 1개"
     source: "docs/source_of_truth/projects/workshield-web.md §10"
     public: true
 
   - id: qwen-language-repair
-    name: "Qwen3.5 9B language repair"
+    name: "Qwen3.5 9B 언어 보정"
     value: 2
-    unit: "cases"
+    unit: "건"
     baseline: null
-    scope: "최초 출력에서 중국어 문자가 혼입돼 1회 repair한 결과"
-    environment: "고정 합성 fixture 16회 호출"
+    scope: "최초 출력에서 중국어 문자가 혼입돼 1회 보정한 결과"
+    environment: "고정 합성 검증 데이터 16회 호출"
     source: "docs/source_of_truth/projects/workshield-web.md §10"
     public: true
 
@@ -148,9 +148,9 @@ publication:
     - "익명 세션과 임시 파일 수명주기"
     - "MCP local·deployment transport 차이"
     - "LLM 출처 결합과 hard gate"
-    - "고정 합성 fixture 모델 비교 결과와 조건"
+    - "고정 합성 검증 데이터 모델 비교 결과와 조건"
     - "AWS 서비스와 배포 권한 경계"
-    - "SQLite·단일 worker·단일 EC2 한계"
+    - "SQLite·단일 실행 프로세스·단일 EC2 한계"
   anonymize: []
   prohibited:
     - "실제 사용자 계약서와 대화 내용"
@@ -164,7 +164,7 @@ risks:
     safeWording: "계약서 비교 MCP를 검토 후보와 근거를 탐색하는 웹 서비스에 연결했다."
 
   - claim: "Exactly-once 검토 실행"
-    reason: "SQLite와 프로세스 내부 실행 큐의 단일 worker 구조이며 여러 방어선도 각자 제한된 범위만 책임진다."
+    reason: "SQLite와 프로세스 내부 실행 큐의 단일 실행 프로세스 구조이며 여러 방어선도 각자 제한된 범위만 책임진다."
     safeWording: "멱등 키·DB UNIQUE 제약·낙관적 잠금으로 중복 요청과 상태 경쟁을 구분해 처리했다."
 
   - claim: "환각 제거"
@@ -172,9 +172,9 @@ risks:
     safeWording: "모델의 출처 ID 생성을 제거하고 백엔드가 검증된 근거 ID를 결합했다."
 
   - claim: "16/16 법률 정확도"
-    reason: "고정된 합성 fixture에서 repair를 포함해 최종 gate를 통과한 개발 검증 결과다."
-    safeWording: "동일한 합성 fixture 8개를 2회 실행한 최종 검증에서 16/16 PASS를 확인했다."
+    reason: "고정된 합성 검증 데이터에서 보정을 포함해 최종 검사를 통과한 개발 검증 결과다."
+    safeWording: "동일한 합성 검증 데이터 8개를 2회 실행한 최종 검증에서 16/16 통과를 확인했다."
 
   - claim: "고가용성·무중단 배포"
     reason: "단일 EC2 구조이며 다중 instance와 자동 traffic failover를 지원하지 않는다."
-    safeWording: "검증된 container와 Web artifact를 재빌드 없이 다시 활성화하는 롤백을 구성했다."
+    safeWording: "검증된 컨테이너와 Web 산출물을 재빌드 없이 다시 활성화하는 롤백을 구성했다."

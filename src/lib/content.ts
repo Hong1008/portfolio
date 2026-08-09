@@ -14,6 +14,7 @@ async function getValidatedContent() {
     evidenceEntries.map((evidence) => [evidence.id, evidence]),
   );
   const evidenceSlugs = new Set<string>();
+  const featuredOrders = new Set<number>();
 
   for (const entry of entries) {
     if (entriesBySlug.has(entry.data.slug)) {
@@ -55,6 +56,40 @@ async function getValidatedContent() {
         `Evidence "${evidence.id}" belongs to "${evidence.data.contentSlug}", not "${entry.data.slug}".`,
       );
     }
+
+    const availableEvidenceIds = new Set([
+      ...evidence.data.facts.filter((fact) => fact.public).map((fact) => fact.id),
+      ...evidence.data.metrics.filter((metric) => metric.public).map((metric) => metric.id),
+    ]);
+
+    for (const evidenceId of entry.data.evidenceHighlights) {
+      if (!availableEvidenceIds.has(evidenceId)) {
+        throw new Error(
+          `Content "${entry.data.slug}" highlights missing or private evidence "${evidenceId}".`,
+        );
+      }
+    }
+
+    if (entry.data.featured) {
+      const order = entry.data.featuredOrder;
+      if (order === null) {
+        throw new Error(`Featured content "${entry.data.slug}" is missing featuredOrder.`);
+      }
+      if (featuredOrders.has(order)) {
+        throw new Error(`Duplicate featuredOrder "${order}".`);
+      }
+      featuredOrders.add(order);
+    }
+  }
+
+  const sortedFeaturedOrders = [...featuredOrders].sort((a, b) => a - b);
+  for (const [index, order] of sortedFeaturedOrders.entries()) {
+    const expected = index + 1;
+    if (order !== expected) {
+      throw new Error(
+        `Featured order must be contiguous from 1; expected "${expected}", received "${order}".`,
+      );
+    }
   }
 
   const relations = relationEntries.flatMap((entry) => entry.data.relations);
@@ -94,6 +129,17 @@ export async function getPortfolioContent() {
     experience: experience.filter(({ data }) => data.visibility === "public"),
     evidence: evidenceEntries,
   };
+}
+
+export async function getEvidenceForEntry(evidenceRef: string, contentSlug: string) {
+  const { evidenceEntries } = await getValidatedContent();
+  const evidence = evidenceEntries.find((entry) => entry.id === evidenceRef);
+
+  if (!evidence || evidence.data.contentSlug !== contentSlug) {
+    throw new Error(`Missing evidence "${evidenceRef}" for content "${contentSlug}".`);
+  }
+
+  return evidence;
 }
 
 export async function getEntryNavigation(slug: string, contentType: "experience" | "project") {

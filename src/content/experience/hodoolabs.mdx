@@ -2,7 +2,7 @@
 title: "호두랩스"
 slug: "hodoolabs"
 contentType: "experience"
-summary: "PG와 인앱 결제를 하나의 API 흐름으로 처리하고 외부 승인과 내부 재화 제공 상태를 분리했습니다. PURCHASED 상태와 Redis 정보가 남아 있는 미완료 주문을 재처리하되, 승인 후 DB 저장 실패처럼 복구할 수 없는 범위를 구분했습니다."
+summary: "PG·인앱 결제 승인이 끝나도 내부 재화 제공은 실패할 수 있는 운영 결제 시스템을 다뤘습니다. 두 완료 시점을 주문 상태로 나누고 PURCHASED와 Redis 정보가 남은 주문만 재처리하도록 판단했습니다. 결제 API·상태 흐름·복구 배치를 구현하고 상태·TTL·DB 제약의 방어 범위를 대조했습니다. 승인 후 DB 저장 실패는 복구하지 못한다는 한계까지 구분해 상태와 복구 경계를 설계한 사례입니다."
 
 startDate: "2021-02"
 endDate: "2021-08"
@@ -58,6 +58,7 @@ themes:
   - "maintenance"
 
 featured: true
+featuredOrder: 1
 visibility: "public"
 confidentialityNote: "회사 코드와 실제 결제 데이터는 포함하지 않고 공개 가능한 범위에서 처리 구조를 재구성했습니다."
 
@@ -79,13 +80,19 @@ cases:
     featured: false
 
 evidenceRef: "hodoolabs"
+evidenceHighlights:
+  - "payment-state"
+  - "duplicate-defense"
+  - "recovery-batch"
 
 caseSummary:
+  context: "PG와 Google Play·Apple 인앱 결제를 하나의 서비스 흐름으로 연결한 운영 결제 시스템입니다."
   problem: "외부 결제 승인과 내부 재화 제공이 한 번에 끝나지 않을 수 있어, 승인 이후 내부 처리가 완료되지 않은 주문을 구분할 필요가 있었습니다."
   decision: "주문을 REQUESTED·PURCHASED·COMPLETED로 나누고, PURCHASED 상태와 Redis 정보가 남은 주문만 복구 배치가 재처리하도록 했습니다."
   role: "PG·인앱 결제 API와 상태 흐름, 복구 배치를 구현했고 Stored Procedure와 DB 처리 구조는 DBA와 협업했습니다."
   verification: "주문 상태, Redis TTL과 DB 제약이 담당하는 범위를 대조해 정상 처리와 재처리 조건, 처리하지 못하는 실패를 구분했습니다."
   limitation: "PG 승인 후 PURCHASED 저장 자체가 실패하거나 Redis 정보가 유실·만료되면 이 복구 흐름만으로 처리할 수 없습니다."
+  demonstrates: "외부 승인과 내부 완료를 상태로 분리하고, 복구 가능한 실패와 남는 복구 공백을 함께 설명하는 역량을 보여줍니다."
 
 limitations:
   - "PG 승인 후 DB의 PURCHASED 저장 자체가 실패하면 Redis와 DB 상태가 REQUESTED에 남을 수 있어 이 흐름으로 복구할 수 없습니다."

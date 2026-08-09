@@ -1,11 +1,13 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import ContentHeader from "../components/content/ContentHeader.astro";
+import EvidenceHighlights from "../components/content/EvidenceHighlights.astro";
 import LimitationCallout from "../components/content/LimitationCallout.astro";
 import RelatedContent from "../components/content/RelatedContent.astro";
 import SummaryCard from "../components/content/SummaryCard.astro";
+import TechnologySummary from "../components/content/TechnologySummary.astro";
 import BaseLayout from "./BaseLayout.astro";
-import { getEntryNavigation } from "../lib/content";
+import { getEntryNavigation, getEvidenceForEntry } from "../lib/content";
 import { contentPath, withBase } from "../lib/site";
 
 interface Props {
@@ -21,6 +23,7 @@ const collectionLabel = data.contentType === "experience"
   ? "경력 목록"
   : "프로젝트 목록";
 const navigation = await getEntryNavigation(data.slug, data.contentType);
+const evidence = await getEvidenceForEntry(data.evidenceRef, data.slug);
 const canonicalPath = `${data.contentType === "experience" ? "experience" : "projects"}/${data.slug}/`;
 ---
 
@@ -40,6 +43,13 @@ const canonicalPath = `${data.contentType === "experience" ? "experience" : "pro
       <ContentHeader entry={entry} />
 
       {data.caseSummary && <SummaryCard {...data.caseSummary} />}
+
+      <EvidenceHighlights ids={data.evidenceHighlights} evidence={evidence.data} />
+
+      <TechnologySummary
+        primary={data.technologies.primary}
+        secondary={data.technologies.secondary}
+      />
 
       <article class="prose">
         <slot />

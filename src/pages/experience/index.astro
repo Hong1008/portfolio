@@ -4,17 +4,25 @@ import { getPublicExperience } from "../../lib/content";
 import { contentPath, formatPeriod, withBase } from "../../lib/site";
 const experience = (await getPublicExperience()).sort((a, b) =>
   b.data.startDate.localeCompare(a.data.startDate));
+const operationStatus = {
+  production: "운영",
+  "pre-release": "출시 전",
+  internal: "내부 사용",
+  discontinued: "서비스 종료",
+};
 ---
 
 <BaseLayout title="경력" description="조직의 제약 안에서 담당한 범위와 기술적 판단을 정리한 경력 사례입니다." canonicalPath="experience/">
   <main id="main-content" class="listing-page">
     <nav class="breadcrumb" aria-label="현재 위치"><a href={withBase()}>홈</a><span>/</span><span>경력</span></nav>
-    <header class="page-header"><p class="eyebrow">Experience</p><h1>경력</h1><p>운영 여부, 개인과 팀의 책임 범위, 당시 확인한 한계까지 함께 기록했습니다.</p></header>
+    <header class="page-header"><p class="eyebrow">경력</p><h1>경력</h1><p>운영 여부, 개인과 팀의 책임 범위, 당시 확인한 한계까지 함께 기록했습니다.</p></header>
     <ol class="listing-cards">
       {experience.map((entry) => (
         <li><a href={contentPath("experience", entry.data.slug)}>
-          <div class="listing-meta"><span>{formatPeriod(entry.data.startDate, entry.data.endDate, entry.data.datePrecision)}</span><span>{entry.data.operationStatus}</span></div>
-          <h2>{entry.data.title}</h2><p class="listing-role">{entry.data.role.title}</p><p>{entry.data.summary}</p><span class="detail-link">상세 보기 →</span>
+          <div class="listing-meta"><span>{formatPeriod(entry.data.startDate, entry.data.endDate, entry.data.datePrecision)}</span><span>{operationStatus[entry.data.operationStatus]}</span></div>
+          <h2>{entry.data.title}</h2><p class="listing-role">{entry.data.role.title}</p><p>{entry.data.summary}</p>
+          <dl class="listing-proof"><div><dt>핵심 판단</dt><dd>{entry.data.caseSummary?.decision}</dd></div><div><dt>검증</dt><dd>{entry.data.caseSummary?.verification}</dd></div></dl>
+          <span class="detail-link">상세 보기 →</span>
         </a></li>
       ))}
     </ol>

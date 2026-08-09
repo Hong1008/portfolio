@@ -2,7 +2,7 @@
 title: "전기차 충전 인프라 SOS 대시보드"
 slug: "ev-infrastructure"
 contentType: "project"
-summary: "공공데이터의 전기차 등록 대수와 충전기 수를 수집해 Pandera로 검증하고 MySQL에 적재한 뒤, 17개 시·도별 팀 정의 충전 불편지수를 지도와 차트로 시각화했습니다. 데이터 처리와 화면 로직은 domain·web·config 레이어로 분리했습니다."
+summary: "5인 팀의 공공데이터 프로토타입에서 전기차 등록 대수와 충전기 수를 같은 흐름으로 검증·적재해야 했습니다. Pandera·MySQL 처리와 domain·web·config 레이어 분리를 선택했습니다. ERD·적재·대시보드를 담당해 17개 시·도 결과를 지도와 차트로 확인했습니다. 팀 정의 불편지수가 실제 대기 시간이나 공식 지표가 아님을 명시해 데이터 흐름과 해석 범위를 함께 관리한 사례입니다."
 
 startDate: "2026-04"
 endDate: "2026-04"
@@ -49,6 +49,7 @@ themes:
   - "architecture"
 
 featured: false
+featuredOrder: null
 visibility: "public"
 confidentialityNote: null
 
@@ -60,13 +61,18 @@ links:
   external: []
 
 evidenceRef: "ev-infrastructure"
+evidenceHighlights:
+  - "data-flow"
+  - "region-count"
 
 caseSummary:
+  context: "공공데이터를 수집·검증·적재해 지역별 전기차 충전 여건을 탐색한 5인 팀의 프로토타입입니다."
   problem: "지역별 전기차 등록 대수와 충전기 수를 같은 흐름에서 검증·적재하고 비교 가능한 형태로 보여줄 필요가 있었습니다."
   decision: "공공데이터를 Pandera로 검증한 뒤 MySQL에 적재하고, 데이터 처리와 화면 로직을 domain·web·config 레이어로 분리했습니다."
   role: "ERD와 적재 쿼리, 데이터 적재 및 Streamlit 기반 대시보드 구현을 담당했습니다."
   verification: "17개 시·도 단위로 전기차 등록 대수와 충전기 수를 바탕으로 계산한 불편지수를 지도와 차트로 확인했습니다."
   limitation: "불편지수는 팀이 정의한 분석 지표이며 실제 충전 대기 시간·사용자 행동이나 공식 정책 지표를 뜻하지 않습니다."
+  demonstrates: "데이터 검증과 적재, 시각화의 책임을 나누고 팀 정의 지표의 해석 범위를 명시하는 역량을 보여줍니다."
 
 limitations:
   - "불편지수는 전기차 등록 대수와 충전기 수로 계산한 팀 정의 분석 지표이며 공식 정책 지표가 아닙니다."

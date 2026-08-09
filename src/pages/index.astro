@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getPublicExperience, getPublicProjects } from "../lib/content";
+import { portfolioProfile } from "../data/profile";
 import { contentPath, formatPeriod, withBase } from "../lib/site";
 
 const [experienceEntries, projectEntries] = await Promise.all([
@@ -11,26 +12,29 @@ const experience = [...experienceEntries].sort((a, b) =>
   b.data.startDate.localeCompare(a.data.startDate));
 const projects = [...projectEntries].sort((a, b) =>
   b.data.startDate.localeCompare(a.data.startDate));
-const priority = <T extends { data: { print: { priority: number | null } } }>(a: T, b: T) =>
-  (a.data.print.priority ?? Number.MAX_SAFE_INTEGER) -
-  (b.data.print.priority ?? Number.MAX_SAFE_INTEGER);
 const featured = [...experience, ...projects]
   .filter(({ data }) => data.featured)
-  .sort(priority)
-  .slice(0, 3);
+  .sort((a, b) => (a.data.featuredOrder ?? 0) - (b.data.featuredOrder ?? 0));
 const additionalProjects = projects.filter(({ data }) => !data.featured);
+const projectOperationStatus = {
+  production: "운영",
+  "pre-release": "출시 전",
+  prototype: "프로토타입",
+  study: "학습",
+  "not-applicable": "해당 없음",
+};
 ---
 
 <BaseLayout canonicalPath="">
   <main id="main-content" class="home-page">
     <header class="home-hero">
       <div>
-        <p class="eyebrow">Backend Engineer Portfolio</p>
+        <p class="eyebrow">{portfolioProfile.experienceLabel} · {portfolioProfile.foundation} {portfolioProfile.role}</p>
         <h1>백엔드 개발자<br /><span>홍철민</span></h1>
       </div>
       <div class="hero-statement">
-        <p>실패 가능성을 전제로<br /><strong>시스템의 상태와 책임 경계를 설계합니다.</strong></p>
-        <p>Java/Kotlin·Spring 기반 백엔드 경험을 바탕으로 결제 상태, 비동기 메시징, 대용량 파일 처리와 AI 서비스 백엔드를 다뤘습니다.</p>
+        <p>{portfolioProfile.headline}</p>
+        <p>{portfolioProfile.description}</p>
         <div class="hero-actions">
           <a class="button primary" href="#featured">대표 사례 보기</a>
           <a class="button" href={withBase("documents/hong-chulmin-portfolio.pdf")}>PDF 다운로드</a>
@@ -38,11 +42,17 @@ const additionalProjects = projects.filter(({ data }) => !data.featured);
       </div>
     </header>
 
+    <dl class="positioning-signals" aria-label="경력과 전문 영역 요약">
+      {portfolioProfile.signals.map((signal) => (
+        <div><dt>{signal.label}</dt><dd>{signal.value}</dd></div>
+      ))}
+    </dl>
+
     <section id="featured" class="home-section featured-section" aria-labelledby="featured-title">
       <div class="section-heading">
-        <p class="eyebrow">Selected work</p>
+        <p class="eyebrow">대표 작업</p>
         <h2 id="featured-title">대표 사례</h2>
-        <p>서로 다른 문제에서 상태, 책임 경계와 검증 범위를 어떻게 다뤘는지 보여주는 세 사례입니다.</p>
+        <p>운영 결제의 상태 분리에서 JVM 라이브러리 측정, AI 서비스 책임 경계로 확장한 세 사례입니다.</p>
       </div>
       <ol class="featured-cases">
         {featured.map((entry, index) => (
@@ -54,9 +64,10 @@ const additionalProjects = projects.filter(({ data }) => !data.featured);
                 <h3>{entry.data.title}</h3>
               </div>
               <dl>
-                <div><dt>문제</dt><dd>{entry.data.caseSummary?.problem}</dd></div>
+                <div class="featured-context"><dt>맥락·문제</dt><dd><span>{entry.data.caseSummary?.context}</span><span>{entry.data.caseSummary?.problem}</span></dd></div>
                 <div><dt>판단</dt><dd>{entry.data.caseSummary?.decision}</dd></div>
                 <div><dt>검증</dt><dd>{entry.data.caseSummary?.verification}</dd></div>
+                <div><dt>증명하는 역량</dt><dd>{entry.data.caseSummary?.demonstrates}</dd></div>
               </dl>
               <span class="detail-link">상세 보기 <span aria-hidden="true">→</span></span>
             </a>
@@ -67,7 +78,7 @@ const additionalProjects = projects.filter(({ data }) => !data.featured);
 
     <section class="home-section timeline-section" aria-labelledby="timeline-title">
       <div class="section-heading">
-        <p class="eyebrow">Experience</p>
+        <p class="eyebrow">경력</p>
         <h2 id="timeline-title">경력 타임라인</h2>
       </div>
       <ol class="career-timeline">
@@ -87,14 +98,14 @@ const additionalProjects = projects.filter(({ data }) => !data.featured);
 
     <section class="home-section projects-section" aria-labelledby="additional-title">
       <div class="section-heading">
-        <p class="eyebrow">More projects</p>
+        <p class="eyebrow">추가 프로젝트</p>
         <h2 id="additional-title">추가 프로젝트</h2>
       </div>
       <ul class="additional-projects">
         {additionalProjects.map((entry) => (
           <li>
             <a href={contentPath("project", entry.data.slug)}>
-              <div><p class="eyebrow">{entry.data.projectType.operationStatus}</p><h3>{entry.data.title}</h3></div>
+              <div><p class="eyebrow">{projectOperationStatus[entry.data.projectType.operationStatus]}</p><h3>{entry.data.title}</h3></div>
               <p>{entry.data.summary}</p>
               <span aria-hidden="true">→</span>
             </a>
@@ -106,13 +117,13 @@ const additionalProjects = projects.filter(({ data }) => !data.featured);
 
     <section class="home-section principles-section" aria-labelledby="principles-title">
       <div class="section-heading">
-        <p class="eyebrow">Engineering principles</p>
+        <p class="eyebrow">개발 원칙</p>
         <h2 id="principles-title">개발 원칙</h2>
       </div>
       <ol>
-        <li><strong>실패 상태를 먼저 구분합니다.</strong><span>정상 흐름뿐 아니라 중복, 재실행과 외부 연동 실패를 상태와 제약으로 드러냅니다.</span></li>
-        <li><strong>책임 경계를 명확히 합니다.</strong><span>애플리케이션, 데이터베이스, 외부 서비스와 팀 구성원이 보장하는 범위를 나눕니다.</span></li>
-        <li><strong>측정 범위를 함께 기록합니다.</strong><span>벤치마크와 모델 지표를 운영 성과로 확대하지 않고 환경, 데이터와 한계를 함께 제시합니다.</span></li>
+        <li><strong>문제를 먼저 정의합니다.</strong><span>기능을 추가하기 전에 사용자 맥락, 바꿀 수 없는 제약과 시스템이 답해야 할 질문을 구분합니다.</span></li>
+        <li><strong>결과를 검증합니다.</strong><span>테스트, 벤치마크와 실제 실행 기록으로 변경을 확인하고 채택·보류·중단 기준을 기록합니다.</span></li>
+        <li><strong>책임 범위를 설명합니다.</strong><span>애플리케이션, 데이터베이스, 외부 서비스와 팀 구성원이 보장하는 범위와 남은 실패를 나눕니다.</span></li>
       </ol>
     </section>
   </main>

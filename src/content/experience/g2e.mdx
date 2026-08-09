@@ -2,7 +2,7 @@
 title: "지투이"
 slug: "g2e"
 contentType: "experience"
-summary: "응급의료 키오스크의 Flutter 앱과 Spring Boot API를 개발하고, 인증·세션·전역 오류·감사 로그 공통 기능을 구성했습니다. 연명의료정보포탈에서는 메뉴별 세부 접근 권한 로직을 구현했습니다."
+summary: "응급의료 키오스크 앱과 공공 포탈을 개발하며 인증·세션·오류·권한을 화면마다 반복하지 않아야 했습니다. 공통 애플리케이션 기능과 메뉴별 권한으로 분리하기로 판단했고, Flutter 앱과 Spring Boot API를 담당해 적용 경로를 확인했습니다. 전체 보안 정책 설계가 아닌 애플리케이션 경계에서 반복 책임을 분리한 사례입니다."
 
 startDate: "2020-02"
 endDate: "2021-02"
@@ -51,6 +51,7 @@ themes:
   - "maintenance"
 
 featured: false
+featuredOrder: null
 visibility: "public"
 confidentialityNote: "의료·공공 시스템의 실제 사용자 데이터와 내부 API는 포함하지 않습니다."
 
@@ -72,13 +73,18 @@ cases:
     featured: false
 
 evidenceRef: "g2e"
+evidenceHighlights:
+  - "kiosk-common-functions"
+  - "portal-menu-permission"
 
 caseSummary:
+  context: "응급의료 키오스크 앱과 공공 포탈의 백엔드 기능을 함께 개발하던 초기 경력입니다."
   problem: "키오스크 앱은 화면 기능뿐 아니라 인증 상태, 세션 만료, 공통 오류와 사용자 작업 기록을 일관되게 처리해야 했습니다."
   decision: "화면별로 반복하지 않도록 인증·세션·전역 오류·감사 로그를 공통 기능으로 분리하고 Spring Boot API와 연결했습니다."
   role: "Flutter 기반 Android 키오스크 앱과 백엔드 CRUD API를 개발했습니다. 별도 포탈에서는 메뉴별 세부 접근 권한 로직을 구현했습니다."
   verification: "인증 상태와 오류 처리를 공통 경로로 적용하고, 메뉴별 권한에 따라 접근 가능 범위를 구분했습니다."
   limitation: "개인정보 암호화나 전체 보안 정책을 설계한 사례가 아니라, 애플리케이션 수준의 인증·세션·접근 권한 구현 사례입니다."
+  demonstrates: "클라이언트와 API를 함께 다루며 반복되는 인증·오류·권한 책임을 공통 경계로 분리한 기반을 보여줍니다."
 
 limitations:
   - "개인정보 암호화나 전체 보안 정책을 설계한 사례가 아니라, 애플리케이션 수준의 인증·세션·접근 권한 구현 사례입니다."
