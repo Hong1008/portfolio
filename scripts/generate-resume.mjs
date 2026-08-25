@@ -9,12 +9,12 @@ process.env.TMP = "/tmp";
 process.env.TEMP = "/tmp";
 
 const privateMode = process.argv.includes("--private");
-const { data, phone } = await loadResumeData({ privateMode });
+const { data, phone, photo } = await loadResumeData({ privateMode });
 const paths = outputPaths(data, privateMode);
 await mkdir(paths.directory, { recursive: true });
 
-const html = renderResumeHtml(data, phone);
-const docx = await renderDocx(data, phone);
+const html = renderResumeHtml(data, phone, photo);
+const docx = await renderDocx(data, phone, photo);
 
 let browser;
 let pdf;

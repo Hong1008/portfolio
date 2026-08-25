@@ -3,195 +3,339 @@ import {
   BorderStyle,
   Document,
   ExternalHyperlink,
-  PageBreak,
+  ImageRun,
   Packer,
   Paragraph,
-  TabStopType,
+  Table,
+  TableCell,
+  TableLayoutType,
+  TableRow,
   TextRun,
+  VerticalAlign,
+  WidthType,
 } from "docx";
 import JSZip from "jszip";
 
 const COLOR = {
-  text: "17211D",
-  muted: "5E6761",
-  accent: "075F4E",
-  border: "B7C6BE",
-  surface: "EEF3F0",
+  text: "202322",
+  muted: "666C69",
+  light: "8A8F8D",
+  border: "777D7A",
+  softBorder: "D8DCDA",
+};
+
+const PAGE_WIDTH = 11906;
+const PAGE_MARGIN = 964;
+const CONTENT_WIDTH = PAGE_WIDTH - (PAGE_MARGIN * 2);
+const PHOTO_WIDTH = 1701;
+const PERIOD_WIDTH = 2438;
+const PROJECT_PERIOD_WIDTH = 3118;
+const LABEL_WIDTH = 1531;
+const SKILL_LABEL_WIDTH = 1984;
+const CASE_LABEL_WIDTH = 1361;
+
+const NIL_BORDER = { color: "FFFFFF", style: BorderStyle.NIL, size: 0 };
+const NO_BORDERS = {
+  top: NIL_BORDER,
+  bottom: NIL_BORDER,
+  left: NIL_BORDER,
+  right: NIL_BORDER,
+  insideHorizontal: NIL_BORDER,
+  insideVertical: NIL_BORDER,
 };
 
 const baseRun = { font: "Malgun Gothic", size: 20, color: COLOR.text };
+const textOf = (value) => typeof value === "string" ? value : value?.text;
 const text = (value, options = {}) => new TextRun({ text: value, ...baseRun, ...options });
 const muted = (value, options = {}) => text(value, { color: COLOR.muted, ...options });
 const strong = (value, options = {}) => text(value, { bold: true, ...options });
 
-const sectionTitle = (title, kicker = null) => new Paragraph({
-  spacing: { before: 120, after: 80 },
-  border: { bottom: { color: COLOR.border, style: BorderStyle.SINGLE, size: 6, space: 5 } },
-  children: [
-    strong(title, { size: 26, color: COLOR.accent }),
-    ...(kicker ? [muted(`  ${kicker}`, { size: 16 })] : []),
-  ],
-});
-
-const compactParagraph = (children, options = {}) => new Paragraph({
-  spacing: { after: 40, line: 230 },
+const paragraph = (children, options = {}) => new Paragraph({
+  keepLines: true,
+  widowControl: true,
+  spacing: { after: 70, line: 280 },
   ...options,
   children,
 });
 
-const bulletParagraph = (value) => new Paragraph({
-  bullet: { level: 0 },
-  indent: { left: 260, hanging: 160 },
-  spacing: { after: 46, line: 225 },
-  children: [text(value, { size: 18 })],
+const spacer = (after = 80) => new Paragraph({
+  spacing: { after, line: 1 },
+  children: [text("", { size: 2 })],
+});
+
+const sectionTitle = (title, kicker = null) => new Paragraph({
+  keepNext: true,
+  spacing: { before: 320, after: 150, line: 260 },
+  border: { bottom: { color: COLOR.border, style: BorderStyle.SINGLE, size: 6, space: 9 } },
+  children: [
+    strong(title, { size: 27 }),
+    ...(kicker ? [muted(`  ${kicker}`, { size: 16, color: COLOR.light })] : []),
+  ],
 });
 
 const link = (label, url, options = {}) => new ExternalHyperlink({
   link: url,
-  children: [text(label, { color: COLOR.accent, underline: {}, ...options })],
+  children: [text(label, { color: COLOR.muted, underline: {}, ...options })],
 });
 
-const rightTabParagraph = ({ left, right, leftOptions = {}, rightOptions = {}, after = 35 }) => new Paragraph({
-  tabStops: [{ type: TabStopType.RIGHT, position: 10000 }],
-  spacing: { after, line: 220 },
-  children: [
-    text(left, leftOptions),
-    text("\t"),
-    text(right, rightOptions),
-  ],
+const bulletParagraph = (value, options = {}) => new Paragraph({
+  keepLines: true,
+  widowControl: true,
+  bullet: { level: 0 },
+  indent: { left: 300, hanging: 160 },
+  spacing: { after: 72, line: 280 },
+  ...options,
+  children: [text(value, { size: 18 })],
 });
 
-const renderHeader = (data, phone) => {
-  const contacts = [
-    link(`Email ${data.contacts.email.value}`, data.contacts.email.url, { size: 16 }),
-    muted("  |  ", { size: 16 }),
-    link(`GitHub ${data.contacts.github.value}`, data.contacts.github.url, { size: 16 }),
-    muted("  |  ", { size: 16 }),
-    link(`Portfolio ${data.contacts.portfolio.value}`, data.contacts.portfolio.url, { size: 16 }),
-  ];
-  if (phone) contacts.push(muted("  |  ", { size: 16 }), text(`Mobile ${phone}`, { size: 16 }));
+const tableCell = ({ children, width, borders = NO_BORDERS, margins = {}, verticalAlign = VerticalAlign.TOP }) => new TableCell({
+  width: { size: width, type: WidthType.DXA },
+  borders,
+  margins: { top: 0, right: 0, bottom: 0, left: 0, ...margins },
+  verticalAlign,
+  children,
+});
 
-  return [
-    new Paragraph({
-      spacing: { after: 20 },
-      children: [strong(data.candidate.name, { size: 42, color: COLOR.text })],
-    }),
-    rightTabParagraph({
-      left: data.candidate.role,
-      right: data.candidate.experienceLabel,
-      leftOptions: { bold: true, size: 23, color: COLOR.accent },
-      rightOptions: { bold: true, size: 18, color: COLOR.accent },
-      after: 60,
-    }),
-    new Paragraph({ spacing: { after: 90, line: 215 }, children: contacts }),
-  ];
+const fixedTable = (columnWidths, rows) => new Table({
+  width: { size: CONTENT_WIDTH, type: WidthType.DXA },
+  columnWidths,
+  layout: TableLayoutType.FIXED,
+  borders: NO_BORDERS,
+  rows,
+});
+
+const labelValueTable = (rows, {
+  labelWidth = LABEL_WIDTH,
+  fontSize = 18,
+  labelColor = COLOR.muted,
+  bottom = 55,
+  topBorder = false,
+} = {}) => fixedTable([labelWidth, CONTENT_WIDTH - labelWidth], rows.map(([label, value]) => {
+  const borders = topBorder
+    ? { ...NO_BORDERS, top: { color: COLOR.softBorder, style: BorderStyle.SINGLE, size: 3, space: 0 } }
+    : NO_BORDERS;
+  return new TableRow({
+    cantSplit: true,
+    children: [
+      tableCell({
+        width: labelWidth,
+        borders,
+        margins: { right: 170, bottom },
+        children: [paragraph([strong(label, { size: fontSize, color: labelColor })], { spacing: { after: 0, line: 260 } })],
+      }),
+      tableCell({
+        width: CONTENT_WIDTH - labelWidth,
+        borders,
+        margins: { bottom },
+        children: [paragraph([text(value, { size: fontSize })], { spacing: { after: 0, line: 280 } })],
+      }),
+    ],
+  });
+}));
+
+const entryHeadingTable = ({
+  title,
+  period,
+  titleSize = 23,
+  periodSize = 17,
+  periodWidth = PERIOD_WIDTH,
+  bottomBorder = false,
+}) => {
+  const cellBorders = bottomBorder
+    ? { ...NO_BORDERS, bottom: { color: COLOR.softBorder, style: BorderStyle.SINGLE, size: 3, space: 0 } }
+    : NO_BORDERS;
+  return fixedTable([CONTENT_WIDTH - periodWidth, periodWidth], [new TableRow({
+    cantSplit: true,
+    children: [
+      tableCell({
+        width: CONTENT_WIDTH - periodWidth,
+        borders: cellBorders,
+        margins: { right: 240, bottom: bottomBorder ? 130 : 30 },
+        children: [
+          paragraph([strong(title, { size: titleSize })], { keepNext: true, spacing: { after: 0, line: 280 } }),
+        ],
+      }),
+      tableCell({
+        width: periodWidth,
+        borders: cellBorders,
+        margins: { bottom: bottomBorder ? 130 : 30 },
+        children: [paragraph([muted(period, { size: periodSize, bold: true })], {
+          alignment: AlignmentType.RIGHT,
+          spacing: { after: 0, line: 260 },
+        })],
+      }),
+    ],
+  })]);
 };
 
-const renderEducation = (data) => {
-  const paragraphs = [sectionTitle("학력 · 교육 · 자격", "Education & Certification")];
-  for (const item of data.education) {
-    paragraphs.push(rightTabParagraph({
-      left: `${item.label}  ${item.title}  ·  ${item.detail}`,
-      right: item.period,
-      leftOptions: { size: 17, bold: true },
-      rightOptions: { size: 16, color: COLOR.muted },
-      after: 28,
-    }));
-  }
-  for (const item of data.certifications) {
-    paragraphs.push(rightTabParagraph({
-      left: `자격  ${item.title}  ·  ${item.detail}`,
-      right: item.acquiredAt,
-      leftOptions: { size: 17, bold: true },
-      rightOptions: { size: 16, color: COLOR.muted },
-      after: 28,
-    }));
-  }
-  return paragraphs;
+const renderHeader = (data, phone, photo) => {
+  const contacts = [
+    link(`Email ${data.contacts.email.value}`, data.contacts.email.url, { size: 15 }),
+    muted("  |  ", { size: 15, color: COLOR.light }),
+    link(`GitHub ${data.contacts.github.value}`, data.contacts.github.url, { size: 15 }),
+    muted("  |  ", { size: 15, color: COLOR.light }),
+    link(`Portfolio ${data.contacts.portfolio.value}`, data.contacts.portfolio.url, { size: 15 }),
+  ];
+  if (phone) contacts.push(muted("  |  ", { size: 15, color: COLOR.light }), text(`Mobile ${phone}`, { size: 15 }));
+
+  const leftWidth = CONTENT_WIDTH - PHOTO_WIDTH;
+  const photoChildren = photo ? [new ImageRun({
+    type: photo.type,
+    data: photo.buffer,
+    transformation: { width: 113, height: 151 },
+    altText: {
+      name: "hong-chulmin-portrait",
+      title: photo.alt,
+      description: photo.alt,
+    },
+  })] : [text("")];
+
+  return [
+    fixedTable([leftWidth, PHOTO_WIDTH], [new TableRow({
+      cantSplit: true,
+      children: [
+        tableCell({
+          width: leftWidth,
+          margins: { right: 400 },
+          children: [
+            paragraph([strong(data.candidate.name, { size: 46 })], { keepNext: true, spacing: { after: 105, line: 460 } }),
+            paragraph([
+              strong(data.candidate.role, { size: 22 }),
+              muted(`  ${data.candidate.experienceLabel}`, { size: 17 }),
+            ], { keepNext: true, spacing: { after: 48, line: 260 } }),
+            paragraph([strong(textOf(data.candidate.educationSummary), { size: 18 })], { keepNext: true, spacing: { after: 55, line: 260 } }),
+            paragraph(contacts, { spacing: { after: 0, line: 235 } }),
+          ],
+        }),
+        tableCell({
+          width: PHOTO_WIDTH,
+          verticalAlign: VerticalAlign.TOP,
+          children: [new Paragraph({ alignment: AlignmentType.RIGHT, spacing: { after: 0 }, children: photoChildren })],
+        }),
+      ],
+    })]),
+    spacer(150),
+  ];
 };
 
 const renderProfile = (data) => [
   sectionTitle("프로필", "Profile"),
-  compactParagraph([strong(data.candidate.headline, { size: 20 })], { spacing: { after: 45, line: 235 } }),
-  ...data.candidate.summary.map((value) => compactParagraph([text(value, { size: 18 })], { spacing: { after: 34, line: 230 } })),
+  paragraph([strong(data.candidate.headline, { size: 20 })], { spacing: { after: 70, line: 285 } }),
+  ...data.candidate.summary.map((value) => paragraph([text(textOf(value), { size: 19 })], { spacing: { after: 65, line: 290 } })),
 ];
 
 const renderSkills = (data) => [
   sectionTitle("핵심 기술", "Skills"),
-  ...data.skills.map((skill) => compactParagraph([
-    strong(`${skill.label}  `, { size: 17, color: COLOR.accent }),
-    text(skill.items.join(" · "), { size: 17 }),
-  ], { spacing: { after: 25, line: 210 } })),
+  labelValueTable(data.skills.map((skill) => [skill.label, skill.items.join(" · ")]), {
+    labelWidth: SKILL_LABEL_WIDTH,
+    bottom: 65,
+  }),
 ];
 
-const renderCareerSummary = (data) => {
-  const paragraphs = [sectionTitle("경력 요약", "Career Highlights")];
-  for (const career of data.careerSummary) {
-    paragraphs.push(rightTabParagraph({
-      left: `${career.company}  ·  ${career.role}`,
-      right: career.period,
-      leftOptions: { bold: true, size: 19 },
-      rightOptions: { size: 16, color: COLOR.muted },
-      after: 16,
-    }));
-    paragraphs.push(compactParagraph([text(career.achievement, { size: 17 })], {
-      indent: { left: 120 },
-      spacing: { after: 45, line: 210 },
-    }));
-  }
-  return paragraphs;
-};
+const renderCaseStudy = (study) => [
+  paragraph([strong(study.title, { size: 21 })], {
+    keepNext: true,
+    spacing: { before: 160, after: 95, line: 285 },
+  }),
+  labelValueTable([
+    ["문제·제약", textOf(study.problem)],
+    ["판단·구현", textOf(study.decision)],
+    ["검증·결과", textOf(study.verification)],
+    ["책임·한계", textOf(study.limitation)],
+  ], { labelWidth: CASE_LABEL_WIDTH, fontSize: 18, bottom: 75 }),
+  spacer(60),
+];
 
 const renderExperience = (entry) => {
-  const paragraphs = [
-    rightTabParagraph({
-      left: `${entry.company}  ·  ${entry.department}`,
-      right: entry.period,
-      leftOptions: { bold: true, size: 25, color: COLOR.text },
-      rightOptions: { bold: true, size: 17, color: COLOR.muted },
-      after: 16,
+  const children = [
+    entryHeadingTable({
+      title: `${entry.company}  ·  ${entry.department}`,
+      period: entry.period,
     }),
-    compactParagraph([
-      strong(entry.role, { size: 18, color: COLOR.accent }),
+    paragraph([
+      strong(entry.role, { size: 18 }),
       muted(`  ·  ${entry.status}`, { size: 16 }),
-    ], { spacing: { after: 42, line: 210 } }),
-    compactParagraph([text(entry.context, { size: 18 })], { spacing: { after: 35, line: 230 } }),
-    compactParagraph([
-      strong("기여  ", { size: 17, color: COLOR.accent }),
-      text(entry.contribution, { size: 17 }),
-    ], { spacing: { after: 42, line: 215 } }),
-    ...entry.bullets.map((bullet) => bulletParagraph(bullet.text)),
-    compactParagraph([
-      strong("기술  ", { size: 16, color: COLOR.accent }),
-      muted(entry.technologies.join(" · "), { size: 16 }),
     ], {
-      border: { top: { color: COLOR.border, style: BorderStyle.SINGLE, size: 3, space: 4 } },
-      spacing: { before: 30, after: 100, line: 205 },
+      keepNext: true,
+      border: { bottom: { color: COLOR.softBorder, style: BorderStyle.SINGLE, size: 3, space: 8 } },
+      spacing: { after: 125, line: 250 },
     }),
   ];
-  return paragraphs;
+
+  if (entry.team) children.push(labelValueTable([["팀", textOf(entry.team)]], { bottom: 65 }));
+  children.push(paragraph([text(textOf(entry.context), { size: 19 })], { spacing: { after: 90, line: 290 } }));
+  children.push(labelValueTable([["기여", textOf(entry.contribution)]], { bottom: 65 }));
+  children.push(...(entry.caseStudies ?? []).flatMap(renderCaseStudy));
+  children.push(...(entry.highlights ?? []).map((item) => bulletParagraph(textOf(item))));
+  children.push(...(entry.additionalContributions ?? []).flatMap((item) => [
+    spacer(35),
+    labelValueTable([["추가 기여", textOf(item)]], { bottom: 50 }),
+  ]));
+  children.push(
+    spacer(45),
+    labelValueTable([["기술", entry.technologies.join(" · ")]], {
+      fontSize: 16,
+      labelColor: COLOR.muted,
+      bottom: 55,
+      topBorder: true,
+    }),
+    spacer(entry.presentation === "compact" ? 125 : 180),
+  );
+  return children;
 };
 
 const renderProjects = (data) => {
-  const paragraphs = [sectionTitle("프로젝트", "Selected Projects")];
-  for (const project of data.projects) {
-    paragraphs.push(rightTabParagraph({
-      left: `${project.title}  ·  ${project.subtitle}`,
-      right: `${project.period}  ·  ${project.type}`,
-      leftOptions: { bold: true, size: 19 },
-      rightOptions: { size: 15, color: COLOR.muted },
-      after: 20,
+  const children = [sectionTitle("프로젝트", "Selected Projects")];
+  for (const project of data.selectedProjects) {
+    children.push(entryHeadingTable({
+      title: `${project.title}  ·  ${project.subtitle}`,
+      period: `${project.period}  ·  ${project.type}`,
+      titleSize: 20,
+      periodSize: 15,
+      periodWidth: PROJECT_PERIOD_WIDTH,
+      bottomBorder: true,
     }));
-    paragraphs.push(...project.sentences.map((sentence) => bulletParagraph(sentence.text)));
-    paragraphs.push(new Paragraph({
-      spacing: { after: 55 },
-      children: [link(project.url, project.url, { size: 15 })],
-    }));
+    children.push(spacer(45));
+    children.push(...project.highlights.map((highlight) => bulletParagraph(textOf(highlight), {
+      spacing: { after: 66, line: 280 },
+    })));
+    children.push(paragraph([link(project.url, project.url, { size: 16 })], { spacing: { after: 145, line: 240 } }));
   }
-  return paragraphs;
+  return children;
 };
 
-const pageBreak = () => new Paragraph({ children: [new PageBreak()] });
+const renderTrainingAndCertifications = (data) => {
+  const rows = [
+    ...data.training.map((item) => ["교육", `${item.title}  ·  ${item.detail}`, item.period]),
+    ...data.certifications.map((item) => ["자격", `${item.title}  ·  ${item.detail}`, item.acquiredAt]),
+  ];
+  const leftWidth = CONTENT_WIDTH - PERIOD_WIDTH;
+
+  return [
+    sectionTitle("교육 · 자격", "Training & Certification"),
+    fixedTable([leftWidth, PERIOD_WIDTH], rows.map(([kind, label, period]) => new TableRow({
+      cantSplit: true,
+      children: [
+        tableCell({
+          width: leftWidth,
+          margins: { right: 240, bottom: 90 },
+          children: [paragraph([
+            muted(`${kind}  `, { size: 16, bold: true }),
+            strong(label, { size: 18 }),
+          ], { spacing: { after: 0, line: 270 } })],
+        }),
+        tableCell({
+          width: PERIOD_WIDTH,
+          margins: { bottom: 90 },
+          children: [paragraph([muted(period, { size: 17 })], {
+            alignment: AlignmentType.RIGHT,
+            spacing: { after: 0, line: 270 },
+          })],
+        }),
+      ],
+    }))),
+  ];
+};
 
 const normalizeDocx = async (buffer) => {
   const zip = await JSZip.loadAsync(buffer);
@@ -213,42 +357,35 @@ const normalizeDocx = async (buffer) => {
   });
 };
 
-export const renderDocx = async (data, phone = null) => {
-  const page2 = data.experiencePages.find((page) => page.page === 2);
-  const page3 = data.experiencePages.find((page) => page.page === 3);
+export const renderDocx = async (data, phone = null, photo = null) => {
   const children = [
-    ...renderHeader(data, phone),
-    ...renderEducation(data),
+    ...renderHeader(data, phone, photo),
     ...renderProfile(data),
     ...renderSkills(data),
-    ...renderCareerSummary(data),
-    pageBreak(),
-    sectionTitle("경력 상세", "Professional Experience"),
-    ...page2.entries.flatMap(renderExperience),
-    pageBreak(),
-    sectionTitle("경력 상세 · 계속", "Professional Experience"),
-    ...page3.entries.flatMap(renderExperience),
+    sectionTitle("경력", "Professional Experience"),
+    ...data.experiences.flatMap(renderExperience),
     ...renderProjects(data),
+    ...renderTrainingAndCertifications(data),
   ];
 
   const document = new Document({
     creator: "홍철민",
     title: data.meta.title,
     subject: "Java/Kotlin·Spring 백엔드 개발자 이력서",
-    description: "근거 기반으로 생성한 3쪽 백엔드 개발자 이력서",
+    description: "근거 기반으로 생성한 경력 중심 백엔드 개발자 이력서",
     styles: {
       default: {
         document: {
           run: baseRun,
-          paragraph: { spacing: { line: 230 } },
+          paragraph: { spacing: { line: 280 } },
         },
       },
     },
     sections: [{
       properties: {
         page: {
-          size: { width: 11906, height: 16838 },
-          margin: { top: 650, right: 800, bottom: 650, left: 800, header: 0, footer: 0, gutter: 0 },
+          size: { width: PAGE_WIDTH, height: 16838 },
+          margin: { top: 907, right: PAGE_MARGIN, bottom: PAGE_MARGIN, left: PAGE_MARGIN, header: 0, footer: 0, gutter: 0 },
         },
       },
       children,
