@@ -50,7 +50,7 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
       <div class="cover-skills"><span>Java · Kotlin</span><span>Spring</span><span>MySQL · Redis</span><span>AWS</span><span>Python · RAG · MCP</span></div>
       <ol class="cover-cases">
         {[hodoolabs, kexcel, workshieldWeb].map((entry, index) => (
-          <li><span>0{index + 1}</span><strong>{entry.data.title}</strong><p>{entry.data.caseSummary?.decision}</p></li>
+          <li><span>0{index + 1}</span><strong>{entry.data.title}</strong><p>{entry.data.caseSummary?.result}</p></li>
         ))}
       </ol>
       <footer class="print-contact">
@@ -69,7 +69,7 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
         <div><strong>REQUESTED</strong><span>주문·주문키 생성</span></div><b>→<small>외부 승인</small></b><div><strong>PURCHASED</strong><span>승인 DB 반영</span></div><b>→<small>재화 제공</small></b><div><strong>COMPLETED</strong><span>내부 처리 완료</span></div>
       </div>
       <div class="print-two-column">
-        <section><h3>핵심 판단</h3><p>{hodoolabs.data.caseSummary?.decision}</p><h3>중복 방어</h3><ul><li>처리 전 DB 주문 상태 검증</li><li>결제 트랜잭션 식별키 UNIQUE 제약</li><li>애플리케이션 검증과 DB 최종 방어를 구분</li></ul></section>
+        <section><h3>핵심 판단</h3><p>{hodoolabs.data.caseSummary?.decision}</p><h3>구현 결과</h3><p>{hodoolabs.data.caseSummary?.result}</p></section>
         <section><h3>역할 경계</h3><p>{hodoolabs.data.role.contributionSummary}</p><h3>직접 담당</h3><ul>{hodoolabs.data.role.responsibilities.slice(0, 4).map((item) => <li>{item}</li>)}</ul></section>
       </div>
       <aside class="print-note"><strong>검증 범위</strong><p>{hodoolabs.data.caseSummary?.verification}</p></aside>
@@ -121,7 +121,8 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
         <div><dt>모델 응답 시간 p50</dt><dd>{metric(workshieldWebMetrics, "qwen-latency-p50")?.value}초</dd><small>동시 요청 1개</small></div>
         <div><dt>모델 응답 시간 p95</dt><dd>{metric(workshieldWebMetrics, "qwen-latency-p95")?.value}초</dd><small>고정 합성 검증 데이터</small></div>
       </dl>
-      <aside class="print-note"><strong>책임 범위</strong><p>{workshieldWeb.data.caseSummary?.limitation}</p></aside>
+      <aside class="print-note"><strong>구현 결과</strong><p>{workshieldWeb.data.caseSummary?.result}</p></aside>
+      <p class="print-caveat">제한 조건 · {workshieldWeb.data.caseSummary?.limitation}</p>
       <a class="print-detail-url" href="https://hong1008.github.io/portfolio/projects/workshield-web/">상세 HTML · hong1008.github.io/portfolio/projects/workshield-web/</a>
     </section>
 
@@ -131,7 +132,7 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
       <p class="print-lead">Java·Kotlin과 Spring 기반 애플리케이션 개발에서 시작해 결제, 비동기 메시징, 도메인 분리와 배포 환경을 다뤘습니다.</p>
       <ol class="print-careers">
         {otherExperience.map((entry) => (
-          <li><div><span>{formatPeriod(entry.data.startDate, entry.data.endDate, entry.data.datePrecision)}</span><strong>{entry.data.title}</strong><small>{entry.data.role.title}</small></div><section><h3>{entry.data.caseSummary?.decision}</h3><p>{entry.data.caseSummary?.verification}</p><p class="career-limit">한계 · {entry.data.caseSummary?.limitation}</p></section></li>
+          <li><div><span>{formatPeriod(entry.data.startDate, entry.data.endDate, entry.data.datePrecision)}</span><strong>{entry.data.title}</strong><small>{entry.data.role.title}</small></div><section><h3>{entry.data.caseSummary?.decision}</h3><p>{entry.data.caseSummary?.result}</p></section></li>
         ))}
       </ol>
       <aside class="print-note"><strong>경력 사례 공개 원칙</strong><p>회사 내부 코드와 실제 사용자 데이터는 포함하지 않았으며, 운영·출시 상태와 개인·팀의 책임 범위를 확인 가능한 수준으로 제한했습니다.</p></aside>
@@ -143,7 +144,7 @@ const metric = (items: typeof kexcelMetrics, id: string) => items.find((item) =>
       <div class="print-projects">
         <article class="print-project-feature"><p class="eyebrow">AI 보조 개발의 범위 통제</p><h3>{workshieldMcp.data.title}</h3><p>AI 제안으로 검색 도구가 검증하기 어려운 상세 비교까지 커진 뒤, 실제 실행 기록과 평가 가능성을 기준으로 상세 비교를 제외하고 목표·비목표를 다시 정했습니다.</p><dl><div><dt>판단</dt><dd>실제 판정 후보와 점수를 보존하고, 실험 전에 가설·채택·보류·중단 조건과 되돌릴 기준선을 기록했습니다.</dd></div><div><dt>역할과 한계</dt><dd>PM·MCP 구현을 담당했습니다. 이 과정은 도구 사용 자체의 성과가 아니라 문제 정의·검증·중단 판단의 책임을 사람이 소유한 사례입니다.</dd></div></dl></article>
         {otherProjects.map((entry) => (
-          <article><p class="eyebrow">{entry.data.organization.displayName}</p><h3>{entry.data.title}</h3><p>{entry.data.caseSummary?.decision}</p><dl><div><dt>역할</dt><dd>{entry.data.role.title}</dd></div><div><dt>검증·한계</dt><dd>{entry.data.caseSummary?.verification} {entry.data.caseSummary?.limitation}</dd></div></dl></article>
+          <article><p class="eyebrow">{entry.data.organization.displayName}</p><h3>{entry.data.title}</h3><p>{entry.data.caseSummary?.result}</p><dl><div><dt>역할</dt><dd>{entry.data.role.title}</dd></div><div><dt>검증</dt><dd>{entry.data.caseSummary?.verification}</dd></div></dl></article>
         ))}
       </div>
       <section class="print-links">

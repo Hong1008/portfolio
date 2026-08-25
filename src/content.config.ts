@@ -69,6 +69,7 @@ const commonEntryFields = {
       problem: z.string().optional(),
       decision: z.string().optional(),
       role: z.string().optional(),
+      result: z.string(),
       verification: z.string().optional(),
       limitation: z.string().optional(),
       demonstrates: z.string().optional(),
@@ -91,6 +92,7 @@ type FeaturedEntry = {
     problem?: string;
     decision?: string;
     role?: string;
+    result?: string;
     verification?: string;
     limitation?: string;
     demonstrates?: string;
@@ -122,6 +124,7 @@ const validateFeaturedEntry = (data: FeaturedEntry, context: z.RefinementCtx) =>
     "problem",
     "decision",
     "role",
+    "result",
     "verification",
     "limitation",
     "demonstrates",

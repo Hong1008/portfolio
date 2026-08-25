@@ -194,6 +194,26 @@ try {
   check((await page.locator(".print-page").count()) === 7, "print page does not contain exactly seven sections");
   await page.locator(".print-page").first().screenshot({ path: `${screenshotDir}/print-cover.png` });
   await page.locator(".print-page").nth(4).screenshot({ path: `${screenshotDir}/print-workshield-web.png` });
+  await page.emulateMedia({ media: "print" });
+  const printPageHeights = await page.locator(".print-page").evaluateAll((items) => {
+    const probe = document.createElement("div");
+    probe.style.height = "273mm";
+    probe.style.position = "absolute";
+    document.body.append(probe);
+    const printableHeight = probe.getBoundingClientRect().height;
+    probe.remove();
+    return items.map((item, index) => ({
+      index: index + 1,
+      height: item.getBoundingClientRect().height,
+      printableHeight,
+    }));
+  });
+  for (const item of printPageHeights) {
+    check(item.height <= item.printableHeight + 1, `print section ${item.index}: content exceeds one A4 page (${Math.round(item.height)}px > ${Math.round(item.printableHeight)}px)`);
+  }
+  const pdfSource = (await readFile(join(dist, "documents", "hong-chulmin-portfolio.pdf"))).toString("latin1");
+  const pdfPageCount = [...pdfSource.matchAll(/\/Type\s*\/Page\b/g)].length;
+  check(pdfPageCount === 7, `generated PDF contains ${pdfPageCount} pages instead of 7`);
 
   if (failures.length) {
     console.error(`Site verification failed:\n- ${failures.join("\n- ")}`);

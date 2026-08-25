@@ -310,6 +310,7 @@ learnings:
 problem:
 decision:
 role:
+result:
 verification:
 limitation:
 ```
@@ -389,14 +390,13 @@ limitations:
 
 ## 9. 30초 요약 규칙
 
-상세 페이지 상단에는 다음을 표시한다.
+상세 페이지 상단에는 채용 담당자가 빠르게 확인할 수 있는 문제, 역할, 판단과 결과를 표시한다. 검증 조건과 한계는 상세 본문과 페이지 하단에서 제공한다.
 
 ```yaml
 problem:
 decision:
 role:
-verification:
-limitation:
+result:
 ```
 
 각 항목은 최대 2문장으로 작성한다.

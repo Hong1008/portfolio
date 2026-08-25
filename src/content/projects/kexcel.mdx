@@ -79,6 +79,7 @@ caseSummary:
   problem: "Apache POI의 저수준 API를 직접 사용하면 객체와 좌표, 스타일 생명주기를 반복해서 관리해야 했고, 엔진을 바꾸면 보고서 코드도 함께 변경해야 했습니다."
   decision: "사용자 DSL과 실제 엑셀 엔진을 ExcelDriver 인터페이스로 분리하고, 스트리밍 제약과 동일 시트 동시 쓰기 오용은 즉시 실패하도록 했습니다."
   role: "개인 프로젝트로 API와 Scope 계층 설계, POI·FastExcel 드라이버 구현, 벤치마크와 배포를 수행했습니다."
+  result: "FastExcel DSL 오버헤드를 16.3%에서 3.1%로 줄이고 512MB heap에서 100만 행 생성을 완료했으며, JitPack 0.1.0으로 공개했습니다."
   verification: "OpenJDK 21, 512MB heap, G1GC 환경에서 JMH로 DSL 오버헤드와 병합 처리량을 측정했습니다."
   limitation: "병합 중복 검증을 우회한 최적화는 잘못된 병합 요청을 사전에 방지해야 하며, 병합 메타데이터의 메모리 비용은 남습니다."
   demonstrates: "API 추상화의 편의뿐 아니라 오용 정책과 런타임 비용을 벤치마크로 함께 검증하는 역량을 보여줍니다."

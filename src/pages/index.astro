@@ -52,7 +52,7 @@ const projectOperationStatus = {
       <div class="section-heading">
         <p class="eyebrow">대표 작업</p>
         <h2 id="featured-title">대표 사례</h2>
-        <p>운영 결제의 상태 분리에서 JVM 라이브러리 측정, AI 서비스 책임 경계로 확장한 세 사례입니다.</p>
+        <p>결제 상태 처리, JVM 라이브러리 성능 측정, AI 출력 검증에서 직접 맡은 구현과 결과를 보여주는 세 사례입니다.</p>
       </div>
       <ol class="featured-cases">
         {featured.map((entry, index) => (
@@ -65,6 +65,8 @@ const projectOperationStatus = {
               </div>
               <dl>
                 <div class="featured-context"><dt>맥락·문제</dt><dd><span>{entry.data.caseSummary?.context}</span><span>{entry.data.caseSummary?.problem}</span></dd></div>
+                <div><dt>내 역할</dt><dd>{entry.data.caseSummary?.role}</dd></div>
+                <div><dt>결과</dt><dd>{entry.data.caseSummary?.result}</dd></div>
                 <div><dt>판단</dt><dd>{entry.data.caseSummary?.decision}</dd></div>
                 <div><dt>검증</dt><dd>{entry.data.caseSummary?.verification}</dd></div>
                 <div><dt>증명하는 역량</dt><dd>{entry.data.caseSummary?.demonstrates}</dd></div>

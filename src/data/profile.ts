@@ -3,9 +3,9 @@ export const portfolioProfile = {
   role: "Backend Engineer",
   experienceLabel: "약 4년 경력",
   foundation: "Java/Kotlin·Spring",
-  headline: "실패 가능성을 전제로 시스템의 상태와 책임 경계를 설계합니다.",
+  headline: "상태가 복잡한 백엔드 문제를 구현과 검증으로 해결합니다.",
   description:
-    "결제 상태, 중복·재실행, 외부 연동 실패와 대용량 파일 처리 문제를 다뤘습니다. 현재는 이 경험을 Python·RAG·MCP 기반 AI 서비스 백엔드의 검증과 책임 분리로 확장하고 있습니다.",
+    "약 4년간 Java/Kotlin·Spring으로 결제, 비동기 메시징과 AWS 배포를 구현했습니다. 현재는 성능 측정과 Python·RAG·MCP 기반 AI 서비스 백엔드로 경험을 확장하고 있습니다.",
   signals: [
     {
       label: "경력",
