@@ -17,6 +17,10 @@ pnpm-debug.log*
 .env
 .env.production
 
+# resume private contact and submission output
+resume/private.local.yaml
+resume/private-output/
+
 # macOS-specific files
 .DS_Store
 

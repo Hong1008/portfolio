@@ -1,0 +1,257 @@
+meta:
+  schemaVersion: 1
+  lastReviewedAt: "2026-08-25"
+  marketReviewedAt: "2026-08-25"
+  title: "홍철민 백엔드 개발자 이력서"
+  fileBaseName: "홍철민_백엔드개발자_이력서"
+  expectedPages: 3
+
+candidate:
+  name: "홍철민"
+  role: "Java/Kotlin·Spring 백엔드 개발자"
+  experienceLabel: "백엔드 경력 3년 7개월"
+  headline: "결제, 비동기 메시징과 AWS 배포를 구현해 온 백엔드 개발자입니다."
+  summary:
+    - "운영 서비스에서 중복 요청과 재실행, 외부 연동 이후의 상태를 DB 제약과 명시적인 상태 흐름으로 다뤘습니다."
+    - "최근에는 실무에서 경험한 엑셀 생성 문제를 Kotlin 라이브러리로 일반화하고, Python 기반 AI 서비스 백엔드로 경험을 확장했습니다."
+  refs:
+    - "profile#fact:identity"
+    - "profile#fact:experience-period"
+
+contacts:
+  email:
+    label: "Email"
+    value: "zxcbnm6404@gmail.com"
+    url: "mailto:zxcbnm6404@gmail.com"
+  github:
+    label: "GitHub"
+    value: "github.com/Hong1008"
+    url: "https://github.com/Hong1008"
+  portfolio:
+    label: "Portfolio"
+    value: "hong1008.github.io/portfolio/"
+    url: "https://hong1008.github.io/portfolio/"
+  refs:
+    - "profile#fact:public-contact"
+
+education:
+  - label: "학력"
+    title: "연성대학교 컴퓨터소프트웨어"
+    detail: "전문학사 · 졸업"
+    period: "2016.03–2019.02"
+    refs:
+      - "profile#fact:university"
+  - label: "교육"
+    title: "SK Networks Family AI 캠프 30기"
+    detail: "실습 중심 교육 과정 수강"
+    period: "2026.04–현재"
+    refs:
+      - "profile#fact:ai-camp"
+
+certifications:
+  - title: "SQL 개발자(SQLD)"
+    detail: "한국데이터산업진흥원"
+    acquiredAt: "2026.06"
+    refs:
+      - "profile#fact:sqld"
+  - title: "PCCE Python3 Lv4"
+    detail: "(주)그렙"
+    acquiredAt: "2026.04"
+    refs:
+      - "profile#fact:pcce"
+
+skills:
+  - label: "Backend"
+    items: ["Java", "Kotlin", "Spring Boot", "Spring MVC", "JPA", "QueryDSL"]
+    refs:
+      - "shopl#fact:implementation-boundary"
+      - "hunik#fact:application-scope"
+      - "hodoolabs#fact:payment-state"
+      - "g2e#fact:kiosk-backend-api"
+  - label: "Data & Messaging"
+    items: ["MySQL", "Redis", "AWS SQS", "Spring Batch"]
+    refs:
+      - "shopl#fact:mail-boundary"
+      - "shopl#fact:duplicate-defense"
+      - "hodoolabs#fact:recovery-batch"
+  - label: "Infrastructure"
+    items: ["AWS", "Docker", "Jenkins", "ECS Fargate"]
+    refs:
+      - "hunik#fact:deployment-pipeline"
+      - "hunik#fact:ecs-private-subnet"
+  - label: "Recent Expansion"
+    items: ["Python", "FastAPI", "RAG", "MCP"]
+    refs:
+      - "profile#fact:ai-camp"
+      - "workshield-mcp#fact:deterministic-boundary"
+      - "workshield-web#fact:contribution"
+
+careerSummary:
+  - company: "샤플앤컴퍼니"
+    role: "백엔드 개발자"
+    period: "2022.11–2023.08"
+    achievement: "배치와 메일 서버를 분리하고, 재실행과 SQS 중복 전달을 서로 다른 DB UNIQUE 제약으로 방어했습니다."
+    refs:
+      - "shopl#fact:employment"
+      - "shopl#fact:mail-boundary"
+      - "shopl#fact:duplicate-defense"
+  - company: "휴니크"
+    role: "개발 리드·백엔드·인프라"
+    period: "2021.09–2022.10"
+    achievement: "4인 팀에서 신규 Spring 시스템의 도메인과 데이터 책임을 나누고 AWS 배포 흐름을 구현했습니다."
+    refs:
+      - "hunik#fact:employment-and-team"
+      - "hunik#fact:domain-boundaries"
+      - "hunik#fact:deployment-pipeline"
+  - company: "호두랩스"
+    role: "백엔드 개발자"
+    period: "2021.02–2021.08"
+    achievement: "외부 승인과 내부 재화 제공을 상태로 구분하고, 승인 후 미완료 주문을 재처리했습니다."
+    refs:
+      - "hodoolabs#fact:employment"
+      - "hodoolabs#fact:payment-state"
+      - "hodoolabs#fact:recovery-batch"
+  - company: "지투이"
+    role: "애플리케이션·백엔드 개발"
+    period: "2020.02–2021.02"
+    achievement: "Flutter 키오스크와 Spring API를 개발하고 인증·세션·오류·감사 로그를 공통 기능으로 구성했습니다."
+    refs:
+      - "g2e#fact:employment"
+      - "g2e#fact:emergency-kiosk-flutter"
+      - "g2e#fact:kiosk-common-functions"
+
+experiencePages:
+  - page: 2
+    entries:
+      - company: "샤플앤컴퍼니"
+        department: "HADA 개발팀"
+        role: "백엔드 개발자"
+        period: "2022.11–2023.08"
+        status: "운영"
+        context: "현장 관리 서비스의 메일 발송, 점검 보고서와 현장 이슈 관리 백엔드를 담당했습니다."
+        contribution: "세 업무의 구현을 직접 담당하고 업무별 기획자·프론트엔드 개발자와 협업했습니다."
+        bullets:
+          - text: "발송 대상자를 선정하는 배치 서버와 실제 전송을 담당하는 메일 서버를 SQS로 분리하고, 발송 기준일과 메일 트랜잭션 키에 각각 DB UNIQUE 제약을 적용했습니다."
+            refs:
+              - "shopl#fact:mail-boundary"
+              - "shopl#fact:duplicate-defense"
+          - text: "서버 일괄 발송에 적합하지 않았던 네이버웍스 메일 API를 AWS SES로 전환하고, 온보딩 발송 구조를 인보이스 메일에도 재사용했습니다."
+            refs:
+              - "shopl#fact:mail-provider"
+              - "shopl#fact:mail-reuse"
+          - text: "POI 기반 점검 보고서를 FastExcel로 전환하고, 반복되는 생성 흐름을 Kotlin DSL 공통 빌더로 분리했습니다."
+            refs:
+              - "shopl#fact:report-generation"
+        technologies: ["Kotlin", "Spring Boot", "Spring Batch", "MySQL", "AWS SQS·SES", "FastExcel"]
+        refs:
+          - "shopl#fact:employment"
+          - "shopl#fact:implementation-boundary"
+          - "shopl#fact:operation-status"
+
+      - company: "휴니크"
+        department: "개발팀"
+        role: "개발 리드·백엔드·인프라"
+        period: "2021.09–2022.10"
+        status: "출시 전 종료"
+        context: "기존 PHP 서비스와 공존할 젤로텍 v2 신규 Spring 시스템을 4인 개발팀에서 진행했습니다."
+        contribution: "개발 리드로 신규 데이터 모델, 어드민·키오스크 API와 AWS 실행·배포 환경을 담당했습니다."
+        bullets:
+          - text: "상품·이용권·프로모션·회원·수업·주문 정보가 30개 이상 컬럼에 결합된 기존 payment 구조를 복제하지 않고 신규 시스템의 데이터 책임을 분리했습니다."
+            refs:
+              - "hunik#fact:legacy-payment-table"
+              - "hunik#fact:domain-boundaries"
+          - text: "어드민·키오스크 API와 JWT·Spring Security 인증을 구현하고, 인증·예외·공통 응답을 멀티모듈 공통 영역으로 분리했습니다."
+            refs:
+              - "hunik#fact:application-scope"
+              - "hunik#fact:multi-module"
+          - text: "Jenkins에서 Docker 이미지를 빌드해 ECR에 업로드하고 ECS Fargate로 배포하는 백엔드 파이프라인을 구성했습니다."
+            refs:
+              - "hunik#fact:deployment-pipeline"
+        technologies: ["Java", "Spring Boot", "Spring Security", "MySQL", "Docker", "Jenkins", "AWS ECS"]
+        refs:
+          - "hunik#fact:employment-and-team"
+          - "hunik#fact:pre-release"
+
+  - page: 3
+    entries:
+      - company: "호두랩스"
+        department: "플랫폼팀"
+        role: "백엔드 개발자"
+        period: "2021.02–2021.08"
+        status: "운영 후 서비스 종료"
+        context: "PG와 Google Play·Apple 인앱 결제를 하나의 서비스 흐름으로 연결했습니다."
+        contribution: "애플리케이션 결제 흐름과 복구 배치를 구현하고, Stored Procedure와 DB 처리 구조는 DBA와 협업했습니다."
+        bullets:
+          - text: "주문을 REQUESTED·PURCHASED·COMPLETED로 나눠 외부 승인과 내부 재화 제공 완료를 구분했습니다."
+            refs:
+              - "hodoolabs#fact:payment-state"
+          - text: "주문 상태 검증과 결제 트랜잭션 식별키 UNIQUE 제약을 중복 방어선으로 사용했습니다."
+            refs:
+              - "hodoolabs#fact:duplicate-defense"
+          - text: "Redis에 남은 PURCHASED 주문을 TTL 안에서 식별해 재처리하고, ShedLock으로 여러 WAS의 복구 스케줄러 동시 실행을 제한했습니다."
+            refs:
+              - "hodoolabs#fact:recovery-batch"
+        technologies: ["Java", "Spring Boot", "MySQL", "Redis", "ShedLock", "Stored Procedure"]
+        refs:
+          - "hodoolabs#fact:employment"
+          - "hodoolabs#fact:payment-team"
+
+      - company: "지투이"
+        department: "개발팀"
+        role: "애플리케이션·백엔드 개발"
+        period: "2020.02–2021.02"
+        status: "사내·고객 시스템"
+        context: "응급의료 키오스크 앱과 공공 포탈의 백엔드 기능을 개발했습니다."
+        contribution: "Flutter 앱과 Spring Boot API를 함께 개발하고 포탈의 메뉴별 접근 권한을 구현했습니다."
+        bullets:
+          - text: "Flutter 기반 Android 키오스크와 Spring Boot CRUD API를 개발하고 인증·세션·전역 오류·감사 로그를 공통 기능으로 구성했습니다."
+            refs:
+              - "g2e#fact:emergency-kiosk-flutter"
+              - "g2e#fact:kiosk-common-functions"
+              - "g2e#fact:kiosk-backend-api"
+          - text: "연명의료정보포탈에서 사용자 권한에 따라 메뉴별 접근 가능 범위를 구분하는 로직을 구현했습니다."
+            refs:
+              - "g2e#fact:portal-menu-permission"
+        technologies: ["Java", "Spring Boot", "MySQL", "JPA", "Flutter"]
+        refs:
+          - "g2e#fact:employment"
+
+projects:
+  - title: "KExcel"
+    subtitle: "Kotlin DSL 기반 대용량 엑셀 생성 라이브러리"
+    period: "2026.05"
+    type: "개인 오픈소스"
+    url: "https://github.com/Hong1008/kexcel"
+    sentences:
+      - text: "Kotlin DSL과 ExcelDriver 인터페이스를 설계하고 PoiDriver·FastExcelDriver, 행 단위 스트리밍과 오용 감지 제약을 구현했습니다."
+        refs:
+          - "kexcel#fact:kotlin-dsl"
+          - "kexcel#fact:engine-abstraction"
+          - "kexcel#fact:streaming"
+          - "kexcel#fact:fail-fast"
+      - text: "OpenJDK 21·512MB heap에서 FastExcel 엔진으로 100만 행을 3.396초에 생성했고, DSL 실행당 추가 할당량을 약 200KB에서 364B로 줄였습니다."
+        refs:
+          - "kexcel#metric:large-data-1m-fast"
+          - "kexcel#metric:extra-allocation"
+    refs:
+      - "kexcel#fact:project-period"
+      - "kexcel#fact:release"
+
+  - title: "WorkShield"
+    subtitle: "표준계약서 비교 MCP·웹 서비스 백엔드"
+    period: "2026.06–2026.08"
+    type: "5인 교육 팀 프로젝트"
+    url: "https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-4th-2Team"
+    sentences:
+      - text: "PM·시스템 설계·MCP 구현을 담당해 문서 처리·검색·상태 분류를 수행하는 결정론적 서버와 선택적 LLM 계층을 분리했습니다."
+        refs:
+          - "workshield-mcp#fact:role"
+          - "workshield-mcp#fact:deterministic-boundary"
+      - text: "웹 확장에서는 FastAPI 기반, Review 상태 전이, LLM 오케스트레이션과 AWS CDK·GitHub Actions 배포 기여를 공개 PR로 남겼습니다."
+        refs:
+          - "workshield-web#fact:contribution"
+          - "workshield-web#fact:review-state"
+          - "workshield-web#fact:deployment-boundary"
+    refs:
+      - "workshield-mcp#fact:project-scope"
+      - "workshield-web#fact:project-scope"

@@ -1,0 +1,90 @@
+contentSlug: profile
+lastReviewedAt: "2026-08-25"
+
+facts:
+  - id: identity
+    statement: "이름은 홍철민이며 Java/Kotlin·Spring 기반 백엔드 개발자를 직무 방향으로 삼고 있다."
+    sourceType: user-confirmed
+    source: "docs/source_of_truth/profile.md §2"
+    scope: "이름·직무 방향"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: experience-period
+    statement: "2020년 2월부터 2023년 8월까지 회사 경력의 중복 월을 한 번만 계산하면 백엔드 경력은 43개월, 3년 7개월이다."
+    sourceType: resume
+    source: "docs/source_of_truth/profile.md §2"
+    scope: "이력서 경력 합산"
+    public: true
+    confidence: confirmed
+    note: "지투이와 호두랩스가 겹치는 2021년 2월은 한 번만 계산했다."
+
+  - id: public-contact
+    statement: "공개 연락처는 zxcbnm6404@gmail.com, github.com/Hong1008, hong1008.github.io/portfolio/이다."
+    sourceType: user-confirmed
+    source: "docs/source_of_truth/profile.md §2·5"
+    scope: "공개 연락처와 링크"
+    public: true
+    confidence: confirmed
+    note: "휴대전화는 공개 근거 파일에 저장하지 않는다."
+
+  - id: university
+    statement: "연성대학교 컴퓨터소프트웨어 전공 전문학사를 2016년 3월부터 2019년 2월까지 이수하고 졸업했다."
+    sourceType: user-confirmed
+    source: "docs/source_of_truth/profile.md §4"
+    scope: "학력"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: ai-camp
+    statement: "SK Networks Family AI 캠프 30기를 2026년 4월부터 수강 중이다."
+    sourceType: user-confirmed
+    source: "docs/source_of_truth/profile.md §3"
+    scope: "교육"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: sqld
+    statement: "2026년 6월 한국데이터산업진흥원의 SQL 개발자(SQLD) 자격을 취득했다."
+    sourceType: user-confirmed
+    source: "docs/source_of_truth/profile.md §4"
+    scope: "자격증"
+    public: true
+    confidence: confirmed
+    note: "이력서에는 점수를 표시하지 않는다."
+
+  - id: pcce
+    statement: "2026년 4월 PCCE Python3 Lv4를 취득했다."
+    sourceType: user-confirmed
+    source: "docs/source_of_truth/profile.md §4"
+    scope: "자격증"
+    public: true
+    confidence: confirmed
+    note: "이력서에는 원점수를 표시하지 않는다."
+
+metrics: []
+
+contribution:
+  mine: []
+  team: []
+  external: []
+
+publication:
+  allowed:
+    - "이름과 직무 방향"
+    - "경력 기간"
+    - "공개 이메일과 링크"
+    - "학력·교육·자격증"
+  anonymize: []
+  prohibited:
+    - "휴대전화"
+    - "주소"
+    - "생년월일"
+
+risks:
+  - claim: "4년 이상 경력"
+    reason: "확인된 회사 경력을 중복 월 없이 합산하면 43개월이다."
+    safeWording: "3년 7개월의 백엔드 경력"

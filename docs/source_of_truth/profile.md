@@ -25,6 +25,8 @@
 - 이름: 홍철민
 - 직무 방향: Java/Kotlin·Spring 기반 백엔드 개발자
 - 백엔드 경력: 약 4년
+- 이력서용 정확 경력 표기: 3년 7개월
+  - 2020.02–2023.08 사이의 중복 월을 한 번만 계산한 43개월
 - 현재 활동: SK Networks Family AI 캠프 수강 및 개인·팀 프로젝트
 - 이메일: `zxcbnm6404@gmail.com`
 - GitHub: https://github.com/Hong1008
