@@ -21,7 +21,7 @@ facts:
     note: "지투이와 호두랩스가 겹치는 2021년 2월은 한 번만 계산했다."
 
   - id: public-contact
-    statement: "공개 연락처는 zxcbnm6404@gmail.com, github.com/Hong1008, hong1008.github.io/portfolio/이다."
+    statement: "공개 연락처와 링크는 zxcbnm6404@gmail.com, velog.io/@hong1008/posts, github.com/Hong1008, hong1008.github.io/portfolio/이다."
     sourceType: user-confirmed
     source: "docs/source_of_truth/profile.md §2·5"
     scope: "공개 연락처와 링크"

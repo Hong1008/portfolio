@@ -2,6 +2,15 @@ contentSlug: g2e
 lastReviewedAt: "2026-07-21"
 
 facts:
+  - id: kiosk-project-period
+    statement: "통합응급의료정보망 키오스크 개발 기간은 2020년 5월부터 2021년 2월까지다."
+    sourceType: resume
+    source: "사용자가 제공한 이력서 홍철민 (백엔드).pdf"
+    scope: "세부 프로젝트 기간"
+    public: true
+    confidence: confirmed
+    note: null
+
   - id: employment
     statement: "2020년 2월부터 2021년 2월까지 지투이 개발팀에서 개발자로 근무했다."
     sourceType: user-confirmed

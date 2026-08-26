@@ -1,33 +1,41 @@
 meta:
-  schemaVersion: 2
-  lastReviewedAt: "2026-08-25"
+  schemaVersion: 4
+  lastReviewedAt: "2026-08-26"
   marketReviewedAt: "2026-08-25"
   title: "홍철민 백엔드 개발자 이력서"
   fileBaseName: "홍철민_백엔드개발자_이력서"
 
-photo:
-  path: "resume/15홍철민님 34 1.jpg"
-  alt: "홍철민 증명사진"
-
 candidate:
   name: "홍철민"
   role: "Java/Kotlin·Spring 백엔드 개발자"
-  experienceLabel: "백엔드 경력 3년 7개월"
-  educationSummary:
-    text: "연성대학교 컴퓨터소프트웨어 전문학사 졸업"
+  experienceLabel: "3년 7개월"
+  professionalSummary:
+    text: "Java/Kotlin·Spring 기반으로 3년 7개월간 결제 API, 배치·비동기 메일과 AWS 배포 환경을 구현한 백엔드 개발자입니다. 운영 서비스에서는 DB UNIQUE 제약과 상태 흐름으로 중복 요청·재실행·외부 승인 후 부분 실패를 다뤘고, 출시 전 신규 시스템에서는 도메인·데이터 책임 분리와 ECS 기반 배포 흐름을 담당했습니다."
     refs:
-      - "profile#fact:university"
-  headline: "결제, 비동기 메시징과 AWS 배포를 구현해 온 백엔드 개발자입니다."
-  summary:
-    - text: "운영 서비스에서 중복 요청과 재실행, 외부 연동 이후의 부분 실패를 DB 제약과 명시적인 상태 흐름으로 다뤘습니다."
+      - "profile#fact:experience-period"
+      - "shopl#fact:duplicate-defense"
+      - "hodoolabs#fact:payment-state"
+      - "hodoolabs#fact:duplicate-defense"
+      - "hunik#fact:domain-boundaries"
+      - "hunik#fact:deployment-pipeline"
+  evidenceHighlights:
+    - title: "실패 경계 설계"
+      detail: "운영 서비스에서 DB UNIQUE 제약과 상태 흐름으로 배치 재실행·메시지 재전달·결제 승인 후 부분 실패를 구분했습니다."
       refs:
         - "shopl#fact:duplicate-defense"
         - "hodoolabs#fact:payment-state"
         - "hodoolabs#fact:duplicate-defense"
-    - text: "신규 시스템의 도메인·데이터 책임을 나누고, Spring 애플리케이션을 위한 AWS 실행·배포 환경을 함께 구현했습니다."
+    - title: "개발 리드·AWS"
+      detail: "4인 개발팀 리드로 출시 전 신규 시스템의 도메인·데이터 책임 분리와 ECS 기반 실행·배포 환경을 담당했습니다."
       refs:
+        - "hunik#fact:employment-and-team"
         - "hunik#fact:domain-boundaries"
         - "hunik#fact:deployment-pipeline"
+    - title: "측정 기반 개선 · 개인"
+      detail: "KExcel은 OpenJDK 21·512MB 힙에서 100만 행 3.396초, DSL 추가 할당량 약 200KB→364B를 확인했습니다."
+      refs:
+        - "kexcel#metric:large-data-1m-fast"
+        - "kexcel#metric:extra-allocation"
   refs:
     - "profile#fact:identity"
     - "profile#fact:experience-period"
@@ -37,6 +45,10 @@ contacts:
     label: "Email"
     value: "zxcbnm6404@gmail.com"
     url: "mailto:zxcbnm6404@gmail.com"
+  blog:
+    label: "개인 블로그"
+    value: "velog.io/@hong1008/posts"
+    url: "https://velog.io/@hong1008/posts"
   github:
     label: "GitHub"
     value: "github.com/Hong1008"
@@ -50,7 +62,7 @@ contacts:
 
 skills:
   - label: "Backend"
-    items: ["Java", "Kotlin", "Spring Boot", "Spring MVC", "JPA", "QueryDSL"]
+    items: ["Java", "Kotlin", "Spring Boot", "JPA", "QueryDSL"]
     refs:
       - "shopl#fact:implementation-boundary"
       - "hunik#fact:application-scope"
@@ -95,44 +107,71 @@ experiences:
         - "shopl#fact:operation-status"
     caseStudies:
       - title: "배치 재실행과 메시지 중복 전달을 분리한 메일 발송 구조"
+        period: "2023.06–2023.08"
         problem:
           text: "기존 네이버웍스 API는 서버의 일괄 발송에 적합하지 않았고, 배치 재실행과 SQS 메시지 재전달을 서로 다른 실패 조건으로 다뤄야 했습니다."
           refs:
             - "shopl#fact:mail-provider"
             - "shopl#fact:duplicate-defense"
-        decision:
-          text: "AWS SES로 전환하고 대상자를 선정하는 배치 서버와 전송을 담당하는 메일 서버를 SQS로 분리했습니다. 배치 단계에는 발송 기준일, 소비 단계에는 메일 트랜잭션 키를 포함한 DB UNIQUE 제약을 적용했습니다."
+        role:
+          text: "온보딩 메일의 발송 대상 선정 배치, SQS 메시지 발행·소비, SES 전송과 중복 방어 로직을 직접 구현했습니다."
           refs:
-            - "shopl#fact:mail-provider"
             - "shopl#fact:mail-boundary"
             - "shopl#fact:duplicate-defense"
+        decision:
+          - text: "대상 선정 배치와 실제 메일 전송을 SQS로 분리했습니다."
+            refs:
+              - "shopl#fact:mail-provider"
+              - "shopl#fact:mail-boundary"
+          - text: "배치 재실행에는 발송 기준일을 포함한 DB UNIQUE 제약을, 메시지 재전달에는 메일 트랜잭션 키의 DB UNIQUE 제약을 적용했습니다."
+            refs:
+              - "shopl#fact:duplicate-defense"
         verification:
-          text: "메일 발송 기능은 운영됐으며, 온보딩 상태와 발송 조건을 분리한 구조를 인보이스 메일에도 재사용했습니다."
-          refs:
-            - "shopl#fact:operation-status"
-            - "shopl#fact:mail-reuse"
+          - text: "메일 발송 기능을 운영 서비스에 적용했습니다."
+            refs:
+              - "shopl#fact:operation-status"
+          - text: "온보딩 상태와 발송 조건을 분리한 구조를 인보이스 메일에도 재사용했습니다."
+            refs:
+              - "shopl#fact:mail-reuse"
         limitation:
           text: "두 단계의 DB 제약은 중복 처리를 방어하는 범위이며, 메일이 항상 한 번만 전달된다는 보장은 아닙니다."
           refs:
             - "shopl#fact:duplicate-defense"
+        technologies: ["Kotlin", "Spring Boot", "Spring Batch", "JPA", "QueryDSL", "MySQL", "AWS SES", "AWS SQS"]
+        refs:
+          - "shopl#fact:mail-project-period"
       - title: "보고서 생성 엔진 전환과 Kotlin DSL 공통화"
+        period: "2023.03–2023.05"
         problem:
           text: "POI 기반 점검 보고서 생성에서 지연이 발생했고 Workbook·Sheet·Row·Cell 처리 코드가 보고서마다 반복됐습니다."
           refs:
             - "shopl#fact:report-generation"
+        role:
+          text: "POI 기반 보고서 생성 방식을 FastExcel로 전환하고 Kotlin DSL 공통 빌더를 직접 구현했습니다."
+          refs:
+            - "shopl#fact:report-generation"
         decision:
-          text: "생성 엔진을 FastExcel로 전환하고 반복 흐름을 Kotlin DSL 공통 빌더로 분리해 보고서 로직이 엑셀 라이브러리에 직접 의존하지 않도록 했습니다."
-          refs:
-            - "shopl#fact:report-generation"
+          - text: "Workbook·Sheet·Row·Cell의 반복 흐름을 Kotlin DSL 공통 빌더로 분리했습니다."
+            refs:
+              - "shopl#fact:report-generation"
+          - text: "엑셀 라이브러리 종속 코드를 공통 영역 안으로 제한했습니다."
+            refs:
+              - "shopl#fact:report-generation"
         verification:
-          text: "공통 빌더는 운영된 점검 보고서에서 사용됐고, 보고서별 구현은 같은 생성 구조를 재사용했습니다."
-          refs:
-            - "shopl#fact:report-generation"
-            - "shopl#fact:operation-status"
+          - text: "공통 빌더를 운영된 점검 보고서에 적용했습니다."
+            refs:
+              - "shopl#fact:report-generation"
+              - "shopl#fact:operation-status"
+          - text: "보고서별 구현이 같은 생성 구조를 재사용하도록 구성했습니다."
+            refs:
+              - "shopl#fact:report-generation"
         limitation:
-          text: "운영 환경의 전후 측정 근거를 확인할 수 없어 생성 시간 개선 수치는 사용하지 않습니다."
+          text: "운영 환경의 전후 측정 근거를 확인할 수 없어 생성 시간 개선 수치는 사용하지 않으며, 개인 프로젝트 KExcel의 결과와도 분리합니다."
           refs:
             - "shopl#fact:report-generation"
+        technologies: ["Kotlin", "Apache POI", "FastExcel", "Kotlin DSL"]
+        refs:
+          - "shopl#fact:report-project-period"
     additionalContributions:
       - text: "현장 이슈의 상태·변경 이력과 AWS S3 기반 다중 이미지 첨부·수정 API를 구현했습니다."
         refs:
@@ -163,49 +202,76 @@ experiences:
         - "hunik#fact:deployment-pipeline"
     caseStudies:
       - title: "레거시 payment 구조를 복제하지 않은 신규 데이터 모델"
+        period: "2022.02–2022.10"
         problem:
           text: "기존 payment 테이블의 30개 이상 컬럼에 상품·이용권·프로모션·회원·수업·주문 정보가 결합돼 있었습니다."
           refs:
             - "hunik#fact:legacy-payment-table"
-        decision:
-          text: "기존 구조를 직접 변경하거나 복제하지 않고 신규 시스템 안에서 도메인별 데이터 책임을 나눴습니다. 기존 회원 인증 결과는 연동하되 Spring 시스템의 데이터와 API는 별도로 구성했습니다."
+        role:
+          text: "4인 개발팀의 개발 리드로 신규 데이터 모델과 어드민·키오스크 API를 담당했습니다."
           refs:
-            - "hunik#fact:separate-system"
-            - "hunik#fact:domain-boundaries"
-            - "hunik#fact:legacy-new-coexistence"
-        verification:
-          text: "어드민·키오스크 API, JWT·Spring Security 인증과 메뉴별 권한을 구현하고 인증·예외·공통 응답을 멀티모듈 공통 영역으로 분리했습니다."
-          refs:
+            - "hunik#fact:employment-and-team"
             - "hunik#fact:application-scope"
-            - "hunik#fact:multi-module"
+        decision:
+          - text: "기존 회원 인증 결과를 연동하면서 JWT·Spring Security 인증과 메뉴별 권한을 구현했습니다."
+            refs:
+              - "hunik#fact:legacy-new-coexistence"
+              - "hunik#fact:application-scope"
+          - text: "인증·예외·공통 응답을 멀티모듈 공통 영역으로 분리했습니다."
+            refs:
+              - "hunik#fact:multi-module"
+        verification:
+          - text: "기존 payment 구조를 복제하지 않고 별도 Spring 시스템 안에서 도메인별 데이터 책임을 나눴습니다."
+            refs:
+              - "hunik#fact:separate-system"
+              - "hunik#fact:domain-boundaries"
+          - text: "분리한 데이터 모델을 바탕으로 어드민·키오스크 API를 구현했습니다."
+            refs:
+              - "hunik#fact:application-scope"
         limitation:
           text: "프로젝트는 출시 전에 종료돼 실제 데이터 마이그레이션, 운영 트래픽 전환과 사용자 성과는 검증하지 못했습니다."
           refs:
             - "hunik#fact:pre-release"
+        technologies: ["Java", "Spring Boot", "Spring Security", "JPA", "QueryDSL", "MySQL"]
+        refs:
+          - "hunik#fact:jellotech-project-period"
       - title: "신규 Spring 시스템의 AWS 실행·배포 환경 구성"
+        period: "2021.09–2022.02"
         problem:
           text: "신규 시스템을 기존 서비스와 독립적으로 실행하고 반복 배포할 AWS 환경과 배포 흐름이 필요했습니다."
           refs:
             - "hunik#fact:separate-system"
             - "hunik#fact:deployment-pipeline"
-        decision:
-          text: "ECS Fargate Task를 Private Subnet에 배치하고 ALB·RDS·ECR과 외부 통신 경로를 구성했습니다. Jenkins에서 Docker 이미지를 빌드해 ECR에 올리고 ECS로 배포하도록 연결했습니다."
+        role:
+          text: "신규 Spring 시스템의 AWS 실행 환경과 Jenkins 기반 백엔드 배포 흐름을 구성했습니다."
           refs:
-            - "hunik#fact:ecs-private-subnet"
-            - "hunik#fact:nat-public-subnet"
-            - "hunik#fact:rds"
-            - "hunik#fact:backend-entrypoint"
+            - "hunik#fact:employment-and-team"
             - "hunik#fact:deployment-pipeline"
+        decision:
+          - text: "ECS Fargate Task를 Private Subnet에 배치하고 ALB·RDS·ECR을 연결했습니다."
+            refs:
+              - "hunik#fact:ecs-private-subnet"
+              - "hunik#fact:rds"
+              - "hunik#fact:backend-entrypoint"
+          - text: "NAT Gateway를 통해 Private Subnet의 외부 통신 경로를 구성했습니다."
+            refs:
+              - "hunik#fact:nat-public-subnet"
         verification:
-          text: "ECS의 롤링 배포와 롤백 기능을 사용할 수 있게 했고, 프론트엔드 결과물은 S3와 CloudFront로 제공했습니다."
-          refs:
-            - "hunik#fact:ecs-deployment-features"
-            - "hunik#fact:frontend-s3-cloudfront"
+          - text: "Docker 이미지 빌드·ECR 업로드·ECS 배포를 연결하고 롤링 배포·롤백 기능을 사용할 수 있게 했습니다."
+            refs:
+              - "hunik#fact:deployment-pipeline"
+              - "hunik#fact:ecs-deployment-features"
+          - text: "프론트엔드 결과물은 S3와 CloudFront로 제공했습니다."
+            refs:
+              - "hunik#fact:frontend-s3-cloudfront"
         limitation:
           text: "출시 전 종료된 환경이므로 실제 운영 트래픽의 배포 연속성이나 장애 대응 수준을 검증한 사례가 아닙니다."
           refs:
             - "hunik#fact:pre-release"
             - "hunik#fact:ecs-deployment-features"
+        technologies: ["AWS", "Docker", "Jenkins", "ECS Fargate", "ECR", "RDS", "ALB"]
+        refs:
+          - "hunik#fact:infra-project-period"
     technologies: ["Java", "Spring Boot", "Spring Security", "MySQL", "Docker", "Jenkins", "AWS ECS·RDS·ALB"]
     refs:
       - "hunik#fact:employment-and-team"
@@ -232,25 +298,44 @@ experiences:
         - "hodoolabs#fact:recovery-batch"
     caseStudies:
       - title: "외부 결제 승인과 내부 재화 제공을 분리한 상태 흐름"
+        period: "2021.02–2021.08"
         problem:
           text: "외부 결제 승인과 내부 재화 제공은 하나의 트랜잭션으로 묶을 수 없어 승인 이후의 부분 실패와 반복 요청을 구분할 필요가 있었습니다."
           refs:
             - "hodoolabs#fact:payment-state"
             - "hodoolabs#fact:duplicate-defense"
-        decision:
-          text: "주문을 REQUESTED·PURCHASED·COMPLETED로 나누고, 애플리케이션의 주문 상태 검증과 결제 트랜잭션 식별키 UNIQUE 제약을 서로 다른 중복 방어선으로 사용했습니다."
+        role:
+          text: "PG·Google Play·Apple 결제 흐름과 미완료 주문 복구 배치를 구현하고, DB 처리 구조를 담당한 DBA와 협업했습니다."
           refs:
-            - "hodoolabs#fact:payment-state"
-            - "hodoolabs#fact:duplicate-defense"
-        verification:
-          text: "Redis의 PURCHASED 정보를 약 300초 TTL로 관리하고 남은 TTL이 약 130초 이하인 미완료 주문을 다시 확인해 처리했습니다. ShedLock은 여러 WAS의 복구 스케줄러 동시 실행만 제한했습니다."
-          refs:
+            - "hodoolabs#fact:payment-team"
+            - "hodoolabs#fact:platform-payment"
             - "hodoolabs#fact:recovery-batch"
+        decision:
+          - text: "주문을 REQUESTED·PURCHASED·COMPLETED로 구분하고 결제 식별키 UNIQUE 제약을 적용했습니다."
+            refs:
+              - "hodoolabs#fact:payment-state"
+              - "hodoolabs#fact:duplicate-defense"
+          - text: "Redis의 PURCHASED 정보는 약 300초 TTL로 관리하고 약 130초 이하인 미완료 주문을 복구 대상으로 조회했습니다."
+            refs:
+              - "hodoolabs#fact:recovery-batch"
+          - text: "ShedLock으로 여러 WAS의 복구 스케줄러 동시 실행을 제한했습니다."
+            refs:
+              - "hodoolabs#fact:recovery-batch"
+        verification:
+          - text: "외부 승인과 내부 재화 제공을 상태로 분리했습니다."
+            refs:
+              - "hodoolabs#fact:payment-state"
+          - text: "승인 후 미완료 주문을 식별하고 다시 확인·처리할 수 있도록 했습니다."
+            refs:
+              - "hodoolabs#fact:recovery-batch"
         limitation:
-          text: "승인 후 DB 상태 저장 자체가 실패한 주문은 이 구조로 복구할 수 없으며, Stored Procedure와 DB 처리 구조는 DBA의 책임이었습니다."
+          text: "승인 후 DB 상태 저장 자체가 실패했거나 Redis 정보가 만료·유실된 주문은 이 구조로 복구할 수 없으며, DB 처리 구조는 DBA의 책임이었습니다."
           refs:
             - "hodoolabs#fact:recovery-batch"
             - "hodoolabs#fact:payment-team"
+        technologies: ["Java", "Spring Boot", "JPA", "MySQL", "Redis", "ShedLock"]
+        refs:
+          - "hodoolabs#fact:payment-project-period"
     additionalContributions:
       - text: "Google Play 구독 연장·구매 확인과 Apple 영수증 검증을 구현하고, PG사별 결제 로직을 공통 인터페이스와 구현체로 분리했습니다."
         refs:
@@ -265,7 +350,6 @@ experiences:
     role: "애플리케이션·백엔드 개발"
     period: "2020.02–2021.02"
     status: "사내·고객 시스템"
-    presentation: "compact"
     context:
       text: "응급의료 현장에서 사용하는 Android 키오스크 앱과 백엔드 API를 개발했습니다."
       refs:
@@ -276,10 +360,64 @@ experiences:
       refs:
         - "g2e#fact:emergency-kiosk-flutter"
         - "g2e#fact:kiosk-backend-api"
-    highlights:
-      - text: "화면별로 반복되는 전역 오류 처리, 인증, 세션과 감사 로그를 공통 모듈로 구성했습니다."
+    caseStudies:
+      - title: "통합응급의료정보망 키오스크 개발"
+        period: "2020.05–2021.02"
+        problem:
+          text: "키오스크 화면과 API를 함께 개발하면서 인증·세션·오류 처리·감사 로그의 반복 구현을 공통 영역으로 분리할 필요가 있었습니다."
+          refs:
+            - "g2e#fact:emergency-kiosk-flutter"
+            - "g2e#fact:kiosk-backend-api"
+            - "g2e#fact:kiosk-common-functions"
+        role:
+          text: "Flutter 기반 Android 키오스크 앱과 Spring Boot CRUD API를 직접 구현했습니다."
+          refs:
+            - "g2e#fact:emergency-kiosk-flutter"
+            - "g2e#fact:kiosk-backend-api"
+        decision:
+          - text: "전역 오류 처리와 인증·세션 기능을 화면별 코드에서 분리했습니다."
+            refs:
+              - "g2e#fact:kiosk-common-functions"
+          - text: "감사 로그를 포함한 반복 기능을 공통 모듈로 구성했습니다."
+            refs:
+              - "g2e#fact:kiosk-common-functions"
+        verification:
+          - text: "키오스크 사용자 화면과 백엔드 CRUD API를 함께 개발했습니다."
+            refs:
+              - "g2e#fact:emergency-kiosk-flutter"
+              - "g2e#fact:kiosk-backend-api"
+          - text: "반복되는 공통 기능을 한 영역에서 관리하도록 구성했습니다."
+            refs:
+              - "g2e#fact:kiosk-common-functions"
+        limitation:
+          text: "정확한 팀 규모와 전체 시스템 설계 책임은 확인되지 않아 의료 보안 체계나 운영 성과로 확대해 표현하지 않습니다."
+          refs:
+            - "g2e#fact:employment"
+        technologies: ["Java", "Spring Boot", "JPA", "MySQL", "Flutter"]
         refs:
-          - "g2e#fact:kiosk-common-functions"
+          - "g2e#fact:kiosk-project-period"
+      - title: "연명의료정보포탈 유지보수"
+        problem:
+          text: "사용자별로 접근 가능한 메뉴 범위를 애플리케이션에서 구분해야 했습니다."
+          refs:
+            - "g2e#fact:portal-menu-permission"
+        role:
+          text: "메뉴별 세부 접근 권한 처리 로직을 구현했습니다."
+          refs:
+            - "g2e#fact:portal-menu-permission"
+        decision:
+          text: "메뉴 단위의 접근 가능 여부를 판정하는 권한 로직을 적용했습니다."
+          refs:
+            - "g2e#fact:portal-menu-permission"
+        verification:
+          text: "사용자별로 접근 가능한 메뉴 범위를 구분할 수 있도록 애플리케이션 권한 처리를 구성했습니다."
+          refs:
+            - "g2e#fact:portal-menu-permission"
+        limitation:
+          text: "전체 인증·인가 정책을 설계하거나 권한 체계를 전면 재구성한 사례는 아닙니다."
+          refs:
+            - "g2e#fact:portal-menu-permission"
+        technologies: ["Java", "Spring Boot", "MySQL"]
     technologies: ["Java", "Spring Boot", "MySQL", "Flutter"]
     refs:
       - "g2e#fact:employment"
@@ -290,18 +428,43 @@ selectedProjects:
     period: "2026.05"
     type: "개인 오픈소스"
     url: "https://github.com/Hong1008/kexcel"
-    highlights:
-      - text: "실무의 엑셀 생성 문제를 일반화해 Kotlin DSL과 ExcelDriver 추상화, 스트리밍·동시 쓰기 오용 감지를 구현했습니다."
+    problem:
+      text: "실무에서 경험한 Apache POI 기반 엑셀 생성의 성능과 API 복잡도 문제를 재사용 가능한 라이브러리 문제로 일반화했습니다."
+      refs:
+        - "kexcel#fact:project-purpose"
+    role:
+      text: "개인 오픈소스로 문제 정의, Kotlin DSL·엔진 추상화 설계, 구현, JMH 벤치마크와 공개 배포를 담당했습니다."
+      refs:
+        - "kexcel#fact:project-period"
+        - "kexcel#fact:kotlin-dsl"
+        - "kexcel#fact:engine-abstraction"
+        - "kexcel#fact:release"
+    decision:
+      - text: "중첩 Kotlin DSL과 ExcelDriver 인터페이스를 설계했습니다."
         refs:
           - "kexcel#fact:kotlin-dsl"
           - "kexcel#fact:engine-abstraction"
+      - text: "POI·FastExcel Driver와 Sequence 기반 스트리밍 쓰기를 구현했습니다."
+        refs:
+          - "kexcel#fact:engine-abstraction"
           - "kexcel#fact:streaming"
+      - text: "처리 완료 행 재접근과 동일 시트 동시 쓰기 오용을 Fail-Fast로 감지하도록 했습니다."
+        refs:
           - "kexcel#fact:fail-fast"
-      - text: "OpenJDK 21·512MB heap에서 100만 행을 3.396초에 생성하고 DSL 실행당 추가 할당량을 약 200KB에서 364B로 줄였으며, 동일 시트 동시 쓰기는 감지해 중단합니다."
+    verification:
+      - text: "OpenJDK 21·512MB heap의 FastExcel 실행에서 100만 행을 3.396초에 생성했습니다."
         refs:
           - "kexcel#metric:large-data-1m-fast"
+      - text: "DSL 실행당 추가 할당량을 약 200KB에서 364B로 줄였습니다."
+        refs:
           - "kexcel#metric:extra-allocation"
-          - "kexcel#fact:fail-fast"
+    limitation:
+      text: "수치는 지정된 벤치마크 환경의 결과이며 운영 서비스 성과가 아닙니다. 동일 시트 동시 쓰기는 안전하게 지원하는 대신 오용을 감지해 중단합니다."
+      refs:
+        - "kexcel#metric:large-data-1m-fast"
+        - "kexcel#metric:extra-allocation"
+        - "kexcel#fact:fail-fast"
+    technologies: ["Kotlin", "Apache POI", "FastExcel", "JMH"]
     refs:
       - "kexcel#fact:project-period"
       - "kexcel#fact:release"
@@ -311,19 +474,54 @@ selectedProjects:
     period: "2026.06–2026.08"
     type: "5인 교육 팀 프로젝트"
     url: "https://github.com/SKNETWORKS-FAMILY-AICAMP/SKN30-4th-2Team"
-    highlights:
-      - text: "5인 팀의 PM·시스템 설계·MCP 구현을 맡아 결정론적 검색·상태 분류와 선택적 LLM 계층을 분리했습니다."
+    problem:
+      text: "계약서를 표준계약서와 조항 단위로 비교하면서 검색·상태 분류의 재현 가능한 실행 경계와 선택적 LLM 설명 계층이 필요했습니다."
+      refs:
+        - "workshield-mcp#fact:project-scope"
+        - "workshield-mcp#fact:deterministic-boundary"
+    role:
+      text: "5인 팀에서 PM·시스템 설계·MCP 구현을 맡았고, 후속 웹 플랫폼에서는 FastAPI API 기반, Review 상태 전이, LLM 근거 결합과 AWS CDK 배포에 기여했습니다."
+      refs:
+        - "workshield-mcp#fact:role"
+        - "workshield-web#fact:contribution"
+    decision:
+      - text: "결정론적 MCP 서버와 선택적 LLM 계층을 분리했습니다."
         refs:
-          - "workshield-mcp#fact:role"
           - "workshield-mcp#fact:deterministic-boundary"
-      - text: "약 0.0328 범위의 RRF 점수가 0.5 임계값과 비교되던 오류를 수정하고 판정 후보·점수를 실행 기록으로 보존했으며, 결과는 법률 판단이 아닌 검토 후보입니다."
+      - text: "약 0.0328 범위의 RRF 점수가 0.5 임계값과 비교되던 계약 오류를 수정했습니다."
         refs:
           - "workshield-mcp#fact:rrf-contract"
+      - text: "실제 판정 후보와 점수는 실행 기록으로 보존했습니다."
+        refs:
           - "workshield-mcp#fact:trace-evaluation"
-          - "workshield-mcp#fact:project-scope"
+    verification:
+      - text: "135건의 v5 골든 데이터에서 1차 조항 대응 상태 분류 F1 0.754(precision 0.742, recall 0.767)를 확인했습니다."
+        refs:
+          - "workshield-mcp#metric:golden-total"
+          - "workshield-mcp#metric:v5-f1"
+          - "workshield-mcp#metric:v5-precision"
+          - "workshield-mcp#metric:v5-recall"
+      - text: "판정에 사용한 후보와 점수를 보존해 검색을 다시 실행하지 않고 평가할 수 있도록 했습니다."
+        refs:
+          - "workshield-mcp#fact:trace-evaluation"
+    limitation:
+      text: "F1은 프로젝트 내부 상태 분류 기준선이지 법률 정확도가 아닙니다. 서비스는 법률 판단이 아닌 검토 후보와 근거를 제공합니다."
+      refs:
+        - "workshield-mcp#metric:v5-f1"
+        - "workshield-mcp#fact:project-scope"
+    technologies: ["Python", "FastAPI", "MCP", "RAG", "Chroma", "BM25"]
     refs:
       - "workshield-mcp#fact:project-scope"
       - "workshield-web#fact:project-scope"
+
+education:
+  - school: "연성대학교"
+    major: "컴퓨터소프트웨어"
+    degree: "전문학사"
+    status: "졸업"
+    period: "2016.03–2019.02"
+    refs:
+      - "profile#fact:university"
 
 training:
   - title: "SK Networks Family AI 캠프 30기"

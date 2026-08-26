@@ -1,5 +1,5 @@
 import { readdir, readFile } from "node:fs/promises";
-import { extname, join, resolve } from "node:path";
+import { join } from "node:path";
 import { parse } from "yaml";
 
 export const root = new URL("../../", import.meta.url).pathname;
@@ -15,43 +15,9 @@ const riskyClaimPattern = /대규모|무중단|고가용성|Exactly-once|자동\
 
 const loadYaml = async (path) => parse(await readFile(path, "utf8"));
 const textOf = (value) => typeof value === "string" ? value : value?.text;
-
-const normalizeLegacyResume = (source) => {
-  if (source?.meta?.schemaVersion !== 1) return source;
-
-  const university = source.education?.find((item) => item.label === "학력");
-  const training = source.education
-    ?.filter((item) => item.label !== "학력")
-    .map(({ label: _label, ...item }) => item) ?? [];
-
-  return {
-    ...source,
-    meta: {
-      ...source.meta,
-      schemaVersion: 2,
-      normalizedFromSchemaVersion: 1,
-    },
-    candidate: {
-      ...source.candidate,
-      educationSummary: university ? {
-        text: `${university.title} ${university.detail}`,
-        refs: university.refs,
-      } : null,
-      summary: source.candidate?.summary?.map((text) => ({ text })) ?? [],
-    },
-    experiences: source.experiencePages?.flatMap((page) => page.entries).map((entry) => ({
-      ...entry,
-      context: { text: entry.context },
-      contribution: { text: entry.contribution },
-      highlights: entry.bullets,
-    })) ?? [],
-    selectedProjects: source.projects?.map((project) => ({
-      ...project,
-      highlights: project.sentences,
-    })) ?? [],
-    training,
-  };
-};
+const textItemsOf = (value) => (Array.isArray(value) ? value : [value])
+  .map(textOf)
+  .filter(Boolean);
 
 const buildEvidenceIndex = async () => {
   const directories = [
@@ -117,46 +83,50 @@ const collectText = (value, text = []) => {
 const assertResumeShape = (data) => {
   const failures = [];
   const assert = (condition, message) => { if (!condition) failures.push(message); };
-  const isLegacy = data?.meta?.normalizedFromSchemaVersion === 1;
 
-  assert(data?.meta?.schemaVersion === 2, "meta.schemaVersion must be 2");
+  assert(data?.meta?.schemaVersion === 4, "meta.schemaVersion must be 4");
   assert(!("expectedPages" in (data?.meta ?? {})), "meta.expectedPages must not constrain resume length");
-  assert(data?.candidate?.experienceLabel === "백엔드 경력 3년 7개월", "experience label must be 3년 7개월");
-  assert(Boolean(textOf(data?.candidate?.educationSummary)), "candidate.educationSummary is required");
-  assert(isLegacy || Boolean(data?.photo?.path && data?.photo?.alt), "schema v2 requires a photo path and alt text");
-  assert(!data?.education, "education must appear only in candidate.educationSummary");
+  assert(data?.candidate?.experienceLabel === "3년 7개월", "experience label must be 3년 7개월");
+  assert(Boolean(textOf(data?.candidate?.professionalSummary)), "candidate.professionalSummary is required");
+  assert(data?.candidate?.evidenceHighlights?.length === 3,
+    "candidate.evidenceHighlights must contain exactly three evidence-backed highlights");
+  for (const item of data?.candidate?.evidenceHighlights ?? []) {
+    assert(Boolean(item.title && item.detail), "each candidate evidence highlight requires title and detail");
+  }
+  assert(!data?.photo, "the reference template does not use a portrait photo");
+  assert(data?.education?.length === 1, "education must contain one university record");
   assert(data?.training?.length === 1, "training must contain the current AI program");
   assert(data?.certifications?.length === 2, "certifications must contain SQLD and PCCE");
-  assert(!data?.careerSummary, "careerSummary duplicates detailed experience and must be omitted");
-  assert(!data?.experiencePages, "experiencePages must be replaced by flowing experiences");
-  assert(!data?.projects, "projects must be replaced by selectedProjects");
+  assert(Boolean(data?.contacts?.email?.value), "a public email is required");
+  assert(Boolean(data?.contacts?.blog?.url && data?.contacts?.github?.url && data?.contacts?.portfolio?.url),
+    "blog, GitHub and portfolio links are required");
 
   const experiences = data?.experiences ?? [];
   assert(experiences.length === 4, "experiences must contain four employers");
   assert(new Set(experiences.map((entry) => entry.company)).size === 4, "experience employers must be unique");
   for (const entry of experiences) {
     const cases = entry.caseStudies ?? [];
-    assert(cases.length <= 2, `${entry.company} must contain at most two representative cases`);
-    if (entry.presentation === "compact") {
-      assert(entry.company === "지투이", "only the oldest G2E experience may use compact presentation");
-      assert((entry.highlights?.length ?? 0) <= 1, "compact G2E experience must contain at most one highlight");
-      assert(cases.length === 0, "compact G2E experience must not contain detailed case studies");
-    } else {
-      assert(cases.length >= 1, `${entry.company} requires at least one representative case`);
-      for (const study of cases) {
-        assert(Boolean(study.title), `${entry.company} case study title is required`);
-        assert(Boolean(textOf(study.problem)), `${entry.company}/${study.title}: problem is required`);
-        assert(Boolean(textOf(study.decision)), `${entry.company}/${study.title}: decision is required`);
-        assert(Boolean(textOf(study.verification)), `${entry.company}/${study.title}: verification is required`);
-        assert(Boolean(textOf(study.limitation)), `${entry.company}/${study.title}: limitation is required`);
-      }
+    assert(cases.length >= 1 && cases.length <= 2, `${entry.company} must contain one or two representative projects`);
+    for (const study of cases) {
+      assert(Boolean(study.title), `${entry.company} project title is required`);
+      assert((study.technologies?.length ?? 0) >= 1, `${entry.company}/${study.title}: technologies are required`);
+      assert(Boolean(textOf(study.problem)), `${entry.company}/${study.title}: problem is required`);
+      assert(Boolean(textOf(study.role)), `${entry.company}/${study.title}: role is required`);
+      assert(textItemsOf(study.decision).length >= 1, `${entry.company}/${study.title}: decision is required`);
+      assert(textItemsOf(study.verification).length >= 1, `${entry.company}/${study.title}: verification is required`);
+      assert(Boolean(textOf(study.limitation)), `${entry.company}/${study.title}: limitation is required`);
     }
   }
 
   const projects = data?.selectedProjects ?? [];
   assert(projects.map((project) => project.title).join(",") === "KExcel,WorkShield", "selectedProjects must contain KExcel and WorkShield only");
   for (const project of projects) {
-    assert(project.highlights?.length === 2, `${project.title} must remain limited to two highlights`);
+    assert((project.technologies?.length ?? 0) >= 1, `${project.title} technologies are required`);
+    assert(Boolean(textOf(project.problem)), `${project.title}: problem is required`);
+    assert(Boolean(textOf(project.role)), `${project.title}: role is required`);
+    assert(textItemsOf(project.decision).length >= 1, `${project.title}: decision is required`);
+    assert(textItemsOf(project.verification).length >= 1, `${project.title}: verification is required`);
+    assert(Boolean(textOf(project.limitation)), `${project.title}: limitation is required`);
   }
 
   const allText = collectText(data).join("\n");
@@ -184,37 +154,11 @@ const assertEvidence = (data, evidenceIndex) => {
   if (failures.length) throw new Error(`Resume evidence validation failed:\n- ${failures.join("\n- ")}`);
 };
 
-const loadPhoto = async (data) => {
-  if (!data.photo?.path) return null;
-
-  const path = resolve(root, data.photo.path);
-  if (!path.startsWith(root)) throw new Error("Resume photo must be inside the repository");
-  const extension = extname(path).toLowerCase();
-  if (!new Set([".jpg", ".jpeg", ".png"]).has(extension)) {
-    throw new Error("Resume photo must be a JPG or PNG image");
-  }
-
-  const buffer = await readFile(path);
-  const type = extension === ".png" ? "png" : "jpg";
-  const mimeType = type === "png" ? "image/png" : "image/jpeg";
-  return {
-    path,
-    buffer,
-    type,
-    mimeType,
-    dataUri: `data:${mimeType};base64,${buffer.toString("base64")}`,
-    alt: data.photo.alt,
-  };
-};
-
 export const loadResumeData = async ({ privateMode = false } = {}) => {
-  const source = await loadYaml(resumeSource);
-  const data = normalizeLegacyResume(source);
+  const data = await loadYaml(resumeSource);
   const evidenceIndex = await buildEvidenceIndex();
   assertResumeShape(data);
   assertEvidence(data, evidenceIndex);
-  const photo = await loadPhoto(data);
-
   let phone = null;
   if (privateMode) {
     const privateData = await loadYaml(privateSource).catch(() => null);
@@ -224,7 +168,7 @@ export const loadResumeData = async ({ privateMode = false } = {}) => {
     phone = privateData.phone;
   }
 
-  return { data, evidenceIndex, phone, photo };
+  return { data, evidenceIndex, phone };
 };
 
 export const outputPaths = (data, privateMode = false) => {
@@ -241,40 +185,61 @@ export const canonicalBlocks = (data, phone = null) => {
   const blocks = [];
   const add = (...values) => values.filter(Boolean).forEach((value) => blocks.push(String(value)));
 
-  add(data.candidate.name, data.candidate.role, data.candidate.experienceLabel, textOf(data.candidate.educationSummary));
-  add(...Object.values(data.contacts).filter((item) => item?.value).map((item) => `${item.label} ${item.value}`));
-  if (phone) add(`Mobile ${phone}`);
-  add("프로필", data.candidate.headline, ...data.candidate.summary.map(textOf));
-  add("핵심 기술");
-  for (const skill of data.skills) add(`${skill.label} ${skill.items.join(" · ")}`);
+  add(data.candidate.name);
+  if (phone) add(phone);
+  add(data.contacts.email.value, "Professional Summary", textOf(data.candidate.professionalSummary), "핵심 근거");
+  for (const item of data.candidate.evidenceHighlights) add(item.title, item.detail);
 
-  add("경력");
+  add("경력", data.candidate.experienceLabel);
   for (const entry of data.experiences) {
-    add(`${entry.company} · ${entry.department}`);
-    add(`${entry.role} · ${entry.status}`);
+    add(entry.company, `${entry.period} | ${entry.department} | ${entry.role} | ${entry.status}`);
+    add(`담당 ${textOf(entry.contribution)}`);
     if (entry.team) add(`팀 ${textOf(entry.team)}`);
-    add(textOf(entry.context), `기여 ${textOf(entry.contribution)}`);
     for (const study of entry.caseStudies ?? []) {
       add(study.title);
-      add(`문제·제약 ${textOf(study.problem)}`);
-      add(`판단·구현 ${textOf(study.decision)}`);
-      add(`검증·결과 ${textOf(study.verification)}`);
-      add(`책임·한계 ${textOf(study.limitation)}`);
+      if (study.period) add(study.period);
+      add(`배경 ${textOf(study.problem)}`);
+      add(`역할 ${textOf(study.role)}`);
+      const results = textItemsOf(study.verification);
+      add(`주요 성과 ${results[0]}`, ...results.slice(1));
+      const implementations = textItemsOf(study.decision);
+      add(`핵심 구현 ${implementations[0]}`, ...implementations.slice(1));
+      add("기술스택", study.technologies.join(", "));
+      add(`한계 ${textOf(study.limitation)}`);
     }
-    for (const highlight of entry.highlights ?? []) add(textOf(highlight));
-    for (const contribution of entry.additionalContributions ?? []) add(`추가 기여 ${textOf(contribution)}`);
-    add(`기술 ${entry.technologies.join(" · ")}`);
+    if (entry.additionalContributions?.length) add("추가 기여");
+    for (const contribution of entry.additionalContributions ?? []) add(textOf(contribution));
   }
 
   add("프로젝트");
   for (const project of data.selectedProjects) {
-    add(project.title);
-    add(...project.highlights.map(textOf), project.url);
+    add(`${project.title} · ${project.subtitle}`, `${project.period} | ${project.type}`);
+    add(`배경 ${textOf(project.problem)}`);
+    add(`역할 ${textOf(project.role)}`);
+    const results = textItemsOf(project.verification);
+    add(`주요 성과 ${results[0]}`, ...results.slice(1));
+    const implementations = textItemsOf(project.decision);
+    add(`핵심 구현 ${implementations[0]}`, ...implementations.slice(1));
+    add("기술스택", project.technologies.join(", "));
+    add(`한계 ${textOf(project.limitation)}`, project.url);
   }
 
-  add("교육 · 자격");
-  for (const item of data.training) add(`교육 ${item.title} · ${item.detail}`);
-  for (const item of data.certifications) add(`자격 ${item.title} · ${item.detail}`);
+  add("학력");
+  for (const item of data.education) {
+    add(item.school, `${item.period} | ${item.status} | ${item.major} | ${item.degree}`);
+  }
+
+  add("스킬");
+  for (const item of data.skills.flatMap((group) => group.items)) add(item);
+
+  add("수상/자격증/기타");
+  for (const item of data.training) add(item.title, `${item.period} | 교육`, item.detail);
+  for (const item of data.certifications) add(item.title, `${item.acquiredAt} | 자격증`, item.detail);
+
+  add("링크");
+  for (const key of ["blog", "github", "portfolio"]) {
+    add(data.contacts[key].label, data.contacts[key].value);
+  }
 
   return blocks;
 };

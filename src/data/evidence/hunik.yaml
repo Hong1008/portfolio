@@ -2,6 +2,24 @@ contentSlug: hunik
 lastReviewedAt: "2026-07-21"
 
 facts:
+  - id: jellotech-project-period
+    statement: "젤로텍 v2 신규 개발 기간은 2022년 2월부터 2022년 10월까지다."
+    sourceType: resume
+    source: "사용자가 제공한 이력서 홍철민 (백엔드).pdf"
+    scope: "세부 프로젝트 기간"
+    public: true
+    confidence: confirmed
+    note: null
+
+  - id: infra-project-period
+    statement: "AWS 인프라와 배포 환경 구성 기간은 2021년 9월부터 2022년 2월까지다."
+    sourceType: resume
+    source: "사용자가 제공한 이력서 홍철민 (백엔드).pdf"
+    scope: "세부 프로젝트 기간"
+    public: true
+    confidence: confirmed
+    note: null
+
   - id: employment-and-team
     statement: "2021년 9월부터 2022년 10월까지 휴니크 개발팀에서 근무했고, 4인 개발팀의 개발 리드로 백엔드와 인프라를 담당했다."
     sourceType: user-confirmed

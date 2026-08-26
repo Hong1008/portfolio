@@ -2,6 +2,15 @@ contentSlug: hodoolabs
 lastReviewedAt: "2026-07-21"
 
 facts:
+  - id: payment-project-period
+    statement: "땅콩스쿨 PG·인앱 통합 결제 API 개발 기간은 2021년 2월부터 2021년 8월까지다."
+    sourceType: resume
+    source: "사용자가 제공한 이력서 홍철민 (백엔드).pdf"
+    scope: "세부 프로젝트 기간"
+    public: true
+    confidence: confirmed
+    note: null
+
   - id: employment
     statement: "2021년 2월부터 2021년 8월까지 호두랩스 플랫폼팀에서 백엔드 개발자로 근무했다."
     sourceType: user-confirmed
